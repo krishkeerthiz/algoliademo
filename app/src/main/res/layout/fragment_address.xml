@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".ui.address.AddressFragment">
 
     <TextView
@@ -11,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Choose Delivery Address"
-        android:textSize="20sp"
+        android:textSize="24sp"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +34,7 @@
         android:id="@+id/placeOrderButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
         android:text="Place Order"
         app:backgroundTint="#4CAF50"
         app:layout_constraintBottom_toBottomOf="parent"

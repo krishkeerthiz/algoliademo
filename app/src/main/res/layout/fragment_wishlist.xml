@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fff"
     tools:context=".ui.wishlist.WishlistFragment">
 
     <TextView
@@ -45,8 +46,9 @@
         android:id="@+id/addAllToCartButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add all to cart"
+        android:layout_marginBottom="56dp"
         android:clickable="false"
+        android:text="Add all to cart"
         app:backgroundTint="#4CAF50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
