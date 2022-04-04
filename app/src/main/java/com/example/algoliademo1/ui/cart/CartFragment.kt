@@ -31,7 +31,7 @@ class CartFragment : Fragment() {
 
         binding = FragmentCartBinding.bind(view)
 
-        setTotalPriceView()
+       // setTotalPriceView()
 
         val cartAdapter = CartAdapter( CartOnClickListener(
             { productId -> (requireActivity() as MainActivity).showProductDetailFragment(productId)},
@@ -42,6 +42,7 @@ class CartFragment : Fragment() {
         viewModel.cartModel.observe(viewLifecycleOwner){
             if(it != null) {
                 cartAdapter.submitList(it.products?.keys?.toList())
+                binding.totalPrice.text = "₹" + it?.total?.toString()
                 //Toast.makeText(requireContext(), it.products?.entries.toString(), Toast.LENGTH_LONG).show()
             }
          }

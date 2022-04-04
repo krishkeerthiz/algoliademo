@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface AddressListDao {
 
     @Query("SELECT address_id FROM address_list WHERE user_id = :userId")
-    fun getUserAddresses(userId: String) : Flow<List<String>>
+    suspend fun getAddresses(userId: String) : List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(addressList: AddressList)

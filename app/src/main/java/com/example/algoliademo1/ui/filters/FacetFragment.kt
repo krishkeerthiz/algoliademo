@@ -1,10 +1,12 @@
 package com.example.algoliademo1.ui.filters
 
+import android.opengl.Visibility
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.algolia.instantsearch.core.connection.ConnectionHandler
@@ -71,6 +73,39 @@ class FacetFragment: Fragment(){
         connection += viewModel.facetList2.connectView(adapterFacet2, viewModel.facetPresenter)
         connection += viewModel.facetList3.connectView(adapterFacet3, viewModel.facetPresenter)
         connection += viewModel.facetList4.connectView(adapterFacet4, viewModel.facetPresenter)
+
+        binding.filterGroup.setOnCheckedChangeListener{ chipGroup, chipId ->
+            when(chipId){
+                R.id.categoryChip -> {
+                    binding.facetList.visibility = View.VISIBLE
+                    binding.facetList2.visibility = View.GONE
+                    binding.facetList3.visibility = View.GONE
+                    binding.facetList4.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Category", Toast.LENGTH_SHORT).show()
+                }
+                R.id.typeChip -> {
+                    binding.facetList.visibility = View.GONE
+                    binding.facetList2.visibility = View.VISIBLE
+                    binding.facetList3.visibility = View.GONE
+                    binding.facetList4.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Type", Toast.LENGTH_SHORT).show()
+                }
+                R.id.brandChip -> {
+                    binding.facetList.visibility = View.GONE
+                    binding.facetList2.visibility = View.GONE
+                    binding.facetList3.visibility = View.VISIBLE
+                    binding.facetList4.visibility = View.GONE
+                    Toast.makeText(requireContext(), "Brand", Toast.LENGTH_SHORT).show()
+                }
+                R.id.priceRangeChip -> {
+                    binding.facetList.visibility = View.GONE
+                    binding.facetList2.visibility = View.GONE
+                    binding.facetList3.visibility = View.GONE
+                    binding.facetList4.visibility = View.VISIBLE
+                    Toast.makeText(requireContext(), "Price range", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {

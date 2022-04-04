@@ -6,10 +6,14 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Address(
-    @PrimaryKey @ColumnInfo(name = "address_id") val addressId: String,
+    @PrimaryKey @ColumnInfo(name = "address_id") var addressId: String,
     val address: String,
     val city: String,
     @ColumnInfo(name= "door_number") val doorNumber: String,
     val pincode: Int,
     val state: String
-)
+){
+    override fun toString(): String {
+        return "$doorNumber $address $city $pincode $state"
+    }
+}

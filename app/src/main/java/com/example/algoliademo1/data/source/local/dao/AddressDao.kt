@@ -11,7 +11,10 @@ import com.example.algoliademo1.data.source.local.entity.AddressList
 interface AddressDao {
 
     @Query("SELECT * FROM address WHERE address_id = :addressId")
-    fun getAddress(addressId: String) : List<Address>
+    suspend fun getAddress(addressId: String) : Address
+
+//    @Query("DELETE FROM address WHERE address_id = :addressId")
+//    suspend fun deleteAddress(addressId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(address: Address)

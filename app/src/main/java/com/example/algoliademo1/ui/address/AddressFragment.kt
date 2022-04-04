@@ -11,10 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.algoliademo1.R
+import com.example.algoliademo1.data.source.local.entity.Address
 import com.example.algoliademo1.databinding.FragmentAddressBinding
+import com.example.algoliademo1.ui.MainActivity
 import com.google.android.material.textfield.TextInputEditText
 
 class AddressFragment : Fragment() {
@@ -35,15 +38,14 @@ class AddressFragment : Fragment() {
         binding = FragmentAddressBinding.bind(view)
         viewModel = ViewModelProvider(requireActivity())[AddressViewModel::class.java]
 
-        //viewModel.loadAddress()
+        viewModel.getAddresses()
 
         viewModel.addresses.observe(viewLifecycleOwner){ addresses ->
-
             if(addresses != null){
-                val addressList = addresses.values.toList()
+                val addressList = viewModel.getAddressList(addresses)
 
-//            val spinner = binding.addressSpinner as Spinner
-//            spinner.setOnItemselectedListener(this)
+                val spinner = binding.addressSpinner as Spinner
+                spinner.onItemSelectedListener
 
                 val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, addressList)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -51,20 +53,23 @@ class AddressFragment : Fragment() {
                 binding.addressSpinner.adapter = adapter
 
                 binding.addressSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
-                        Toast.makeText(requireContext(), addressList[position], Toast.LENGTH_SHORT).show()
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+                    Toast.makeText(requireContext(), addressList[position], Toast.LENGTH_SHORT).show()
 
-                        viewModel.addressReference = addresses.filterValues{ it == addressList[position] }.keys.first()
-                    }
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                    }
-
+                    viewModel.addressId = addresses[position].addressId
+                }
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                }
                 }
             }
         }
 
         binding.placeOrderButton.setOnClickListener {
             viewModel.placeOrder()
+
+            Toast.makeText(requireContext(), "Order placed successfully", Toast.LENGTH_SHORT).show()
+            (requireActivity() as MainActivity).showOrdersFragment()
+
         }
 
         binding.addAddressButton.setOnClickListener {
@@ -72,6 +77,8 @@ class AddressFragment : Fragment() {
         }
 
     }
+
+
 
     private fun showAddAddressDialog(){
         val builder = AlertDialog.Builder(requireContext())
@@ -124,5 +131,28 @@ class AddressFragment : Fragment() {
         pincodeEditText.addTextChangedListener(watcher)
         stateEditText.addTextChangedListener(watcher)
 
-    }
+//    }if(addresses != null){
+//        val addressList = addresses.values.toList()
+//
+//            val spinner = binding.addressSpinner as Spinner
+//            spinner.setOnItemselectedListener(this)
+//
+//        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, addressList)
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//
+//        binding.addressSpinner.adapter = adapter
+//
+//        binding.addressSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+//            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
+//                Toast.makeText(requireContext(), addressList[position], Toast.LENGTH_SHORT).show()
+//
+//                viewModel.addressId = addresses.filterValues{ it == addressList[position] }.keys.first()
+//            }
+//            override fun onNothingSelected(p0: AdapterView<*>?) {
+//            }
+//
+//        }
+//    }
+
+        }
 }

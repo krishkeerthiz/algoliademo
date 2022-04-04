@@ -37,25 +37,25 @@ class ProductDetailFragment(
 
         viewModel.getCartModel()
 
-        val productDocumentReference = FirebaseService.testGetProductReference(id)
-
-        productDocumentReference.get().addOnSuccessListener {
-            val productModel = it.toObject<ProductModel>()
-
-            viewModel.productModel.value = productModel
-
-            binding.productName.text = productModel?.name
-            binding.productBrand.text = productModel?.brand
-
-            binding.productPrice.text = "₹" + productModel?.price
-
-            binding.productRating.rating = productModel?.rating?.div(2)?.toFloat() ?: 2.5f
-
-            binding.productDescription.text = productModel?.description
-            Glide.with(binding.productImage.context)
-                .load(productModel?.image)
-                .into(binding.productImage)
-        }
+//        val productDocumentReference = FirebaseService.testGetProductReference(id)
+//
+//        productDocumentReference.get().addOnSuccessListener {
+//            val productModel = it.toObject<ProductModel>()
+//
+//            viewModel.productModel.value = productModel
+//
+//            binding.productName.text = productModel?.name
+//            binding.productBrand.text = productModel?.brand
+//
+//            binding.productPrice.text = "₹" + productModel?.price
+//
+//            binding.productRating.rating = productModel?.rating?.div(2)?.toFloat() ?: 2.5f
+//
+//            binding.productDescription.text = productModel?.description
+//            Glide.with(binding.productImage.context)
+//                .load(productModel?.image)
+//                .into(binding.productImage)
+//        }
 
      //   val application = ShoppingApplication()
 
@@ -63,29 +63,29 @@ class ProductDetailFragment(
 //
 //        val product = repository?.getProduct(id)?.asLiveData()!!
 
-//        val productRepository = ProductsRepository.getRepository()
-//
-//        val product = productRepository.getProduct(id).asLiveData()
-//
-//        product.observe(viewLifecycleOwner){ products ->
-//            if(products.isNotEmpty()){
-//
-//                val data = products[0]
-//                //viewModel.productModel.value = productModel
-//
-//                binding.productName.text = data.name
-//                binding.productBrand.text = data.brand
-//
-//                binding.productPrice.text = "₹" + data.price
-//
-//                binding.productRating.rating = data.rating?.div(2)?.toFloat() ?: 2.5f
-//
-//                binding.productDescription.text = data.description
-//                Glide.with(binding.productImage.context)
-//                    .load(data.image)
-//                    .into(binding.productImage)
-//            }
-//        }
+        val productRepository = ProductsRepository.getRepository()
+
+        val product = productRepository.getProduct(id).asLiveData()
+
+        product.observe(viewLifecycleOwner){ products ->
+            if(products.isNotEmpty()){
+
+                val data = products[0]
+                //viewModel.productModel.value = productModel
+
+                binding.productName.text = data.name
+                binding.productBrand.text = data.brand
+
+                binding.productPrice.text = "₹" + data.price
+
+                binding.productRating.rating = data.rating?.div(2)?.toFloat() ?: 2.5f
+
+                binding.productDescription.text = data.description
+                Glide.with(binding.productImage.context)
+                    .load(data.image)
+                    .into(binding.productImage)
+            }
+        }
 
 
         // Sets card add visibility

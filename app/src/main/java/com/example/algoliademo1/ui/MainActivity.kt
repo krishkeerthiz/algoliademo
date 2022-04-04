@@ -1,8 +1,11 @@
 package com.example.algoliademo1.ui
 
+import android.content.ContentValues.TAG
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.algoliademo1.R
+import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.ui.address.AddressFragment
 import com.example.algoliademo1.ui.cart.CartFragment
 import com.example.algoliademo1.ui.filters.FacetFragment
@@ -16,8 +19,11 @@ import com.google.firebase.firestore.DocumentReference
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate: 1")
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate:2 ")
         setContentView(R.layout.activity_main)
+        Log.d(TAG, "onCreate:3 ")
         showProductFragment()
     }
 
@@ -76,10 +82,10 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    fun showOrderDetailFragment(orderDocumentReference: DocumentReference) {
+    fun showOrderDetailFragment(order: Order) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.container, OrderDetailFragment(orderDocumentReference))
+            .replace(R.id.container, OrderDetailFragment(order))  // replace document reference with order
             .addToBackStack("Order Detail fragment")
             .commit()
 

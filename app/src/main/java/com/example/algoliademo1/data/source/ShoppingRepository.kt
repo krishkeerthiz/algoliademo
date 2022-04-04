@@ -14,7 +14,6 @@ class ShoppingRepository(private val productsDao: ProductsDao) {
     fun searchResult(searchText: String) = productsDao.getSearchProducts(searchText)
 
     @Suppress("RedundantSuspendModifier")
-    @WorkerThread
     suspend fun addProduct(product: Product){
         productsDao.insert(product)
     }

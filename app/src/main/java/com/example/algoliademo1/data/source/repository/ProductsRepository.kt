@@ -19,7 +19,7 @@ class ProductsRepository {
     //suspend fun searchResult(searchText: String) = productsDao.getSearchProducts(searchText)
 
     @Suppress("RedundantSuspendModifier")
-    @WorkerThread
+    //@WorkerThread
     suspend fun addProduct(product: Product){
         dataSource.insertProduct(product)
     }

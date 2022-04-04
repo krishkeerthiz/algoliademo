@@ -35,13 +35,14 @@ class OrdersFragment : Fragment() {
 
         val adapter = OrdersAdapter(
             OrdersOnClickListener {
-                orderDocumentReference -> (requireActivity() as MainActivity).showOrderDetailFragment(orderDocumentReference)
+                order -> (requireActivity() as MainActivity)
+                .showOrderDetailFragment(order)  // Its incorrect to document reference as parameter
             }
         )
 
-        viewModel.ordersModel.observe(viewLifecycleOwner){ model ->
-            if(model != null){
-                adapter.submitList(model.order)
+        viewModel.orders.observe(viewLifecycleOwner){ orders ->
+            if(orders != null){
+                adapter.submitList(orders)
             }
         }
 

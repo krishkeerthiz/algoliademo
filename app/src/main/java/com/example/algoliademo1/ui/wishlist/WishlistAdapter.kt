@@ -1,5 +1,6 @@
 package com.example.algoliademo1
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
@@ -22,6 +23,7 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<
 
     override fun onBindViewHolder(holder: WishlistViewHolder, position: Int) {
         val productId = getItem(position)
+        Log.d("bind viewholder pid", productId)
         holder.bind(productId)
 
         holder.binding.addToCartButton.setOnClickListener {
@@ -63,6 +65,8 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<
 class WishlistViewHolder(val binding: WishlistItemBinding) : RecyclerView.ViewHolder(binding.root){
 
     fun bind(productId: String){
+        Log.d("wishlist adapter", productId)
+        if(productId != "")
         FirebaseService.testGetProductReference(productId).get().addOnSuccessListener {
             val productModel = it.toObject<ProductModel>()
 
@@ -78,8 +82,8 @@ class WishlistViewHolder(val binding: WishlistItemBinding) : RecyclerView.ViewHo
 }
 
 class WishlistClickListener(val itemClickListener: (productId: String) -> Unit,
-val addItemClickListener: (productId: String, price: Float) -> Unit,
-val removeItemClickListener: (productId: String) ->Unit){
+    val addItemClickListener: (productId: String, price: Float) -> Unit,
+    val removeItemClickListener: (productId: String) ->Unit){
 
     fun onItemClick(productId: String) = itemClickListener(productId)
 

@@ -1,7 +1,11 @@
 package com.example.algoliademo1.model
 
 class WishlistModel {
-    val products : List<String>? = null
+    var products : List<String>? = null
 
     constructor()
+
+    constructor(productIds: List<String>){
+        products = productIds
+    }
 }

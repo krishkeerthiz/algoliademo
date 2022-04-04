@@ -9,7 +9,7 @@ import com.google.firebase.ktx.Firebase
 
 object FirebaseService {
     private const val TAG ="FirebaseService"
-    private val userId = Firebase.auth.currentUser!!.uid
+    val userId = Firebase.auth.currentUser!!.uid
 
     fun testGetProductReference(id: String): DocumentReference{
         val db = FirebaseFirestore.getInstance()

@@ -6,7 +6,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "cart_items")
 data class CartItems(
-    @PrimaryKey @ColumnInfo(name = "user_id") val userId: String,
+    @ColumnInfo(name = "user_id") val userId: String,
     @ColumnInfo(name = "product_id") val productId: String,
     val quantity: Int
-)
+){
+    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "cart_items_id") var cartItemsId: Int = 0
+
+}

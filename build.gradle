@@ -6,6 +6,7 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+
     }
     dependencies {
         classpath "com.android.tools.build:gradle:7.0.3"
@@ -19,11 +20,12 @@ buildscript {
 
 ext {
     coroutines = '1.5.2'
-    lifecycleVersion = '2.4.0'
-    roomVersion = '2.4.0-rc01'
+    lifecycleVersion = '2.4.1'
+    roomVersion = '2.5.0-alpha01'
 }
 
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+

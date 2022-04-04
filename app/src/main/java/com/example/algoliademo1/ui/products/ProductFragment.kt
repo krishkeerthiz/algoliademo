@@ -1,7 +1,9 @@
 package com.example.algoliademo1.ui.products
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -29,22 +31,34 @@ class ProductFragment : Fragment() {
     private val connection = ConnectionHandler()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_product, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onCreateView: product fragment")
         binding = FragmentProductBinding.bind(view)
-
+        Log.d(TAG, "onCreateView: product fragment1")
         val viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
 
+        Log.d(TAG, "onCreateView: product fragment2")
         val auth = Firebase.auth
+        Log.d(TAG, "onCreateView: product fragment3")
         if(auth.currentUser == null){
-            startActivity(Intent(requireActivity(), SignInActivity::class.java))
+            Log.d(TAG, "onCreateView: product fragment4")
+            startActivity(Intent(requireContext(), SignInActivity::class.java))
+            Log.d(TAG, "onCreateView: product fragment5")
             requireActivity().finish()
-            return
+            Log.d(TAG, "onCreateView: product fragment6")
+            //return
         }
+
+        Log.d(TAG, "onCreateView: product fragment7")
+        binding.shimmerFrameLayout.visibility = View.VISIBLE
+        binding.shimmerFrameLayout.startShimmer()
+        binding.productList.visibility = View.INVISIBLE
 
         val adapterProduct = ProductAdapter(
             OnClickListener{
@@ -52,14 +66,26 @@ class ProductFragment : Fragment() {
             }
         )
 
-        viewModel.products.observe(viewLifecycleOwner, Observer { hits -> adapterProduct.submitList(hits) })
+        Log.d(TAG, "onCreateView: product fragment3")
+        viewModel.products.observe(viewLifecycleOwner, Observer { hits ->
+            binding.shimmerFrameLayout.visibility = View.INVISIBLE
+            binding.shimmerFrameLayout.stopShimmer()
+            binding.productList.visibility = View.VISIBLE
+            adapterProduct.submitList(hits)
+            })
 
         binding.productList.let {
             it.itemAnimator = null
             it.adapter = adapterProduct
             it.layoutManager = GridLayoutManager(requireContext(), 2)
             it.autoScrollToStart(adapterProduct)
+
+//            binding.shimmerViewContainer.visibility = View.INVISIBLE
+//            binding.shimmerViewContainer.stopShimmer()
+//            binding.productList.visibility = View.VISIBLE
         }
+
+        Log.d(TAG, "onCreateView: product fragment4")
 
         val searchBoxView = SearchBoxViewAppCompat(binding.searchView)
 
@@ -72,11 +98,13 @@ class ProductFragment : Fragment() {
             //Toast.makeText(requireContext(), "Test", Toast.LENGTH_SHORT).show()
             (requireActivity() as MainActivity).showFacetFragment()
         }
+        Log.d(TAG, "onCreateView: product fragment5")
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
-        connection.clear()
+        //connection.clear()
     }
 
     private fun onItemClicked(id: String){

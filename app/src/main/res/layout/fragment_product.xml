@@ -48,24 +48,79 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <TextView
-        android:id="@+id/stats"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerFrameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <!-- Adding 15 rows of placeholders -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:orientation="vertical"
+            android:rowCount="8">
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+            <include layout="@layout/shimmer_product_placeholder_layout" />
+
+        </GridLayout>
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <TextView
+            android:id="@+id/stats"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/productList"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        tools:listitem="@layout/product_item"/>
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:listitem="@layout/product_item"
+        tools:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

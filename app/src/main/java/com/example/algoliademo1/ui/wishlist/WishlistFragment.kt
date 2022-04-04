@@ -1,6 +1,7 @@
 package com.example.algoliademo1.ui.wishlist
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -39,17 +40,18 @@ class WishlistFragment : Fragment() {
             WishlistClickListener(
                 {productId -> (requireActivity() as MainActivity).showProductDetailFragment(productId)},
                 { productId, price -> viewModel.addToCart(productId, price)},
-                {productId -> viewModel.removeFromWishlist(productId)}
+                {productId -> viewModel.removeFromWishlistAndUpdate(productId)}
             )
         )
 
-        viewModel.wishlistModel.observe(viewLifecycleOwner){wishlistModel ->
-            if(wishlistModel != null){
+        viewModel.wishlistModel.observe(viewLifecycleOwner){ wishlistModel ->
+            if(wishlistModel != null){ // && !(wishlistModel.products.isNullOrEmpty())
+                Log.d("wishlist adapter", wishlistModel.products.toString())
                 wishlistAdapter.submitList(wishlistModel.products)
             }
         }
 
-        viewModel.wishlistModel.observe(viewLifecycleOwner){wishlistModel ->
+        viewModel.wishlistModel.observe(viewLifecycleOwner){ wishlistModel ->
             if(wishlistModel != null && !(wishlistModel.products.isNullOrEmpty())){
                 binding.addAllToCartButton.isClickable = true
             }
