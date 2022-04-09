@@ -1,5 +1,7 @@
 package com.example.algoliademo1.data.source.local.localdatasource
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import com.example.algoliademo1.data.source.datasource.CartDataSource
 import com.example.algoliademo1.data.source.local.dao.CartDao
 import com.example.algoliademo1.data.source.local.dao.CartItemsDao
@@ -15,7 +17,8 @@ class CartLocalDataSource(val cartDao: CartDao, val cartItemsDao: CartItemsDao, 
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
     override suspend fun addToCart(userId: String, productId: String) = withContext(ioDispatcher){
-        cartItemsDao.insert(CartItems(userId, productId, 1))
+        val id = cartItemsDao.insert(CartItems(userId, productId, 1))
+        Log.d(TAG, "addToCart: $id")
         addItemPrice(userId, productId)
     }
 
@@ -72,6 +75,10 @@ class CartLocalDataSource(val cartDao: CartDao, val cartItemsDao: CartItemsDao, 
     override suspend fun emptyCart(userId: String) = withContext(ioDispatcher){
         cartItemsDao.deleteProducts(userId)
         cartDao.updateCartTotal(userId, 0.0f)
+    }
+
+    override suspend fun isProductInCart(userId: String, productId: String): Boolean = withContext(ioDispatcher){
+        return@withContext cartItemsDao.isProductInCart(userId, productId) != null
     }
 
 }

@@ -7,4 +7,6 @@ interface WishlistDataSource {
     suspend fun getWishlist(userId: String): List<String>  // list of product ids
 
     suspend fun removeFromWishlist(userId: String, productId: String)
+
+    suspend fun isInWishlist(userId: String, productId: String): Boolean
 }

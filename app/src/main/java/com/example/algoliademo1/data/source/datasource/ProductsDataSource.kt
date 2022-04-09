@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProductsDataSource {
 
-    fun getProducts(): Flow<List<Product>>
+    suspend fun getProducts(): List<Product>
 
-    fun getProduct(productId: String): Flow<List<Product>>
+    suspend fun getProduct(productId: String): Product
 
     suspend fun insertProduct(product: Product)
 }

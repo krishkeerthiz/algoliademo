@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.OrderedItemsAdapter
 import com.example.algoliademo1.OrdersAdapter
@@ -27,10 +28,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class OrderDetailFragment(val order: Order) : Fragment() {
+class OrderDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentOrderDetailBinding
     private lateinit var viewModel: OrderDetailViewModel
+
+    private val args: OrderDetailFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +46,9 @@ class OrderDetailFragment(val order: Order) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d(TAG, "onViewCreated: keerthi")
+        val order: Order = args.order
+
+        Log.d(TAG, "order total: ${order.total}")
 
         binding = FragmentOrderDetailBinding.bind(view)
         viewModel = ViewModelProvider(requireActivity())[OrderDetailViewModel::class.java]
@@ -50,7 +56,7 @@ class OrderDetailFragment(val order: Order) : Fragment() {
 //        viewModel = ViewModelProvider(requireActivity(),
 //            OrderDetailViewModelFactory(order.orderId))[OrderDetailViewModel::class.java]
 
-        binding.totalPrice.text = order.total.toString()
+        binding.totalPrice.text = getString(R.string.currency) + String.format("%.2f", order.total)
         binding.orderDateTextView.text = formatDate(order.date)
 
         viewModel.orderId = order.orderId

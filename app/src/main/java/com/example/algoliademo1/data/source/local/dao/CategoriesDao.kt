@@ -10,7 +10,7 @@ import com.example.algoliademo1.data.source.local.entity.Categories
 interface CategoriesDao {
 
     @Query("SELECT category FROM categories WHERE product_id= :productId")
-    fun getCategories(productId: String): List<String>
+    suspend fun getCategories(productId: String): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: Categories)

@@ -5,12 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.algoliademo1.data.source.local.entity.Address
+import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.model.AddressModel
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.OrdersRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.*
 
 class AddressViewModel : ViewModel() {
 
@@ -26,7 +29,7 @@ class AddressViewModel : ViewModel() {
 
     var addressId: String? = null
 
-    fun addAddress(doorNumber: String, address: String, city: String, pincode: Int, state: String){
+    fun addAddress(doorNumber: String, address: String, city: String, pincode: Int, state: String) {
         viewModelScope.launch {
             val addressModel = AddressModel(address, city, doorNumber, pincode, state)
 
@@ -38,17 +41,17 @@ class AddressViewModel : ViewModel() {
         }
     }
 
-    private fun generateId(length: Int): String{
+    private fun generateId(length: Int): String {
         val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
         return List(length) { charset.random() }
             .joinToString("")
     }
 
-    fun getAddress(){
+    fun getAddress() {
     }
 
-    fun getAddresses(){
+    fun getAddresses() {
         viewModelScope.launch {
             val addresses = addressRepository.getAddressList(FirebaseService.userId)
 
@@ -56,10 +59,10 @@ class AddressViewModel : ViewModel() {
         }
     }
 
-    fun getAddressList(addresses: List<Address>): List<String>{
+    fun getAddressList(addresses: List<Address>): List<String> {
         val addressList = mutableListOf<String>()
 
-        for(address in addresses){
+        for (address in addresses) {
             addressList.add(
                 address.doorNumber + " " + address.address + " " + address.city +
                         " " + address.state + " " + address.pincode
@@ -68,25 +71,32 @@ class AddressViewModel : ViewModel() {
         return addressList
     }
 
-    fun placeOrder(){
-        viewModelScope.launch {
-            if(addressId != null){
-                val userId = FirebaseService.userId
+    suspend fun placeOrder(): Order {
+        val orderId = generateId(10)
+        val userId = FirebaseService.userId
+        val order = viewModelScope.async {
+            var total = 0.0f
+            if (addressId != null) {
+                total = cartRepository.getCartTotal(userId)
+
                 ordersRepository.placeOrder(
                     userId,
-                    generateId(10),
+                    orderId,
                     addressId!!,
                     cartRepository.getCartItems(userId),
-                    cartRepository.getCartTotal(userId)
+                    total
                 )
 
                 cartRepository.emptyCart(userId)
             }
+
+            return@async Order(orderId, addressId!!, Date(), total)
         }
+        return order.await()
     }
 
     // Old code
-    init{
+    init {
         //   getAddresses()
     }
 
@@ -101,7 +111,6 @@ class AddressViewModel : ViewModel() {
 //    get() = _addresses
 //
 //    var addressReference: DocumentReference? = null
-
 
 
 //    fun getAddresses(){

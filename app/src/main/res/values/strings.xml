@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Algolia demo 1</string>
+    <string name="app_name">Shopizy</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="content_description_media">Product image</string>
@@ -9,5 +9,6 @@
     <string name="product_brand">Brand</string>
     <string name="product_description">Description</string>
     <string name="sign_out">Sign out</string>
+    <string name="currency">$</string>
 
 </resources>

@@ -1,5 +1,7 @@
 package com.example.algoliademo1.ui.cart
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -25,6 +27,7 @@ class CartViewModel : ViewModel(){
         viewModelScope.launch {
             val items = cartRepository.getCartItems(FirebaseService.userId)
 
+
             val productsQuantity: Map<String, Int> = listToMap(items)
             val total = cartRepository.getCartTotal(FirebaseService.userId)
 
@@ -38,8 +41,12 @@ class CartViewModel : ViewModel(){
     private fun listToMap(items: List<ItemCount>): Map<String, Int>{
         val productsQuantity = mutableMapOf<String, Int>()
 
-        for(item in items)
+        for(item in items){
             productsQuantity[item.productId] = item.quantity
+            Log.d(TAG, "listToMap: $item.quantity")
+        }
+
+
 
         return productsQuantity
     }
@@ -47,6 +54,20 @@ class CartViewModel : ViewModel(){
     fun removeItemAndUpdate(productId: String, price: Float){
         viewModelScope.launch {
             cartRepository.removeFromCart(FirebaseService.userId, productId)
+            getCartItems()
+        }
+    }
+
+    fun incrementItemAndUpdate(productId: String){
+        viewModelScope.launch {
+            cartRepository.incrementItemCount(FirebaseService.userId, productId)
+            getCartItems()
+        }
+    }
+
+    fun decrementItemAndUpdate(productId: String){
+        viewModelScope.launch {
+            cartRepository.decrementItemCount(FirebaseService.userId, productId)
             getCartItems()
         }
     }

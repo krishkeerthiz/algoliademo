@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.Flow
 interface ProductsDao {
 
     @Query("SELECT * FROM products_table WHERE product_id = :productId")
-    fun getProduct(productId: String) : Flow<List<Product>> //Product//
+    suspend fun getProduct(productId: String) : Product //Product//
 
     @Query("SELECT price FROM products_table WHERE product_id = :productId")
     fun getProductPrice(productId: String) : Float
 
     @Query("SELECT * FROM products_table")
-    fun getProducts() : Flow<List<Product>>
+    fun getProducts() : List<Product>
 
-    @Query("SELECT * FROM products_table WHERE name LIKE :search OR description LIKE :search")
-    fun getSearchProducts(search: String): Flow<List<Product>>
+//    @Query("SELECT * FROM products_table WHERE name LIKE :search OR description LIKE :search")
+//    fun getSearchProducts(search: String): Flow<List<Product>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: Product)

@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="0.5dp"
-    app:cardCornerRadius="0dp"
-    tools:layout_height="100dp">
+    tools:layout_height="wrap_content"
+    app:cardUseCompatPadding="true"
+    android:elevation="4dp"
+    app:cardCornerRadius="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -14,11 +15,11 @@
 
         <ImageView
             android:id="@+id/cartItemImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:src="@drawable/loading"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
@@ -31,39 +32,29 @@
             android:id="@+id/wishlistItemName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
-            android:maxLines="3"
+            android:maxLines="2"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="16sp"
-            app:layout_constraintEnd_toStartOf="@id/addToCartButton"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/cartItemImage"
-            app:layout_constraintTop_toTopOf="@id/cartItemImage"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="@tools:sample/lorem/random" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/addToCartButton"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginEnd="4dp"
-            android:text="Add to Cart"
-            app:backgroundTint="#FF9800"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/wishlistItemName" />
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/removeButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
             android:text="Remove"
             app:backgroundTint="#E91E63"
-            app:layout_constraintBottom_toBottomOf="@id/wishlistItemPrice"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/addToCartButton"
-            app:layout_constraintTop_toBottomOf="@id/addToCartButton" />
+            app:layout_constraintTop_toBottomOf="@+id/wishlistItemPrice" />
 
 
         <TextView
@@ -71,12 +62,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@id/cartItemImage"
-            app:layout_constraintStart_toEndOf="@id/cartItemImage"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/cartItemImage"
+            app:layout_constraintTop_toBottomOf="@+id/wishlistItemName"
             tools:text="₹2540" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addToCartButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="4dp"
+            android:text="Add to cart"
+            app:backgroundTint="#FF9800"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/removeButton"
+            app:layout_constraintTop_toBottomOf="@+id/wishlistItemPrice" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </com.google.android.material.card.MaterialCardView>

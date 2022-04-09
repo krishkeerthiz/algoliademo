@@ -1,5 +1,6 @@
 package com.example.algoliademo1.ui.wishlist
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,9 @@ import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.WishlistRepository
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okio.utf8Size
 
@@ -27,6 +31,7 @@ class WishlistViewModel : ViewModel() {
             val productIds = wishlistRepository.getWishlist(FirebaseService.userId)
            // val x = productIds.toString()
             val model = if(productIds.isEmpty()) WishlistModel(listOf()) else WishlistModel(productIds)
+            Log.d(TAG, "getWishlistItems: ${productIds.toString()}")
             _wishlistModel.value = model
 
         }
@@ -44,30 +49,47 @@ class WishlistViewModel : ViewModel() {
     fun addToCart(productId: String, price: Float){
         viewModelScope.launch {
             cartRepository.addToCart(productId, price)
-            removeFromWishlistAndUpdate(productId)
+            //removeFromWishlistAndUpdate(productId)
         }
 
     }
 
-    fun removeFromWishlist(productId: String){
+    suspend fun getProductCount(productId: String): Int{
+        val count = viewModelScope.async {
+            return@async cartRepository.getProductQuantity(FirebaseService.userId, productId)
+        }
+
+        return count.await()
+    }
+
+    suspend fun removeFromWishlist(productId: String){
         viewModelScope.launch {
             wishlistRepository.removeFromWishlist(FirebaseService.userId, productId)
-        }
+        }.join()
+        Log.d(TAG, "addAllToCart: remove after join")
     }
 
-    fun addAllToCart(){
+    suspend fun addAllToCart(){
         viewModelScope.launch {
             val productIds = wishlistRepository.getWishlist(FirebaseService.userId)
 
+            Log.d(TAG, "addAllToCart: ${productIds.size}")
             for(productId in productIds){
-                cartRepository.addToCart(productId) // Add price if using firebase
+                val productCount = getProductCount(productId) //product count in cart
+
+                if(productCount == 0)
+                    cartRepository.addToCart(productId)
+
                 removeFromWishlist(productId)
+                Log.d(TAG, "addAllToCart: $productId")
+                //viewModel.removeFromWishlistAndUpdate(productId)
+               // cartRepository.addToCart(productId) // Add price if using firebase
+
             }
 
-            getWishlistItems()
-        }
-
-
+        }.join()
+        Log.d(TAG, "addAllToCart: after join")
+        getWishlistItems()
     }
 
     //Old code

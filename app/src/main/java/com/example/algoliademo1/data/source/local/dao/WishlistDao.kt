@@ -10,6 +10,9 @@ interface WishlistDao {
     @Query("SELECT product_id FROM wishlist WHERE user_id = :userId")
     suspend fun getItems(userId: String) : List<String>
 
+    @Query("SELECT product_id FROM wishlist WHERE user_id = :userId AND product_id= :productId")
+    suspend fun getItem(userId: String, productId: String) : String?
+
 //    @Query("SELECT quantity FROM wishlist WHERE user_id = :userId AND product_id = :productId")
 //    fun getProductQuantity(userId: String, productId: String) : Int
 //

@@ -26,6 +26,8 @@ class WishlistRepository {
         dataSource.removeFromWishlist(userId, productId)
     }
 
+    suspend fun isInWishlist(userId: String, productId: String) = dataSource.isInWishlist(userId, productId)
+
     companion object {
         @Volatile
         private var INSTANCE: WishlistRepository? = null

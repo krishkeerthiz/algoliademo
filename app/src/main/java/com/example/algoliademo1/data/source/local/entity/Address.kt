@@ -14,6 +14,6 @@ data class Address(
     val state: String
 ){
     override fun toString(): String {
-        return "$doorNumber $address $city $pincode $state"
+        return "$doorNumber\n$address\n$city\n$pincode\n$state"
     }
 }

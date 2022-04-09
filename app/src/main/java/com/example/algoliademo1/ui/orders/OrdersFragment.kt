@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.*
+import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.FragmentOrdersBinding
 import com.example.algoliademo1.ui.MainActivity
 
@@ -35,13 +37,21 @@ class OrdersFragment : Fragment() {
 
         val adapter = OrdersAdapter(
             OrdersOnClickListener {
-                order -> (requireActivity() as MainActivity)
-                .showOrderDetailFragment(order)  // Its incorrect to document reference as parameter
+                order -> gotoOrderDetailsFragment(order)
+            //(requireActivity() as MainActivity).showOrderDetailFragment(order)  // Its incorrect to document reference as parameter
             }
         )
 
         viewModel.orders.observe(viewLifecycleOwner){ orders ->
             if(orders != null){
+                if(orders.isEmpty()){
+                    binding.emptyLayout.visibility = View.VISIBLE
+                    binding.ordersList.visibility = View.INVISIBLE
+                }
+                else{
+                    binding.emptyLayout.visibility = View.INVISIBLE
+                    binding.ordersList.visibility = View.VISIBLE
+                }
                 adapter.submitList(orders)
             }
         }
@@ -51,6 +61,11 @@ class OrdersFragment : Fragment() {
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(requireContext())
         }
+    }
+
+    private fun gotoOrderDetailsFragment(order: Order) {
+        val action = OrdersFragmentDirections.actionOrdersFragmentToOrderDetailFragment(order)
+        view?.findNavController()?.navigate(action)
     }
 
 }

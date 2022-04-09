@@ -1,5 +1,6 @@
 package com.example.algoliademo1.ui.prductdetail
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +13,7 @@ import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.WishlistRepository
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ProductDetailViewModel: ViewModel() {
@@ -31,10 +33,26 @@ class ProductDetailViewModel: ViewModel() {
         }
     }
 
-    fun incrementProductQuantity(productId: String){
+    fun removeProductFromWishlist(id: String) {
         viewModelScope.launch {
-            cartRepository.incrementItemCount(FirebaseService.userId, productId)
+            wishlistRepository.removeFromWishlist(FirebaseService.userId, id)
         }
+    }
+
+    suspend fun isProductInCart(id: String): Boolean {
+        val result = viewModelScope.async {
+            cartRepository.isProductInCart(FirebaseService.userId, id)
+        }
+        return result.await()
+    }
+
+    suspend fun isInWishlist(productId: String): Boolean{
+        val result = viewModelScope.async {
+            wishlistRepository.isInWishlist(FirebaseService.userId, productId)
+        }
+//        val r = result.await()
+//        Log.d(TAG, "isInWishlist: $r")
+        return result.await()
     }
 
     // Old  code
@@ -70,4 +88,6 @@ class ProductDetailViewModel: ViewModel() {
                 Log.d("Product detail fragment", "Cart model failed to load")
             }
     }
+
+
 }

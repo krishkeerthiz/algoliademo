@@ -8,10 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.algolia.instantsearch.core.connection.ConnectionHandler
+import com.algolia.instantsearch.helper.android.filter.clear.FilterClearViewImpl
 import com.algolia.instantsearch.helper.android.filter.facet.FacetListAdapter
 import com.algolia.instantsearch.helper.android.list.autoScrollToStart
+import com.algolia.instantsearch.helper.filter.clear.connectView
 import com.algolia.instantsearch.helper.filter.facet.connectView
 import com.example.algoliademo1.*
 import com.example.algoliademo1.databinding.FragmentFacetBinding
@@ -45,6 +48,16 @@ class FacetFragment: Fragment(){
 
        // Toast.makeText(requireContext(), "navigated to facet fragment", Toast.LENGTH_SHORT).show()
 
+        binding.applyFilter.setOnClickListener{
+            val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
+            view?.findNavController()?.navigate(action)
+        }
+
+        binding.clearFilter.setOnClickListener{
+            val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
+            view?.findNavController()?.navigate(action)
+        }
+
         binding.facetList.let {
             it.adapter = adapterFacet
             it.layoutManager = LinearLayoutManager(requireContext())
@@ -73,6 +86,7 @@ class FacetFragment: Fragment(){
         connection += viewModel.facetList2.connectView(adapterFacet2, viewModel.facetPresenter)
         connection += viewModel.facetList3.connectView(adapterFacet3, viewModel.facetPresenter)
         connection += viewModel.facetList4.connectView(adapterFacet4, viewModel.facetPresenter)
+        connection += viewModel.clearAll.connectView(FilterClearViewImpl(binding.clearFilter))
 
         binding.filterGroup.setOnCheckedChangeListener{ chipGroup, chipId ->
             when(chipId){
@@ -81,31 +95,32 @@ class FacetFragment: Fragment(){
                     binding.facetList2.visibility = View.GONE
                     binding.facetList3.visibility = View.GONE
                     binding.facetList4.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Category", Toast.LENGTH_SHORT).show()
+                 //   Toast.makeText(requireContext(), "Category", Toast.LENGTH_SHORT).show()
                 }
                 R.id.typeChip -> {
                     binding.facetList.visibility = View.GONE
                     binding.facetList2.visibility = View.VISIBLE
                     binding.facetList3.visibility = View.GONE
                     binding.facetList4.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Type", Toast.LENGTH_SHORT).show()
+                 //   Toast.makeText(requireContext(), "Type", Toast.LENGTH_SHORT).show()
                 }
                 R.id.brandChip -> {
                     binding.facetList.visibility = View.GONE
                     binding.facetList2.visibility = View.GONE
                     binding.facetList3.visibility = View.VISIBLE
                     binding.facetList4.visibility = View.GONE
-                    Toast.makeText(requireContext(), "Brand", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(requireContext(), "Brand", Toast.LENGTH_SHORT).show()
                 }
                 R.id.priceRangeChip -> {
                     binding.facetList.visibility = View.GONE
                     binding.facetList2.visibility = View.GONE
                     binding.facetList3.visibility = View.GONE
                     binding.facetList4.visibility = View.VISIBLE
-                    Toast.makeText(requireContext(), "Price range", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(requireContext(), "Price range", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+
     }
 
     override fun onDestroyView() {

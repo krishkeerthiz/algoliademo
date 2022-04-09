@@ -22,12 +22,15 @@ interface CartItemsDao {
     @Query("UPDATE cart_items SET quantity = :quantity WHERE user_id = :userId AND product_id = :productId")
     fun updateProductQuantity(userId: String, productId: String, quantity: Int)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(cartItems : CartItems)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(cartItems : CartItems): Long
 
     @Query("DELETE FROM cart_items WHERE user_id = :userId AND product_id = :productId")
     fun deleteProduct(userId: String, productId: String)
 
     @Query("DELETE FROM cart_items WHERE user_id = :userId")
     fun deleteProducts(userId: String)
+
+    @Query("SELECT quantity FROM cart_items WHERE user_id= :userId AND product_id= :productId")
+    fun isProductInCart(userId: String, productId: String): Int?
 }

@@ -1,5 +1,6 @@
 package com.example.algoliademo1
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -38,6 +39,7 @@ class OrdersAdapter(val onClickListener: OrdersOnClickListener)
         holder.bind(order, addressRepository)
 
         holder.itemView.setOnClickListener {
+            Log.d(TAG, "order total: ${order.total}")
             onClickListener.onItemClick(order)
         }
     }
@@ -73,7 +75,7 @@ class OrdersViewHolder(val binding: OrderCardBinding) : RecyclerView.ViewHolder(
             withContext(Dispatchers.Main){
                 binding.orderAddress.text = address
                 binding.orderDate.text = formatDate(order.date)
-                binding.orderTotalPrice.text = order.total.toString()
+                binding.orderTotalPrice.text = binding.orderTotalPrice.context.getString(R.string.currency) + String.format("%.2f", order.total )
             }
         }
 

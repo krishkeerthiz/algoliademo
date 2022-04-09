@@ -19,64 +19,84 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
 
-@Database(entities = [Product::class, Address::class, AddressList::class, CartItems::class, Cart::class,
-                     Categories::class, Order::class, OrderItems::class, Orders::class, Wishlist::class], version = 1, exportSchema = false)
-@TypeConverters(DateConverter::class, ItemCountConverter::class, StringListConverter::class, IntListConverter::class)
+@Database(
+    entities = [Product::class, Address::class, AddressList::class, CartItems::class, Cart::class,
+        Categories::class, Order::class, OrderItems::class, Orders::class, Wishlist::class],
+    version = 1, exportSchema = false
+)
+@TypeConverters(
+    DateConverter::class,
+    ItemCountConverter::class,
+    StringListConverter::class,
+    IntListConverter::class
+)
 
 //@TypeConverters(ItemCountConverter::class)
-abstract class ShoppingRoomDatabase : RoomDatabase(){
+abstract class  ShoppingRoomDatabase : RoomDatabase() {
 
-    abstract fun productsDao() : ProductsDao
-    abstract fun addressDao() : AddressDao
-    abstract fun addressListDao() : AddressListDao
-    abstract fun cartDao() : CartDao
-    abstract fun cartItemsDao() : CartItemsDao
-    abstract fun categoriesDao() : CategoriesDao
-    abstract fun orderDao() : OrderDao
-    abstract fun orderItemsDao() : OrderItemsDao
-    abstract fun ordersDao() : OrdersDao
-    abstract fun wishlistDao() : WishlistDao
+    abstract fun productsDao(): ProductsDao
+    abstract fun addressDao(): AddressDao
+    abstract fun addressListDao(): AddressListDao
+    abstract fun cartDao(): CartDao
+    abstract fun cartItemsDao(): CartItemsDao
+    abstract fun categoriesDao(): CategoriesDao
+    abstract fun orderDao(): OrderDao
+    abstract fun orderItemsDao(): OrderItemsDao
+    abstract fun ordersDao(): OrdersDao
+    abstract fun wishlistDao(): WishlistDao
 
-    private class ShoppingDatabaseCallback(private val scope: CoroutineScope, val context: Context)
-        : RoomDatabase.Callback(){
+    private class ShoppingDatabaseCallback(
+        private val scope: CoroutineScope,
+        val context: Context
+    ) : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             INSTANCE?.let { database ->
                 scope.launch {
-                    populateDatabase(database.productsDao(),
+                    populateDatabase(
+                        database.productsDao(),
                         database.categoriesDao(),
                         database.wishlistDao(),
                         database.cartDao(),
-                        context)
+                        context
+                    )
                 }
             }
         }
 
-        suspend fun populateDatabase(productsDao: ProductsDao,
-                                     categoriesDao: CategoriesDao,
-                                     wishlistDao: WishlistDao,
-                                     cartDao: CartDao,
-                                     context: Context){
+        suspend fun populateDatabase(
+            productsDao: ProductsDao,
+            categoriesDao: CategoriesDao,
+            wishlistDao: WishlistDao,
+            cartDao: CartDao,
+            context: Context
+        ) {
 
-            val obj = JSONObject(JsonUtil.loadJSONFromAsset(context))
-            val productsArray = obj.getJSONArray("products")
+            scope.launch {
+                val obj = JSONObject(JsonUtil.loadJSONFromAsset(context))
+                val productsArray = obj.getJSONArray("products")
 
-            for(i in 0 until productsArray.length()){
-                val productDetail = productsArray.getJSONObject(i)
+                for (i in 0 until productsArray.length()) {
+                    val productDetail = productsArray.getJSONObject(i)
 
-                addProductsToDatabase(i, productDetail, productsDao)
-             //   addProductCategoriesToDatabase(i, productDetail.getJSONArray("categories"), categoriesDao)
+                    addProductsToDatabase(i, productDetail, productsDao)
+                    addProductCategoriesToDatabase(i, productDetail.getJSONArray("categories"), categoriesDao)
 
-            }
-            Log.d("Database", FirebaseService.userId)
-            initializeCart(Cart(FirebaseService.userId, 0.0f), cartDao)
+                }
+                Log.d("Database", FirebaseService.userId)
+                initializeCart(Cart(FirebaseService.userId, 0.0f), cartDao)
+            }.join()
 
         }
 
-        private suspend fun addProductsToDatabase(index: Int, productDetail: JSONObject, productsDao: ProductsDao){
+        private suspend fun addProductsToDatabase(
+            index: Int,
+            productDetail: JSONObject,
+            productsDao: ProductsDao
+        ) {
             var product: Product?
 
-            productDetail.apply{
+            productDetail.apply {
                 val brand = getString("brand")
                 val description = getString("description")
                 val freeShipping = getBoolean("free_shipping")
@@ -94,43 +114,58 @@ abstract class ShoppingRoomDatabase : RoomDatabase(){
                 val productId = index.toString()
 
 
-                val categories = arrayListOf<String>()
+//                val categories = arrayListOf<String>()
+//
+//                for (i in 0 until categoriesArray.length()) {
+//                    categories.add(categoriesArray.get(i) as String)
+//                }
 
-                for(i in 0 until categoriesArray.length()) {
-                    categories.add(categoriesArray.get(i) as String)
-                }
-
-                product = Product(productId, brand, categories, description, freeShipping, image, name, objectId, popularity, price
-                    , priceRange, rating, type, url)
+                product = Product(
+                    productId,
+                    brand,
+                    description,
+                    freeShipping,
+                    image,
+                    name,
+                    objectId,
+                    popularity,
+                    price,
+                    priceRange,
+                    rating,
+                    type,
+                    url
+                )
 
             }
             productsDao.insert(product!!)
-
         }
 
-        private suspend fun initializeCart(cart: Cart, cartDao: CartDao){
+        private suspend fun initializeCart(cart: Cart, cartDao: CartDao) {
             cartDao.insert(cart)
         }
 
 
-        private suspend fun addProductCategoriesToDatabase(index: Int, categories: JSONArray, categoriesDao: CategoriesDao){
-            for(i in 0 until categories.length()){
+        private suspend fun addProductCategoriesToDatabase(
+            index: Int,
+            categories: JSONArray,
+            categoriesDao: CategoriesDao
+        ) {
+            for (i in 0 until categories.length()) {
                 val category = categories.get(i) as String
 
                 categoriesDao.insert(Categories(index.toString(), category))
             }
         }
-
-
     }
 
-    companion object{
+    companion object {
         @Volatile
         private var INSTANCE: ShoppingRoomDatabase? = null
 
-        fun getDatabase(context: Context
-        , scope: CoroutineScope): ShoppingRoomDatabase{
-            return INSTANCE ?: synchronized(this){
+        fun getDatabase(
+            context: Context, scope: CoroutineScope
+        ): ShoppingRoomDatabase {
+            return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ShoppingRoomDatabase::class.java,

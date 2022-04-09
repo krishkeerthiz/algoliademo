@@ -23,4 +23,8 @@ class WishlistLocalDataSource(val wishlistDao: WishlistDao) : WishlistDataSource
         wishlistDao.deleteProduct(userId, productId)
     }
 
+    override suspend fun isInWishlist(userId: String, productId: String): Boolean {
+        return wishlistDao.getItem(userId, productId) != null
+    }
+
 }

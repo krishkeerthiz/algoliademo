@@ -49,7 +49,7 @@ class OrderDetailViewModel() : ViewModel() {
         Log.d("ContentValues", "Inside ordered items")
         viewModelScope.launch {
             val orders = ordersRepository.getOrderItemsId(orderId)
-            _orders.value = orders
+            _orders.value = orders.distinct()
             Log.d(TAG, "getOrderItems: ${orders.size}  ${orders.toString()}")
             ordersFlag.value = true
         }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="@color/white"
     xmlns:tools="http://schemas.android.com/tools">
 
     <ScrollView
@@ -23,11 +23,12 @@
                 android:id="@+id/productName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textSize="16sp"
+                android:textSize="20sp"
+                android:textStyle="normal"
                 app:layout_constraintBottom_toTopOf="@id/productImage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -38,22 +39,34 @@
                 android:id="@+id/productImage"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
                 android:src="@drawable/loading"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/wishlistButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productName" />
+
+            <ImageView
+                android:id="@+id/wishlistButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:tint="@color/red"
+                android:src="@drawable/ic_baseline_favorite_border_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/productImage" />
 
             <TextView
                 android:id="@+id/productPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="16sp"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productImage"
                 tools:text="@string/product_price" />
@@ -62,10 +75,10 @@
                 android:id="@+id/productBrand"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="14sp"
+                android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productPrice"
                 tools:text="@string/product_brand" />
@@ -75,46 +88,24 @@
                 style="@style/Widget.AppCompat.RatingBar.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toStartOf="@+id/wishlistButton"
                 app:layout_constraintTop_toBottomOf="@id/productImage" />
 
             <TextView
                 android:id="@+id/productDescription"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
-                android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/wishlistButton"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productBrand"
                 tools:text="@string/product_description" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/incrementButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Increment"
-                app:backgroundTint="#4CAF50"
-                app:layout_constraintBottom_toTopOf="@id/wishlistButton"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/productDescription" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/wishlistButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Wishlist"
-                app:backgroundTint="#4CAF50"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/incrementButton"
-                app:layout_constraintTop_toBottomOf="@id/incrementButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -124,14 +115,15 @@
         android:id="@+id/cartAdd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="56dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Add to cart"
         android:visibility="visible"
         app:backgroundTint="#4CAF50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

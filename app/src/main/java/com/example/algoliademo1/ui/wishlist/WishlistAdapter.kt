@@ -11,14 +11,22 @@ import com.bumptech.glide.Glide
 import com.example.algoliademo1.databinding.WishlistItemBinding
 import com.example.algoliademo1.model.ProductModel
 import com.example.algoliademo1.data.source.remote.FirebaseService
+import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.google.firebase.firestore.ktx.toObject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<String, WishlistViewHolder>(WishlistAdapter) {
+
+    private val productsRepository = ProductsRepository.getRepository()
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishlistViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = WishlistItemBinding.inflate(view, parent, false)
-        return WishlistViewHolder(binding)
+        return WishlistViewHolder(binding, productsRepository)
     }
 
     override fun onBindViewHolder(holder: WishlistViewHolder, position: Int) {
@@ -27,7 +35,7 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<
         holder.bind(productId)
 
         holder.binding.addToCartButton.setOnClickListener {
-            val price = holder.binding.wishlistItemPrice.text.trimStart('₹').toString().toFloat()
+            val price = holder.binding.wishlistItemPrice.text.trimStart('$').toString().toFloat()
             onClickListener.onAddItemClick(productId, price)
             Toast.makeText(it.context, "Added to cart", Toast.LENGTH_SHORT).show()
         }
@@ -39,7 +47,7 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<
 
         holder.itemView.setOnClickListener {
             onClickListener.onItemClick(productId)
-            Toast.makeText(it.context, "Item clicked", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(it.context, "Item clicked", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -62,22 +70,29 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<
     }
 }
 
-class WishlistViewHolder(val binding: WishlistItemBinding) : RecyclerView.ViewHolder(binding.root){
+class WishlistViewHolder(val binding: WishlistItemBinding, val productsRepository: ProductsRepository) : RecyclerView.ViewHolder(binding.root){
 
     fun bind(productId: String){
         Log.d("wishlist adapter", productId)
         if(productId != "")
-        FirebaseService.testGetProductReference(productId).get().addOnSuccessListener {
-            val productModel = it.toObject<ProductModel>()
+//        FirebaseService.testGetProductReference(productId).get().addOnSuccessListener {
+//            val productModel = it.toObject<ProductModel>()
 
-            binding.wishlistItemName.text = productModel?.name
+    CoroutineScope(Dispatchers.Main).launch {
 
-            binding.wishlistItemPrice.text = "₹" + productModel?.price
-
-            Glide.with(binding.cartItemImage.context)
-                .load(productModel?.image)
-                .into(binding.cartItemImage)
+        val productModel = withContext(Dispatchers.IO){
+            productsRepository.getProduct(productId)
         }
+        binding.wishlistItemName.text = productModel?.name
+
+        binding.wishlistItemPrice.text = binding.wishlistItemPrice.context.getString(R.string.currency) + productModel?.price
+
+        Glide.with(binding.cartItemImage.context)
+            .load(productModel?.image)
+            .into(binding.cartItemImage)
+    }
+
+      //  }
     }
 }
 

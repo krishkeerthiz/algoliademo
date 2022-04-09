@@ -10,6 +10,7 @@ import com.algolia.instantsearch.core.selectable.list.SelectionMode
 import com.algolia.instantsearch.helper.android.filter.state.connectPagedList
 import com.algolia.instantsearch.helper.android.list.SearcherSingleIndexDataSource
 import com.algolia.instantsearch.helper.android.searchbox.SearchBoxConnectorPagedList
+import com.algolia.instantsearch.helper.filter.clear.FilterClearConnector
 import com.algolia.instantsearch.helper.filter.facet.FacetListConnector
 import com.algolia.instantsearch.helper.filter.facet.FacetListPresenterImpl
 import com.algolia.instantsearch.helper.filter.facet.FacetSortCriterion
@@ -50,6 +51,9 @@ class MyViewModel: ViewModel() {
     val stats = StatsConnector(searcher)
 
     val filterState = FilterState()
+
+    val clearAll = FilterClearConnector(filterState = filterState)
+
     val facetList = FacetListConnector(
         searcher = searcher,
         filterState = filterState,
@@ -112,6 +116,7 @@ class MyViewModel: ViewModel() {
         connection += facetList4
         connection += searcher.connectFilterState(filterState)
         connection += filterState.connectPagedList(products)
+        connection += clearAll
 
     }
 

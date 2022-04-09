@@ -1,13 +1,18 @@
 package com.example.algoliademo1.ui.products
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.algolia.instantsearch.core.connection.ConnectionHandler
 import com.algolia.instantsearch.helper.android.item.StatsTextView
@@ -72,6 +77,13 @@ class ProductFragment : Fragment() {
             binding.shimmerFrameLayout.stopShimmer()
             binding.productList.visibility = View.VISIBLE
             adapterProduct.submitList(hits)
+            if(hits.isEmpty()){
+                binding.noResultImage.visibility = View.VISIBLE
+            }
+            else {
+                binding.noResultImage.visibility = View.INVISIBLE
+                adapterProduct.submitList(hits)
+            }
             })
 
         binding.productList.let {
@@ -80,9 +92,6 @@ class ProductFragment : Fragment() {
             it.layoutManager = GridLayoutManager(requireContext(), 2)
             it.autoScrollToStart(adapterProduct)
 
-//            binding.shimmerViewContainer.visibility = View.INVISIBLE
-//            binding.shimmerViewContainer.stopShimmer()
-//            binding.productList.visibility = View.VISIBLE
         }
 
         Log.d(TAG, "onCreateView: product fragment4")
@@ -94,10 +103,6 @@ class ProductFragment : Fragment() {
         connection += viewModel.searchBox.connectView(searchBoxView)
         connection += viewModel.stats.connectView(statsView, StatsPresenterImpl())
 
-        binding.filters.setOnClickListener {
-            //Toast.makeText(requireContext(), "Test", Toast.LENGTH_SHORT).show()
-            (requireActivity() as MainActivity).showFacetFragment()
-        }
         Log.d(TAG, "onCreateView: product fragment5")
     }
 
@@ -108,7 +113,9 @@ class ProductFragment : Fragment() {
     }
 
     private fun onItemClicked(id: String){
-        (requireActivity() as MainActivity).showProductDetailFragment(id)
+        val action = ProductFragmentDirections.actionProductFragmentToProductDetailFragment(id)
+        view?.findNavController()?.navigate(action)
+        //(requireActivity() as MainActivity).showProductDetailFragment(id)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -122,16 +129,26 @@ class ProductFragment : Fragment() {
                 signOut()
                 true
             }
-            R.id.cart -> {
-                (requireActivity() as MainActivity).showCartFragment()
+            R.id.filter -> {
+                gotoFilterFragment()
                 true
             }
-            R.id.wishlist -> {
-                (requireActivity() as MainActivity).showWishlistFragment()
-                true
-            }
-            R.id.orders ->{
-                (requireActivity() as MainActivity).showOrdersFragment()
+            R.id.search -> {
+                //showSearchView()
+                //item.isVisible = false
+                if(binding.searchView.visibility == View.GONE){
+                    binding.searchView.visibility = View.VISIBLE
+                    binding.searchView.requestFocus()
+                    val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+                    item.icon = context?.getDrawable(R.drawable.ic_baseline_close_24)
+                }
+                else{
+                    binding.searchView.visibility = View.GONE
+                    item.icon = context?.getDrawable(R.drawable.ic_baseline_search_24)
+                    binding.searchView.setQuery("", true)
+                    binding.searchView.clearFocus()
+                }
                 true
             }
             else ->super.onOptionsItemSelected(item)
@@ -142,5 +159,10 @@ class ProductFragment : Fragment() {
         AuthUI.getInstance().signOut(requireActivity())
         startActivity(Intent(requireActivity(), SignInActivity::class.java))
         requireActivity().finish()
+    }
+
+    private fun gotoFilterFragment(){
+        val action = ProductFragmentDirections.actionProductFragmentToFacetFragment()
+        view?.findNavController()?.navigate(action)
     }
 }

@@ -39,6 +39,7 @@ class SignInActivity : AppCompatActivity() {
             signIn.launch(signInIntent)
         }
         else
+
             goToMainActivity()
 
     }

@@ -1,26 +1,41 @@
 package com.example.algoliademo1.ui.prductdetail
 
 import android.app.Application
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavArgs
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
 import com.example.algoliademo1.ShoppingApplication
+import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.databinding.FragmentProductDetailBinding
 import com.example.algoliademo1.model.ProductModel
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProductDetailFragment(
-    val id: String) : Fragment() {
+class ProductDetailFragment : Fragment() {
+    private val args: ProductDetailFragmentArgs by navArgs()
+    private lateinit var binding: FragmentProductDetailBinding
+    private lateinit var viewModel: ProductDetailViewModel
+    private val productRepository = ProductsRepository.getRepository()
+
+    private val product = MutableLiveData<Product>()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,12 +45,16 @@ class ProductDetailFragment(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val binding = FragmentProductDetailBinding.bind(view)
+        val id: String = args.id
 
-        val viewModel = ViewModelProvider(requireActivity())[ProductDetailViewModel::class.java]
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentProductDetailBinding.bind(view)
+
+        viewModel = ViewModelProvider(requireActivity())[ProductDetailViewModel::class.java]
 
         viewModel.getCartModel()
+
+        refreshCartButton(id)
 
 //        val productDocumentReference = FirebaseService.testGetProductReference(id)
 //
@@ -57,63 +76,132 @@ class ProductDetailFragment(
 //                .into(binding.productImage)
 //        }
 
-     //   val application = ShoppingApplication()
+        //   val application = ShoppingApplication()
 
 //        val repository = ShoppingApplication.instance?.repository
 //
 //        val product = repository?.getProduct(id)?.asLiveData()!!
 
-        val productRepository = ProductsRepository.getRepository()
+//        lifecycleScope.launch(Dispatchers.IO) {
+//            product.value = productRepository.getProduct(id)
+//
+//            product.observe(viewLifecycleOwner) { product ->
+//                if (product != null) {
+//
+//                    withContext(Dispatchers.Main){
+//                        binding.productName.text = product.name
+//                        binding.productBrand.text = product.brand
+//
+//                        binding.productPrice.text = "₹" + product.price
+//
+//                        binding.productRating.rating = product.rating?.div(2)?.toFloat() ?: 2.5f
+//
+//                        binding.productDescription.text = product.description
+//                        Glide.with(binding.productImage.context)
+//                            .load(product.image)
+//                            .into(binding.productImage)
+//                    }
+//
+//                }
+//            }
+//        }
 
-        val product = productRepository.getProduct(id).asLiveData()
+        lifecycleScope.launch(Dispatchers.Main) {
+            Log.d(TAG, "onViewCreated: $id")
+            val product = withContext(Dispatchers.IO) {
+                productRepository.getProduct(id)
+            }
+            Log.d(TAG, "onViewCreated: ${product.toString()}")
+           // viewModel.productModel.value = productModel
+            withContext(Dispatchers.Main){
 
-        product.observe(viewLifecycleOwner){ products ->
-            if(products.isNotEmpty()){
+                binding.productName.text = product.name
+                binding.productBrand.text = product.brand
 
-                val data = products[0]
-                //viewModel.productModel.value = productModel
+                binding.productPrice.text = getString(R.string.currency) + product.price
 
-                binding.productName.text = data.name
-                binding.productBrand.text = data.brand
+                binding.productRating.rating = product.rating?.div(2)?.toFloat() ?: 2.5f
 
-                binding.productPrice.text = "₹" + data.price
-
-                binding.productRating.rating = data.rating?.div(2)?.toFloat() ?: 2.5f
-
-                binding.productDescription.text = data.description
+                binding.productDescription.text = product.description
                 Glide.with(binding.productImage.context)
-                    .load(data.image)
+                    .load(product.image)
                     .into(binding.productImage)
             }
         }
 
 
+//
+//        product.observe(viewLifecycleOwner) { products ->
+//
+//        }
+
         // Sets card add visibility
-        viewModel.cartModel.observe(viewLifecycleOwner){ cartModel ->  // sets button visibility
-            if(cartModel != null){
-                if(cartModel.products?.containsKey(id) == true){
+        viewModel.cartModel.observe(viewLifecycleOwner) { cartModel ->  // sets button visibility
+            if (cartModel != null) {
+                if (cartModel.products?.containsKey(id) == true) {
                     binding.cartAdd.text = "Added to cart"
                     binding.cartAdd.isClickable = false
-                }
-                else{
+                } else {
                     binding.cartAdd.text = "Add to Cart"
                     binding.cartAdd.isClickable = true
                 }
-               // binding.cartAdd.visibility = View.VISIBLE
+                // binding.cartAdd.visibility = View.VISIBLE
             }
         }
+
 
         binding.cartAdd.setOnClickListener {
             viewModel.addProductToCart(id)
             viewModel.getCartModel()
+            refreshCartButton(id, true)
         }
 
-        binding.wishlistButton.setOnClickListener{
-            viewModel.addProductToWishlist(id)
+        //set icon state while entering the page
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = viewModel.isInWishlist(id)
+            withContext(Dispatchers.Main) {
+                if (result) {
+                    binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_24))
+                } else {
+                    binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_border_24))
+                }
+            }
         }
 
-        binding.incrementButton.setOnClickListener {
-            viewModel.incrementProductQuantity(id)
+        // set icon state while click
+        binding.wishlistButton.setOnClickListener {
+            lifecycleScope.launch(Dispatchers.IO) {
+                val result = viewModel.isInWishlist(id)
+                Log.d(TAG, "onViewCreated: result before dispatcher main")
+                withContext(Dispatchers.Main) {
+                    Log.d(TAG, "onViewCreated: result during dispatcher main")
+                    if (result) {
+                        Log.d(TAG, "onViewCreated: ")
+                        viewModel.removeProductFromWishlist(id)
+                        binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_border_24))
+                    } else {
+                        viewModel.addProductToWishlist(id)
+                        binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_24))
+                    }
+                    Log.d(TAG, "onViewCreated: $result")
+                }
+            }
+        }
+
+    }
+
+    private fun refreshCartButton(id: String, default: Boolean = false) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = viewModel.isProductInCart(id)
+            withContext(Dispatchers.Main) {
+                if (result || default) {
+                    binding.cartAdd.text = "Added to cart"
+                    binding.cartAdd.isClickable = false
+                } else {
+                    binding.cartAdd.text = "Add to cart"
+                    binding.cartAdd.isClickable = true
+                }
+            }
         }
     }
 }
