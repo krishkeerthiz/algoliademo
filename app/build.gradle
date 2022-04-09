@@ -1,16 +1,18 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-
+    id 'com.google.gms.google-services'
+    id 'androidx.navigation.safeargs'
+    id 'kotlin-kapt'
 }
 
 android {
-    compileSdk 31
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.example.algoliademo1"
         minSdk 21
-        targetSdk 31
+        targetSdk 32
         versionCode 1
         versionName "1.0"
 
@@ -39,7 +41,13 @@ android {
         exclude 'META-INF/*.kotlin_module'
     }
 
-
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            freeCompilerArgs += [
+                    "-Xjvm-default=all",
+            ]
+        }
+    }
 }
 
 dependencies {
@@ -53,17 +61,67 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
+    // Navigation graph
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
+
+    //Lifecycle components
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
+    implementation "androidx.lifecycle:lifecycle-common:2.4.1"
+
+    // lifecycleScope:
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-alpha05'
+
+    // viewModelScope:
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-alpha05'
+
+
+    // Kotlin components
+   // implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2"
+
+    // Room components
+    implementation "androidx.room:room-ktx:$rootProject.roomVersion"
+    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
+
+    //Algolia
+    implementation "com.algolia:algoliasearch-client-kotlin:1.12.1"
     implementation 'com.algolia:instantsearch-android:2.11.4'
 
-    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
-    implementation "androidx.lifecycle:lifecycle-common:2.2.0"
-
-    implementation "com.algolia:algoliasearch-client-kotlin:1.12.1"
-
-    // Choose one of the following HTTP clients
-    implementation "io.ktor:ktor-client-okhttp:1.5.3"
+    //Ktor
+    implementation "io.ktor:ktor-client-okhttp:1.6.7"
     implementation "io.ktor:ktor-client-android:1.5.3"
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
+
+    //Firebase
+    implementation platform('com.google.firebase:firebase-bom:28.0.0')
+    implementation 'com.google.firebase:firebase-firestore-ktx'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+
+    //Firebase UI
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
+
+    //Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.0'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.13.0'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.8'
+
+    // Shimmer animation
+    //implementation 'com.github.sharish:ShimmerRecyclerView:v1.3'
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+   // implementation 'androidx.work:work-runtime-ktx:2.7.1'
+    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
 }

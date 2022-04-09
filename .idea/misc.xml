@@ -12,6 +12,34 @@
         <entry key="..\:/Users/KRISH/AndroidStudioProjects/Algoliademo1/app/src/main/res/layout/fragment_product.xml" value="0.25" />
         <entry key="..\:/Users/KRISH/AndroidStudioProjects/Algoliademo1/app/src/main/res/layout/ic_check.xml" value="0.1890625" />
         <entry key="..\:/Users/KRISH/AndroidStudioProjects/Algoliademo1/app/src/main/res/layout/product_item.xml" value="0.176" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/ic_baseline_favorite_border_24.xml" value="0.2005" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/ic_baseline_remove_24.xml" value="0.261" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/activity_sign_in.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/add_address_dialog.xml" value="0.22604166666666667" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/cart_item.xml" value="0.264" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/facet_item.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/facet_item2.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_address.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_cart.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_facet.xml" value="0.2391304347826087" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_hierarchical_menu.xml" value="0.27943840579710144" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_order_detail.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_orders.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_product.xml" value="0.25" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_product_detail.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_wishlist.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/new_address_dialog.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/order_card.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/order_item.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/plus_minus_button.xml" value="0.264" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/product_card.xml" value="0.264" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/product_item.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/shimmer_product_placeholder_layout.xml" value="0.26856884057971014" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/state_textview.xml" value="0.27943840579710144" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/wishlist_item.xml" value="0.26811594202898553" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.30416666666666664" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/menu/product_fragment_menu.xml" value="0.30416666666666664" />
       </map>
     </option>
   </component>
