@@ -7,6 +7,7 @@
     tools:layout_height="wrap_content"
     app:cardUseCompatPadding="true"
     android:elevation="4dp"
+    android:background="@color/background"
     app:cardCornerRadius="16dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -80,6 +81,7 @@
             app:backgroundTint="#FF9800"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/removeButton"
+            app:layout_constraintStart_toEndOf="@+id/cartItemImage"
             app:layout_constraintTop_toBottomOf="@+id/wishlistItemPrice" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

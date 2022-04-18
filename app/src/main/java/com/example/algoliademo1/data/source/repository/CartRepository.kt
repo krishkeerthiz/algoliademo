@@ -54,6 +54,12 @@ class CartRepository {
     suspend fun isProductInCart(userId: String, productId: String) =
         dataSource.isProductInCart(userId, productId)
 
+    suspend fun createCartEntry(userId: String){
+        dataSource.insert(userId)
+    }
+
+    suspend fun getCart(userId: String) = dataSource.getCart(userId)
+
     companion object {
         @Volatile
         private var INSTANCE: CartRepository? = null

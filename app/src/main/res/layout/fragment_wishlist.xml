@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background"
     tools:context=".ui.wishlist.WishlistFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,7 +40,6 @@
             android:layout_marginBottom="16dp"
             android:clickable="false"
             android:text="Add all to cart"
-            app:backgroundTint="#4CAF50"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

@@ -10,9 +10,6 @@ import com.example.algoliademo1.data.source.local.entity.ItemCount
 @Dao
 interface CartDao {
 
-//    @Query("SELECT * FROM cart WHERE user_id = :userId")
-//    fun getCart(userId: String) : Cart
-
     @Query("SELECT total FROM cart WHERE user_id = :userId")
     fun getCartTotal(userId: String) : Float
 
@@ -21,4 +18,7 @@ interface CartDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(cart: Cart)
+
+    @Query("SELECT * FROM cart WHERE user_id = :userId")
+    suspend fun getCart(userId: String) : Cart?
 }

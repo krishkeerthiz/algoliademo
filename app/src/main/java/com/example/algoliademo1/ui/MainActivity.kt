@@ -1,13 +1,15 @@
 package com.example.algoliademo1.ui
 
-import android.content.ContentValues.TAG
-import androidx.appcompat.app.AppCompatActivity
+import android.content.IntentFilter
+import android.graphics.Typeface
+import android.net.ConnectivityManager
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
+import android.preference.PreferenceManager
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -15,21 +17,13 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.algoliademo1.R
-import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.ActivityMainBinding
-import com.example.algoliademo1.ui.address.AddressFragment
-import com.example.algoliademo1.ui.cart.CartFragment
-import com.example.algoliademo1.ui.filters.FacetFragment
-import com.example.algoliademo1.ui.orders.OrdersFragment
-import com.example.algoliademo1.ui.orderdetail.OrderDetailFragment
-import com.example.algoliademo1.ui.products.ProductFragment
-import com.example.algoliademo1.ui.prductdetail.ProductDetailFragment
-import com.example.algoliademo1.ui.wishlist.WishlistFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.firestore.DocumentReference
+import com.example.algoliademo1.util.NetworkReceiver
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
-
+    val bottomNavPreference = "COMPLETED_ONBOARDING_BOTTOM_NAVIGATION"
     private lateinit var binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -59,119 +53,104 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-//        binding.bottomNavigation.setOnItemReselectedListener { menuItem ->
-//            Log.d(TAG, "onCreate: bottom nav reselected")
-//            navController.popBackStack(menuItem.itemId, inclusive = false)
-//
-//        }
 
-//        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
-//            Log.d(TAG, "onCreate: bottom nav selected")
-//            //navController.popBackStack(menuItem.itemId, inclusive = false)
-//
-//            true
-//        }
         
         navController.addOnDestinationChangedListener(this)
         //  showProductFragment()
 
-//        val navigationItemSelectedListener =
-//            BottomNavigationView.OnNavigationItemSelectedListener { menuItem ->
-//                when (menuItem.itemId) {
-//                    R.id.home -> {
-//                        Log.d(TAG, "onCreate: inside home")
-//                        showProductFragment()
-//                        true
-//                    }
-//                    R.id.cart -> {
-//                        Log.d(TAG, "onCreate: inside cart")
-//                        //Toast.makeText(this, "cart clicked", Toast.LENGTH_SHORT).show()
-//                        showCartFragment()
-//                        true
-//                    }
-//                    R.id.wishlist -> {
-//                        showWishlistFragment()
-//                        true
-//                    }
-//                    R.id.orders -> {
-//                        showOrdersFragment()
-//                        true
-//
-//                    }
-//                    else -> super.onOptionsItemSelected(menuItem)
-//                }
-//
-//            }
-//        binding.bottomNavigation.setOnNavigationItemSelectedListener(navigationItemSelectedListener)
+        val sharedPreferences = getSharedPreferences("Shopizy", MODE_PRIVATE)
+        val firstTime = sharedPreferences.getBoolean(bottomNavPreference, false) // put key in constant
+
+        // Tap targets
+        if(!firstTime){
+            TapTargetSequence(this).targets(
+                TapTarget.forView(view.findViewById(R.id.productFragment), "Home page", "You can find all products here")
+                    .outerCircleColor(R.color.teal_200)
+                    .outerCircleAlpha(0.96f)
+                    .targetCircleColor(R.color.white)
+                    .titleTextSize(20)
+                    .titleTextColor(R.color.white)
+                    .descriptionTextSize(10)
+                    .descriptionTextColor(R.color.black)
+                    .textColor(R.color.black)
+                    .textTypeface(Typeface.SANS_SERIF)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .cancelable(false)
+                    .tintTarget(true)
+                    .transparentTarget(true)
+                    .targetRadius(60),
+                TapTarget.forView(view.findViewById(R.id.cartFragment), "Cart", "You can find all cart items here")
+                    .outerCircleColor(R.color.teal_200)
+                    .outerCircleAlpha(0.96f)
+                    .targetCircleColor(R.color.white)
+                    .titleTextSize(20)
+                    .titleTextColor(R.color.white)
+                    .descriptionTextSize(10)
+                    .descriptionTextColor(R.color.black)
+                    .textColor(R.color.black)
+                    .textTypeface(Typeface.SANS_SERIF)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .cancelable(false)
+                    .tintTarget(true)
+                    .transparentTarget(true)
+                    .targetRadius(60),
+                TapTarget.forView(view.findViewById(R.id.wishlistFragment), "Wishlist", "You can find all wish listed items here")
+                    .outerCircleColor(R.color.teal_200)
+                    .outerCircleAlpha(0.96f)
+                    .targetCircleColor(R.color.white)
+                    .titleTextSize(20)
+                    .titleTextColor(R.color.white)
+                    .descriptionTextSize(10)
+                    .descriptionTextColor(R.color.black)
+                    .textColor(R.color.black)
+                    .textTypeface(Typeface.SANS_SERIF)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .cancelable(false)
+                    .tintTarget(true)
+                    .transparentTarget(true)
+                    .targetRadius(60),
+                TapTarget.forView(view.findViewById(R.id.ordersFragment), "Orders", "You can find all orders here")
+                    .outerCircleColor(R.color.teal_200)
+                    .outerCircleAlpha(0.96f)
+                    .targetCircleColor(R.color.white)
+                    .titleTextSize(20)
+                    .titleTextColor(R.color.white)
+                    .descriptionTextSize(10)
+                    .descriptionTextColor(R.color.black)
+                    .textColor(R.color.black)
+                    .textTypeface(Typeface.SANS_SERIF)
+                    .dimColor(R.color.black)
+                    .drawShadow(true)
+                    .cancelable(false)
+                    .tintTarget(true)
+                    .transparentTarget(true)
+                    .targetRadius(60),
+            ).listener(object : TapTargetSequence.Listener {
+                override fun onSequenceFinish() {
+                    Toast.makeText(this@MainActivity, "Sequence Finished", Toast.LENGTH_SHORT).show()
+
+                    val sharedPreferencesEdit = sharedPreferences.edit()
+                    sharedPreferencesEdit.putBoolean(bottomNavPreference, true)
+                    sharedPreferencesEdit.commit()
+                }
+
+                override fun onSequenceStep(lastTarget: TapTarget, targetClicked: Boolean) {
+                    Toast.makeText(this@MainActivity, "GREAT!", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onSequenceCanceled(lastTarget: TapTarget) {}
+            }).start()
+        }
+
+
+        checkInternet()
 
     }
 
-    fun showProductFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, ProductFragment())
-            //.addToBackStack("Products page")
-            .commit()
-    }
 
-    fun showFacetFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, FacetFragment())
-            //.addToBackStack("facet")
-            .commit()
-    }
-
-//    fun showProductDetailFragment(id: String) {
-//        supportFragmentManager
-//            .beginTransaction()
-//            .replace(R.id.container, ProductDetailFragment(id))
-//            .addToBackStack("Product detail")
-//            .commit()
-//    }
-
-    fun showCartFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, CartFragment())
-            .addToBackStack("Cart items")
-            .commit()
-    }
-
-    fun showWishlistFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, WishlistFragment())
-            //.addToBackStack("Cart items")
-            .commit()
-    }
-
-    fun showAddressFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, AddressFragment())
-            //.addToBackStack("Address fragment")
-            .commit()
-    }
-
-    fun showOrdersFragment() {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.container, OrdersFragment())
-            //.addToBackStack("Orders fragment")
-            .commit()
-    }
-
-//    fun showOrderDetailFragment(order: Order) {
-//        supportFragmentManager
-//            .beginTransaction()
-//            .replace(
-//                R.id.container, OrderDetailFragment(order)
-//            )  // replace document reference with order
-//            .addToBackStack("Order Detail fragment")
-//            .commit()
-//
-//    }
 
     override fun onSupportNavigateUp(): Boolean {
         //supportFragmentManager.popBackStack()
@@ -205,6 +184,10 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
             else -> binding.bottomNavigation.visibility = View.VISIBLE
         }
+    }
+
+    private fun checkInternet(){
+        registerReceiver(NetworkReceiver(), IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
     }
 
 }

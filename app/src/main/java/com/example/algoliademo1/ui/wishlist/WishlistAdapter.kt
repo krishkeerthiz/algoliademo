@@ -42,7 +42,7 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) : ListAdapter<
 
         holder.binding.removeButton.setOnClickListener {
             onClickListener.onRemoveItemClick(productId)
-            Toast.makeText(it.context, "removed from wishlist", Toast.LENGTH_SHORT).show()
+
         }
 
         holder.itemView.setOnClickListener {
@@ -89,6 +89,7 @@ class WishlistViewHolder(val binding: WishlistItemBinding, val productsRepositor
 
         Glide.with(binding.cartItemImage.context)
             .load(productModel?.image)
+            .placeholder(R.drawable.spinner1)
             .into(binding.cartItemImage)
     }
 

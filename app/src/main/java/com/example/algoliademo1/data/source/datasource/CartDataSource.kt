@@ -24,4 +24,8 @@ interface CartDataSource {
     suspend fun emptyCart(userId: String)
 
     suspend fun isProductInCart(userId: String, productId: String): Boolean
+
+    suspend fun insert(userId: String)
+
+    suspend fun getCart(userId: String): Cart?
 }

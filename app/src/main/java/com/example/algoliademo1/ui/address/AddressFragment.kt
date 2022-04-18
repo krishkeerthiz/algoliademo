@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.telephony.PhoneNumberFormattingTextWatcher
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -12,13 +13,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.FragmentAddressBinding
+import com.example.algoliademo1.model.PincodeDetail
+import com.example.algoliademo1.model.PincodeModel
+import com.example.algoliademo1.util.cityCheck
+import com.example.algoliademo1.util.doorNumberCheck
+import com.example.algoliademo1.util.streetCheck
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
@@ -50,32 +58,37 @@ class AddressFragment : Fragment() {
 
                 if(addressList.isEmpty()){
                     binding.emptyLayout.visibility = View.VISIBLE
-                    binding.placeOrderButton.isClickable = false
+                    binding.placeOrderButton.visibility = View.GONE
+                   // binding.placeOrderButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_greyed))
                     binding.addressTextView.text = "Add Address First"
-                    binding.outlinedAddressTextField.visibility = View.GONE
+                    binding.addressSpinner.visibility = View.INVISIBLE
+                    //binding.outlinedAddressTextField.visibility = View.GONE
                     //Toast.makeText(requireContext(), "Add address to place order", Toast.LENGTH_SHORT).show()
                 }
                 else {
                     //binding.emptyLayout.visibility = View.INVISIBLE
-                    binding.placeOrderButton.isClickable = true
-                    binding.outlinedAddressTextField.visibility = View.VISIBLE
+                    binding.placeOrderButton.visibility = View.VISIBLE
+                 //   binding.placeOrderButton.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green))
+                    binding.addressSpinner.visibility = View.VISIBLE
+                    //binding.outlinedAddressTextField.visibility = View.VISIBLE
                     binding.addressTextView.text = "Choose Delivery Address"
                 }
 //                val spinner = binding.addressSpinner as Spinner
 //                spinner.onItemSelectedListener
 
-                val spinner = binding.addressDropdown
-                spinner.onItemSelectedListener
+                val spinner = binding.addressSpinner
+                //spinner.onItemSelectedListener
 
                 val adapter = ArrayAdapter(requireContext(), R.layout.state_dropdown, addressList)
-                //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                adapter.setDropDownViewResource(R.layout.state_dropdown)
 
-                spinner.setAdapter(adapter)
+                spinner.adapter = adapter
 
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, position: Int, p3: Long) {
                     binding.placeOrderButton.isClickable = true
-                    //Toast.makeText(requireContext(), addressList[position], Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(requireContext(), "${addresses[position].addressId}", Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, "onItemSelected: ${addresses[position].addressId}")
                     viewModel.addressId = addresses[position].addressId
                 }
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -85,14 +98,14 @@ class AddressFragment : Fragment() {
         }
 
         binding.placeOrderButton.setOnClickListener {
-            if(binding.addressDropdown.text.toString().isEmpty())
-                Toast.makeText(requireContext(), "Select address to place order", Toast.LENGTH_SHORT).show()
-            else
+//            if(binding.addressDropdown.text.toString().isEmpty())
+//                Toast.makeText(requireContext(), "Select address to place order", Toast.LENGTH_SHORT).show()
+//            else
                 showAlertDialog()
         }
 
         binding.addAddressButton.setOnClickListener {
-            showAddAddressDialog()
+            showPincodeDialog()
         }
 
     }
@@ -103,10 +116,12 @@ class AddressFragment : Fragment() {
             setMessage("Do you want to place order?")
             setPositiveButton("Yes"){ dialogInterface, i ->
                 lifecycleScope.launch(IO) {
+                    Log.d(TAG, "showAlertDialog: before placing order")
                     val order = viewModel.placeOrder()
 
                     Log.d(TAG, "order total: ${order.total}")
                     withContext(Main) {
+                        Log.d(TAG, "showAlertDialog: ")
                         Toast.makeText(requireContext(), "Order placed successfully", Toast.LENGTH_SHORT).show()
                         gotoOrderDetailFragment(order)
                     }
@@ -123,6 +138,81 @@ class AddressFragment : Fragment() {
 
     }
 
+    private fun showPincodeDialog(){
+        val builder = AlertDialog.Builder(requireContext())
+
+        builder.setTitle("Enter Pincode")
+
+        val pincodeDialog = layoutInflater.inflate(R.layout.add_pincode_dialog, null)
+        builder.setView(pincodeDialog).setCancelable(false)
+
+        val pincodeEditText = pincodeDialog.findViewById<TextInputEditText>(R.id.pincodeText)
+        val pincodeLayout = pincodeDialog.findViewById<TextInputLayout>(R.id.outlinedPincodeTextField)
+
+        builder.setPositiveButton("Save"){ dialogInterface, i ->
+            binding.loadingPanel.visibility = View.VISIBLE
+            turnOffButtons()
+
+            viewModel.getPincodeDetails(pincodeEditText.text.toString())
+
+            viewModel.pincodeModel.observe(viewLifecycleOwner){pincodeList ->
+                if(pincodeList != null){
+                    binding.loadingPanel.visibility = View.INVISIBLE
+
+
+                    if(pincodeList[0].postOffice == null){
+                        Toast.makeText(requireContext(), "Pincode not registered", Toast.LENGTH_SHORT).show()
+                        viewModel.pincodeModel.value = null
+                        dialogInterface.dismiss()
+                        showPincodeDialog()
+                    }
+                    else{
+                        turnOnButttons()
+                        val postOffice = pincodeList[0].postOffice!![0]
+                        viewModel.pincodeDetail = PincodeDetail(postOffice.name + ", "+ postOffice.district,
+                            postOffice.state!!, postOffice.pincode!!.toInt())
+
+                        viewModel.pincodeModel.value = null
+                        dialogInterface.dismiss()
+                        showAddAddressDialog()
+                    }
+
+                }
+            }
+        }
+
+        builder.setNegativeButton("Cancel"){ dialogInterface, i ->
+            turnOnButttons()
+            dialogInterface.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
+
+        val pincodeWatcher = object : TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {
+                var pincode = pincodeEditText.text.toString()
+
+                if(pincode.isEmpty() || pincode.length != 6 || pincode.toInt() < 100000)
+                    pincodeLayout.error = "Enter valid pincode"
+                else{
+                    pincodeLayout.error = null
+                    pincodeLayout.isErrorEnabled = false
+                }
+
+                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = !(pincode.isEmpty()  ||
+                        (pincode.length != 6 ) || (pincode.toInt() < 100000))
+            }
+        }
+        pincodeEditText.addTextChangedListener(pincodeWatcher)
+
+    }
 
     private fun showAddAddressDialog(){
         val builder = AlertDialog.Builder(requireContext())
@@ -133,52 +223,121 @@ class AddressFragment : Fragment() {
         builder.setView(addAddressDialog).setCancelable(false)
 
         val doorNumberEditText = addAddressDialog.findViewById<TextInputEditText>(R.id.doorNumberText)
-        val addressEditText = addAddressDialog.findViewById<TextInputEditText>(R.id.addressText)
-        val cityEditText = addAddressDialog.findViewById<TextInputEditText>(R.id.cityText)
-        val pincodeEditText = addAddressDialog.findViewById<TextInputEditText>(R.id.pincodeText)
-        val stateDropdown = addAddressDialog.findViewById<AutoCompleteTextView>(R.id.stateDropdown)
+        val streetEditText = addAddressDialog.findViewById<TextInputEditText>(R.id.streetText)
+        val cityText = addAddressDialog.findViewById<TextView>(R.id.cityText)
+        val stateText = addAddressDialog.findViewById<TextView>(R.id.stateText)
+        val pincodeText = addAddressDialog.findViewById<TextView>(R.id.pincodeText)
 
-        val states = resources.getStringArray(R.array.states)
-        val statesAdapter = ArrayAdapter(requireContext(), R.layout.state_dropdown, states )
-        stateDropdown.setAdapter(statesAdapter)
+        val doorNumberLayout = addAddressDialog.findViewById<TextInputLayout>(R.id.outlinedDoorNumberTextField)
+        val streetLayout = addAddressDialog.findViewById<TextInputLayout>(R.id.outlinedStreetTextField)
+        //val cityLayout = addAddressDialog.findViewById<TextInputLayout>(R.id.outlinedCityTextField)
+//        val states = resources.getStringArray(R.array.states)
+//        val statesAdapter = ArrayAdapter(requireContext(), R.layout.state_dropdown, states )
+//        stateDropdown.setAdapter(statesAdapter)
+
+        cityText.setText(viewModel.pincodeDetail?.city)
+        stateText.setText(viewModel.pincodeDetail?.state)
+        pincodeText.setText(viewModel.pincodeDetail?.pincode.toString())
+
+        cityText.isClickable = false
+        cityText.isCursorVisible = false
+        cityText.isFocusable = false
+
+        stateText.isClickable = false
+        stateText.isCursorVisible = false
+        stateText.isFocusable = false
+
+        pincodeText.isClickable = false
+        pincodeText.isCursorVisible = false
+        pincodeText.isFocusable = false
 
         builder.setPositiveButton("Save"){ dialogInterface, i ->
             viewModel.addAddress(
                 doorNumberEditText.text.toString(),
-                addressEditText.text.toString(),
-                cityEditText.text.toString(),
-                pincodeEditText.text.toString().toInt(),
-                stateDropdown.text.toString(),
+                streetEditText.text.toString(),
+                cityText.text.toString(),
+                pincodeText.text.toString().toInt(),
+                stateText.text.toString()
             )
+            viewModel.pincodeModel.value = null
+            viewModel.pincodeDetail = null
+            dialogInterface.dismiss()
         }
 
         builder.setNegativeButton("Cancel"){ dialogInterface, i ->
-            dialogInterface.cancel()
+            viewModel.pincodeModel.value = null
+            viewModel.pincodeDetail = null
+            dialogInterface.dismiss()
         }
 
+
+        // load pincode
+//        loadPincodeDetails.setOnClickListener {
+//            Log.d(TAG, "showAddAddressDialog: inside add address")
+//            viewModel.getPincodeDetails("600020")
+//
+//        }
         val dialog = builder.create()
         dialog.show()
 
+        // Pincode details fetching
+//        viewModel.pincodeModel.observe(viewLifecycleOwner){ pincodeModel ->
+//            Log.d(TAG, "showAddAddressDialog: inside pincode observer")
+//            if(pincodeModel != null){
+//                Log.d(TAG, "showAddAddressDialog: insise valid pincode ")
+//                Toast.makeText(requireContext(), pincodeModel.toString(), Toast.LENGTH_SHORT).show()
+//
+//                cityEditText.setText(pincodeModel[0].postOffice[0].district.toString())
+//                stateDropdown.setText(pincodeModel[0].postOffice[0].state.toString())
+//
+//                viewModel.pincodeModel.value = null
+//            }
+//        }
+
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = false
 
-        val watcher = object: TextWatcher{
+        val doorNumberWatcher = object: TextWatcher{
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
             override fun afterTextChanged(s: Editable?) {
-                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = !(doorNumberEditText.text?.trim().toString().isEmpty() ||
-                        addressEditText.text?.trim().toString().isEmpty() || cityEditText.text?.trim().toString().isEmpty() ||
-                        pincodeEditText.text.toString().isEmpty()  || stateDropdown.text.toString().isEmpty() ||
-                        (pincodeEditText.text.toString().length != 6 ) || (pincodeEditText.text.toString().toInt() < 100000))
+                if(doorNumberCheck(doorNumberEditText.text?.trim().toString()))
+                    doorNumberLayout.error = "Enter valid door number"
+                else{
+                    doorNumberLayout.error = null
+                    doorNumberLayout.isErrorEnabled = false
+                }
+                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = !( doorNumberCheck(doorNumberEditText.text?.trim().toString()) ||
+                        streetCheck(streetEditText.text?.trim().toString()))
             }
         }
 
-        doorNumberEditText.addTextChangedListener(watcher)
-        addressEditText.addTextChangedListener(watcher)
-        cityEditText.addTextChangedListener(watcher)
-        pincodeEditText.addTextChangedListener(watcher)
-       // stateEditText.addTextChangedListener(watcher)
+        val streetWatcher = object : TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+            override fun afterTextChanged(s: Editable?) {
+                if(streetCheck(streetEditText.text?.trim().toString()))
+                    streetLayout.error = "Enter valid street name"
+                else{
+                    streetLayout.error = null
+                    streetLayout.isErrorEnabled = false
+                }
+
+                dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = !( doorNumberCheck(doorNumberEditText.text?.trim().toString()) ||
+                        streetCheck(streetEditText.text?.trim().toString()))
+            }
+
+        }
+
+
+        doorNumberEditText.addTextChangedListener(doorNumberWatcher)
+        streetEditText.addTextChangedListener(streetWatcher)
+//        cityEditText.addTextChangedListener(cityWatcher)
+//        pincodeEditText.addTextChangedListener(pincodeWatcher)
+        //stateDropdown.addTextChangedListener(stateWatcher)
 
 //    }if(addresses != null){
 //        val addressList = addresses.values.toList()
@@ -207,5 +366,15 @@ class AddressFragment : Fragment() {
     private fun gotoOrderDetailFragment(order: Order) {
         val action = AddressFragmentDirections.actionAddressFragmentToOrderDetailFragment(order)
         view?.findNavController()?.navigate(action)
+    }
+
+    private fun turnOffButtons(){
+        binding.placeOrderButton.isClickable = false
+        binding.addAddressButton.isClickable = false
+    }
+
+    private fun turnOnButttons(){
+        binding.placeOrderButton.isClickable = true
+        binding.addAddressButton.isClickable = true
     }
 }

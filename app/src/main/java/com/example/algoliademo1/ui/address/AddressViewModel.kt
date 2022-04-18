@@ -1,9 +1,13 @@
 package com.example.algoliademo1.ui.address
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.algoliademo1.api.ApiService
+import com.example.algoliademo1.api.PostalPincodeApi
 import com.example.algoliademo1.data.source.local.entity.Address
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.model.AddressModel
@@ -11,8 +15,13 @@ import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.OrdersRepository
+import com.example.algoliademo1.model.Pincode
+import com.example.algoliademo1.model.PincodeDetail
+//import com.example.algoliademo1.model.Pincode
+import com.example.algoliademo1.model.PincodeModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.util.*
 
 class AddressViewModel : ViewModel() {
@@ -27,7 +36,11 @@ class AddressViewModel : ViewModel() {
     val addresses: LiveData<List<Address>>
         get() = _addresses
 
+    val pincodeModel= MutableLiveData<List<PincodeModel>?>()
+
     var addressId: String? = null
+
+    var pincodeDetail: PincodeDetail? = null
 
     fun addAddress(doorNumber: String, address: String, city: String, pincode: Int, state: String) {
         viewModelScope.launch {
@@ -74,11 +87,15 @@ class AddressViewModel : ViewModel() {
     suspend fun placeOrder(): Order {
         val orderId = generateId(10)
         val userId = FirebaseService.userId
+        Log.d(TAG, "placeOrder: before async")
         val order = viewModelScope.async {
             var total = 0.0f
+            Log.d(TAG, "placeOrder: inside vm scope")
             if (addressId != null) {
+                Log.d(TAG, "placeOrder: $addressId")
                 total = cartRepository.getCartTotal(userId)
 
+                Log.d(TAG, "placeOrder: placing order")
                 ordersRepository.placeOrder(
                     userId,
                     orderId,
@@ -87,12 +104,30 @@ class AddressViewModel : ViewModel() {
                     total
                 )
 
+                Log.d(TAG, "placeOrder: empty cart")
                 cartRepository.emptyCart(userId)
             }
 
+            Log.d(TAG, "placeOrder: ${Order(orderId, addressId!!, Date(), total)}")
             return@async Order(orderId, addressId!!, Date(), total)
         }
+        Log.d(TAG, "placeOrder: before await")
         return order.await()
+    }
+
+    fun getPincodeDetails(pincode: String){
+        viewModelScope.launch {
+         //   try {
+            Log.d(TAG, "getPincodeDetails: before getting pincode $pincode")
+                val details = PostalPincodeApi.service.getPincodeDetails(pincode)
+                Log.d(TAG, "getPincodeDetails: $details")
+                pincodeModel.value = details
+           // }
+//          /  catch (e: Exception){
+//                Log.d(TAG, "getPincodeDetails: error")
+//                pincodeModel.value = null
+//            }
+        }
     }
 
     // Old code

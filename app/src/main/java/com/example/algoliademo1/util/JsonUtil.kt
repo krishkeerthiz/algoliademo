@@ -10,7 +10,7 @@ class JsonUtil {
         fun loadJSONFromAsset(context: Context): String{
             val json: String?
             try {
-                val inputStream = context.applicationContext.assets.open("products.json")
+                val inputStream = context.applicationContext.assets.open("products4.json")
 
                 val size = inputStream.available()
                 val buffer = ByteArray(size)

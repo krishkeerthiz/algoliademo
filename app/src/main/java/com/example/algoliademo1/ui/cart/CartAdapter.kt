@@ -111,6 +111,7 @@ class CartViewHolder(val binding: CartItemBinding, val productsRepository: Produ
 
                 Glide.with(binding.cartItemImage.context)
                     .load(productModel?.image)
+                    .placeholder(R.drawable.spinner1)
                     .into(binding.cartItemImage)
 
             //}

@@ -7,8 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="red">#EE4F4F</color>
     <color name="black">#FF000000</color>
+    <color name="background">#FFFFFFFF</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorGrey">#dddddd</color>
+    <color name="green">#4CAF50</color>
+    <color name="green_greyed">#718a72</color>
     <color name="primary_shrine_pink">#FEDBD0</color>
     <color name="secondary_shrine_dark">#FEEAE6</color>
 </resources>

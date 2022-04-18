@@ -27,6 +27,8 @@ class CartViewModel : ViewModel(){
         viewModelScope.launch {
             val items = cartRepository.getCartItems(FirebaseService.userId)
 
+            Log.d(TAG, "getCartItems: ${items.toString()}")
+            Log.d(TAG, "getCartItems: ${FirebaseService.userId}")
 
             val productsQuantity: Map<String, Int> = listToMap(items)
             val total = cartRepository.getCartTotal(FirebaseService.userId)

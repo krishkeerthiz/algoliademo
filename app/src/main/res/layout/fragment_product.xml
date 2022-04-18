@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/background">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
@@ -33,46 +33,15 @@
         tools:visibility="visible">
 
         <!-- Adding 15 rows of placeholders -->
-        <GridLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:orientation="vertical"
-            android:rowCount="8">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <include layout="@layout/shimmer_product_placeholder_layout" />
+            <include layout="@layout/shimmer_products_page_placeholder_layout" />
 
-            <include layout="@layout/shimmer_product_placeholder_layout" />
+        </LinearLayout>
 
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-            <include layout="@layout/shimmer_product_placeholder_layout" />
-
-        </GridLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -85,8 +54,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView"
         tools:listitem="@layout/product_card"
-        tools:visibility="visible">
-    </androidx.recyclerview.widget.RecyclerView>
+        tools:visibility="invisible"></androidx.recyclerview.widget.RecyclerView>
 
     <TextView
         android:id="@+id/stats"
@@ -102,7 +70,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/empty_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

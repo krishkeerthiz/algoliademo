@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
+            android:textAppearance="?attr/textAppearanceBody1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/add_button"
             app:layout_constraintStart_toEndOf="@id/remove_button"

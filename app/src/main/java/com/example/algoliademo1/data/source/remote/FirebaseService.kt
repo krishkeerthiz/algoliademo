@@ -9,12 +9,16 @@ import com.google.firebase.ktx.Firebase
 
 object FirebaseService {
     private const val TAG ="FirebaseService"
-    val userId = Firebase.auth.currentUser!!.uid
+    var userId = Firebase.auth.currentUser!!.uid
 
+    fun refreshUserId(){
+        userId = Firebase.auth.currentUser!!.uid
+        Log.d(TAG, "refreshUserId: user id refreshed $userId")
+    }
     fun testGetProductReference(id: String): DocumentReference{
         val db = FirebaseFirestore.getInstance()
         val docId = id.removeSurrounding("\"", "\"")
-        val documentRef = db.collection("products3").document(docId)
+        val documentRef = db.collection("products4").document(docId)
         return documentRef
     }
 
@@ -132,8 +136,8 @@ object FirebaseService {
      fun getProduct(id: String): ProductModel?{
          val db = FirebaseFirestore.getInstance()
          val docId = id.removeSurrounding("\"", "\"")
-         val documentRef = db.collection("products3").document(docId)
-        // val documentRef = db.collection("products3")
+         val documentRef = db.collection("products4").document(docId)
+        // val documentRef = db.collection("products4")
 
        //  documentRef.where(Firebase.firestore.document().id , 'in', listOf<String>("1", "2"))
          Log.d(TAG, "Document ref finished")

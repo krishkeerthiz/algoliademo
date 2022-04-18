@@ -29,7 +29,7 @@ import io.ktor.client.features.logging.*
 
 class MyViewModel: ViewModel() {
     val client = ClientSearch(ApplicationID("9N1YDJJ8DK"), APIKey("dcd5088a151c2e8db47aec60ea0eb6ec"), LogLevel.ALL)
-    val index = client.initIndex(IndexName("products3"))
+    val index = client.initIndex(IndexName("products4"))
     val searcher = SearcherSingleIndex(index)
 
     val dataSourceFactory = SearcherSingleIndexDataSource.Factory(searcher) { hit ->

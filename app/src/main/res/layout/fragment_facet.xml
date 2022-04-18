@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/background">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/white"
+        android:background="@color/background"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@id/applyFilter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="3dp"
-        android:background="@color/white"
+        android:background="@color/background"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/applyFilter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +39,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="3dp"
-        android:background="@color/white"
+        android:background="@color/background"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/applyFilter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +52,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="3dp"
-        android:background="@color/white"
+        android:background="@color/background"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/applyFilter"
         app:layout_constraintEnd_toEndOf="parent"

@@ -2,17 +2,21 @@ package com.example.algoliademo1.ui.prductdetail
 
 import android.app.Application
 import android.content.ContentValues.TAG
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavArgs
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
@@ -125,6 +129,7 @@ class ProductDetailFragment : Fragment() {
                 binding.productDescription.text = product.description
                 Glide.with(binding.productImage.context)
                     .load(product.image)
+                    .placeholder(R.drawable.spinner1)
                     .into(binding.productImage)
             }
         }
@@ -139,11 +144,21 @@ class ProductDetailFragment : Fragment() {
         viewModel.cartModel.observe(viewLifecycleOwner) { cartModel ->  // sets button visibility
             if (cartModel != null) {
                 if (cartModel.products?.containsKey(id) == true) {
+
+                    //binding.cartAdd.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.green_greyed))
+                    //binding.cartAdd.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_greyed))
                     binding.cartAdd.text = "Added to cart"
                     binding.cartAdd.isClickable = false
+//                    binding.gotoCart.visibility = View.VISIBLE
+//                    binding.cartAdd.visibility = View.INVISIBLE
                 } else {
+
+                    //binding.cartAdd.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.green))
+                    //binding.cartAdd.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green))
                     binding.cartAdd.text = "Add to Cart"
                     binding.cartAdd.isClickable = true
+//                    binding.gotoCart.visibility = View.INVISIBLE
+//                    binding.cartAdd.visibility = View.VISIBLE
                 }
                 // binding.cartAdd.visibility = View.VISIBLE
             }
@@ -151,9 +166,15 @@ class ProductDetailFragment : Fragment() {
 
 
         binding.cartAdd.setOnClickListener {
+            Toast.makeText(requireContext(), "Product added to cart", Toast.LENGTH_SHORT).show()
             viewModel.addProductToCart(id)
             viewModel.getCartModel()
             refreshCartButton(id, true)
+        }
+
+        binding.gotoCart.setOnClickListener{
+            val action = ProductDetailFragmentDirections.actionProductDetailFragmentToCartFragment()
+            view?.findNavController()?.navigate(action)
         }
 
         //set icon state while entering the page
@@ -161,9 +182,9 @@ class ProductDetailFragment : Fragment() {
             val result = viewModel.isInWishlist(id)
             withContext(Dispatchers.Main) {
                 if (result) {
-                    binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_24))
+                    binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_heart_red))
                 } else {
-                    binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_border_24))
+                    binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_heart))
                 }
             }
         }
@@ -178,10 +199,11 @@ class ProductDetailFragment : Fragment() {
                     if (result) {
                         Log.d(TAG, "onViewCreated: ")
                         viewModel.removeProductFromWishlist(id)
-                        binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_border_24))
+                        binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_heart))
                     } else {
                         viewModel.addProductToWishlist(id)
-                        binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_baseline_favorite_24))
+                        binding.wishlistButton.setImageDrawable(context?.getDrawable(R.drawable.ic_heart_red))
+                        binding.wishlistAnimation.likeAnimation()
                     }
                     Log.d(TAG, "onViewCreated: $result")
                 }
@@ -195,9 +217,13 @@ class ProductDetailFragment : Fragment() {
             val result = viewModel.isProductInCart(id)
             withContext(Dispatchers.Main) {
                 if (result || default) {
+//                    binding.gotoCart.visibility = View.VISIBLE
+//                    binding.cartAdd.visibility = View.INVISIBLE
                     binding.cartAdd.text = "Added to cart"
                     binding.cartAdd.isClickable = false
                 } else {
+//                    binding.gotoCart.visibility = View.INVISIBLE
+//                    binding.cartAdd.visibility = View.VISIBLE
                     binding.cartAdd.text = "Add to cart"
                     binding.cartAdd.isClickable = true
                 }

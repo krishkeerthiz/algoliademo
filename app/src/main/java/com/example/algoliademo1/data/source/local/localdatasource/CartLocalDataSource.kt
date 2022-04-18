@@ -81,4 +81,11 @@ class CartLocalDataSource(val cartDao: CartDao, val cartItemsDao: CartItemsDao, 
         return@withContext cartItemsDao.isProductInCart(userId, productId) != null
     }
 
+    override suspend fun insert(userId: String){
+        cartDao.insert(Cart(userId, 0.0f))
+    }
+
+    override suspend fun getCart(userId: String): Cart? {
+        return cartDao.getCart(userId)
+    }
 }

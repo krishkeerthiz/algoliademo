@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.lifecycle.lifecycleScope
+import com.example.algoliademo1.data.source.remote.FirebaseService
+import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.ui.MainActivity
 import com.example.algoliademo1.databinding.ActivitySignInBinding
 import com.firebase.ui.auth.AuthUI
@@ -13,6 +16,10 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
@@ -28,7 +35,6 @@ class SignInActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if(Firebase.auth.currentUser == null){
-
             val signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(
@@ -38,15 +44,25 @@ class SignInActivity : AppCompatActivity() {
                 ).build()
             signIn.launch(signInIntent)
         }
-        else
+        else{
+            val repository = CartRepository.getRepository()
+            CoroutineScope(Dispatchers.IO).launch {
+                val cart = repository.getCart(FirebaseService.userId)
 
+                if(cart == null)
+                repository.createCartEntry(FirebaseService.userId)
+            }
             goToMainActivity()
+
+        }
+
 
     }
 
     private fun onSignInResult(result : FirebaseAuthUIAuthenticationResult){
-        if(result.resultCode == RESULT_OK)
+        if(result.resultCode == RESULT_OK){
             goToMainActivity()
+        }
         else{
             Toast.makeText(
                 this,
@@ -63,8 +79,14 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun goToMainActivity(){
-        startActivity(Intent(this, MainActivity::class.java))
+        FirebaseService.refreshUserId()
         finish()
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+
     }
 
 

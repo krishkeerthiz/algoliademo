@@ -79,6 +79,7 @@ class OrderedItemsViewHolder(val binding: OrderItemBinding,val productsRepositor
 
             Glide.with(binding.orderItemImage.context)
                 .load(productModel?.image)
+                .placeholder(R.drawable.spinner1)
                 .into(binding.orderItemImage)
 
             //Log.d(TAG, "$productQuantity ")

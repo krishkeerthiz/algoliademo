@@ -1,5 +1,6 @@
 package com.example.algoliademo1.ui.wishlist
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -20,6 +21,7 @@ import com.example.algoliademo1.ui.cart.CartFragmentDirections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WishlistFragment : Fragment() {
 
@@ -46,7 +48,7 @@ class WishlistFragment : Fragment() {
             WishlistClickListener(
                 {productId -> gotoProductDetailFragment(productId)}, //(requireActivity() as MainActivity).showProductDetailFragment(productId)},
                 { productId, price -> addToCart(productId, price)},
-                {productId -> viewModel.removeFromWishlistAndUpdate(productId)}
+                {productId -> showAlertDialog(productId)}
             )
         )
 
@@ -84,6 +86,10 @@ class WishlistFragment : Fragment() {
         binding.addAllToCartButton.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO){
                 viewModel.addAllToCart()
+                withContext(Dispatchers.Main){
+                    Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
+                }
+
             }
             //viewModel.getWishlistItems()
             //Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
@@ -103,5 +109,24 @@ class WishlistFragment : Fragment() {
     private fun gotoProductDetailFragment(productId: String) {
         val action = WishlistFragmentDirections.actionWishlistFragmentToProductDetailFragment(productId)
         view?.findNavController()?.navigate(action)
+    }
+
+    private fun showAlertDialog(productId: String) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
+            setTitle("Remove product")
+            setMessage("Do you want to remove product?")
+            setPositiveButton("Yes") { dialogInterface, i ->
+                viewModel.removeFromWishlistAndUpdate(productId)
+                Toast.makeText(requireContext(), "removed from wishlist", Toast.LENGTH_SHORT).show()
+            }
+            setNegativeButton("No") { dialogInterface, i ->
+                dialogInterface.cancel()
+            }
+            setCancelable(true)
+        }
+
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+
     }
 }

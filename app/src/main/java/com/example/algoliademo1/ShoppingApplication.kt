@@ -13,7 +13,7 @@ class ShoppingApplication: Application() {
 
     val applicationScope = CoroutineScope(SupervisorJob())
 
-    val database by lazy { ShoppingRoomDatabase.getDatabase(this.applicationContext, applicationScope) }
+    lateinit var database: ShoppingRoomDatabase//by lazy { ShoppingRoomDatabase.getDatabase(this.applicationContext, applicationScope) }
     //val database = ShoppingRoomDatabase.getDatabase(this.applicationContext, applicationScope)
 //    val userId = Firebase.auth.currentUser!!.uid
 
@@ -22,6 +22,7 @@ class ShoppingApplication: Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        database = ShoppingRoomDatabase.getDatabase(this.applicationContext, applicationScope)
 //        CoroutineScope(Dispatchers.IO).launch {
 //            Log.d(TAG, "Application onCreate : ${database.productsDao().getProducts()}")
 //        }

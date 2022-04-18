@@ -49,6 +49,7 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
         private val scope: CoroutineScope,
         val context: Context
     ) : RoomDatabase.Callback() {
+
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             INSTANCE?.let { database ->
@@ -74,7 +75,7 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
 
             scope.launch {
                 val obj = JSONObject(JsonUtil.loadJSONFromAsset(context))
-                val productsArray = obj.getJSONArray("products")
+                val productsArray = obj.getJSONArray("products4")
 
                 for (i in 0 until productsArray.length()) {
                     val productDetail = productsArray.getJSONObject(i)
@@ -84,7 +85,7 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
 
                 }
                 Log.d("Database", FirebaseService.userId)
-                initializeCart(Cart(FirebaseService.userId, 0.0f), cartDao)
+               // initializeCart(Cart(FirebaseService.userId, 0.0f), cartDao)
             }.join()
 
         }
@@ -156,6 +157,8 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
                 categoriesDao.insert(Categories(index.toString(), category))
             }
         }
+
+
     }
 
     companion object {
@@ -177,5 +180,10 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
                 instance
             }
         }
+
+        fun isDatabaseLoaded() : Boolean{
+            return INSTANCE != null
+        }
+
     }
 }
