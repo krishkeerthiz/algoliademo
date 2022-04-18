@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Shopizy</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="content_description_media">Product image</string>
     <string name="product_detail">Product detail</string>
@@ -10,5 +9,40 @@
     <string name="product_description">Description</string>
     <string name="sign_out">Sign out</string>
     <string name="currency">$</string>
-
+    <string name="door_number">Door number</string>
+    <string name="street">Street</string>
+    <string name="city">City</string>
+    <string name="state">State</string>
+    <string name="pincode">Pincode</string>
+    <string name="checked">checked</string>
+    <string name="choose_delivery_address">Choose Delivery Address</string>
+    <string name="place_order">Place Order</string>
+    <string name="empty_location">Empty Location</string>
+    <string name="empty_cart">Empty Cart</string>
+    <string name="empty_orders">Empty Orders</string>
+    <string name="empty_wishlist">Empty Wishlist</string>
+    <string name="add_location">Add Location</string>
+    <string name="total">Total</string>
+    <string name="buy">Buy</string>
+    <string name="category">Category</string>
+    <string name="type">Type</string>
+    <string name="brand">Brand</string>
+    <string name="price_range">Price Range</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
+    <string name="no_result">No Result</string>
+    <string name="goto_cart">Goto Cart</string>
+    <string name="add_to_cart">Add to cart</string>
+    <string name="wishlist_button">Wishlist Button</string>
+    <string name="product_image">Product Image</string>
+    <string name="add_all_to_cart">Add all to cart</string>
+    <string name="times">x</string>
+    <string name="remove">Remove</string>
+    <string name="home">Home</string>
+    <string name="cart">Cart</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="orders">Orders</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="add_address_first">Add Address First</string>
 </resources>

@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="8dp"
-            android:text="Total"
+            android:text="@string/total"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@id/buyButton"
@@ -57,7 +57,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
-            android:text="Buy"
+            android:text="@string/buy"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -97,7 +97,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/empty_cart"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

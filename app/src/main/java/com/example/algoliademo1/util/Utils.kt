@@ -3,20 +3,19 @@ package com.example.algoliademo1.util
 import java.text.SimpleDateFormat
 import java.util.*
 
-//val doorNumberSymbols = "!@#$%^&*()+={[}}"':;?.,<>|\'
-fun formatDate(date: Date): String{
+fun formatDate(date: Date): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy")
     return sdf.format(date).toString()
 }
 
-fun doorNumberCheck(value: String): Boolean{
+fun doorNumberCheck(value: String): Boolean {
     return !value.matches("^[a-zA-Z0-9. /,-]+$".toRegex())
 }
 
-fun streetCheck(value: String): Boolean{
+fun streetCheck(value: String): Boolean {
     return !value.matches("^[a-zA-Z0-9. /,]+$".toRegex())
 }
 
-fun cityCheck(value: String): Boolean{
+fun cityCheck(value: String): Boolean {
     return !value.matches("^[a-zA-Z ,]+$".toRegex())
 }

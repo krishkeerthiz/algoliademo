@@ -18,7 +18,7 @@ class MyFacetListViewHolder2(view: View) : FacetListViewHolder(view) {
         binding.facetName.text = facet.value
     }
 
-    object Factory: FacetListViewHolder.Factory{
+    object Factory : FacetListViewHolder.Factory {
         override fun createViewHolder(parent: ViewGroup): FacetListViewHolder {
             return MyFacetListViewHolder2(parent.inflate(R.layout.facet_item2))
         }

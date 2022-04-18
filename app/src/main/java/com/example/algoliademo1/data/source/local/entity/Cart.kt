@@ -8,6 +8,8 @@ import androidx.room.PrimaryKey
 data class Cart(
     @ColumnInfo(name = "user_id") val userId: String,
     val total: Float
-){
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "cart_id") var cartId: Int = 0
+) {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "cart_id")
+    var cartId: Int = 0
 }

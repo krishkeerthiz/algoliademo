@@ -7,11 +7,19 @@ import com.example.algoliademo1.data.source.local.entity.Address
 import com.example.algoliademo1.data.source.local.entity.AddressList
 import com.example.algoliademo1.model.AddressModel
 
-class AddressLocalDataSource(val addressDao: AddressDao, val addressListDao: AddressListDao) : AddressDataSource {
+class AddressLocalDataSource(val addressDao: AddressDao, val addressListDao: AddressListDao) :
+    AddressDataSource {
 
     override suspend fun addAddress(userId: String, addressId: String, addressModel: AddressModel) {
         // Adding address
-        val address = Address(addressId, addressModel.address, addressModel.city, addressModel.doorNumber, addressModel.pincode, addressModel.state)
+        val address = Address(
+            addressId,
+            addressModel.address,
+            addressModel.city,
+            addressModel.doorNumber,
+            addressModel.pincode,
+            addressModel.state
+        )
         addressDao.insert(address)
 
         // Adding address list
@@ -24,7 +32,7 @@ class AddressLocalDataSource(val addressDao: AddressDao, val addressListDao: Add
 
         val addressIds = addressListDao.getAddresses(userId)
 
-        for(id in addressIds)
+        for (id in addressIds)
             addressList.add(addressDao.getAddress(id))
 
         return addressList
@@ -33,14 +41,5 @@ class AddressLocalDataSource(val addressDao: AddressDao, val addressListDao: Add
     //return addressListDao.getUserAddresses(userId)
     override suspend fun getAddress(addressId: String, userId: String): Address {
         return addressDao.getAddress(addressId)
-//        val address = addressDao.getAddress(addressId)[0]
-
-//        return AddressModel(
-//            address.address,
-//            address.city,
-//            address.doorNumber,
-//            address.pincode,
-//            address.state
-//        )
     }
 }

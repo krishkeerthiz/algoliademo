@@ -11,10 +11,12 @@ import com.example.algoliademo1.data.source.local.entity.OrderItems
 import com.example.algoliademo1.data.source.local.entity.Orders
 import java.util.*
 
-class OrdersLocalDataSource(val orderDao: OrderDao,
-                            val ordersDao: OrdersDao,
-                            val orderItemsDao: OrderItemsDao,
-                            val cartItemsDao: CartItemsDao) : OrdersDataSource {
+class OrdersLocalDataSource(
+    val orderDao: OrderDao,
+    val ordersDao: OrdersDao,
+    val orderItemsDao: OrderItemsDao,
+    val cartItemsDao: CartItemsDao
+) : OrdersDataSource {
 
     override suspend fun addNewOrder(
         userId: String,
@@ -31,12 +33,11 @@ class OrdersLocalDataSource(val orderDao: OrderDao,
         ordersDao.insert(Orders(userId, orderId))
 
         //Add items
-        for(item in items)
+        for (item in items)
             orderItemsDao.insert(OrderItems(orderId, item.productId, item.quantity))
-
     }
 
-    override suspend fun getOrderItems(orderId: String): List<ItemCount>{
+    override suspend fun getOrderItems(orderId: String): List<ItemCount> {
         return orderItemsDao.getProductsAndQuantities(orderId)
     }
 

@@ -13,49 +13,52 @@ class OrdersRepository {
 
     init {
         val dbInstance = ShoppingApplication.instance!!.database
-        dataSource = OrdersLocalDataSource(dbInstance.orderDao(),
+        dataSource = OrdersLocalDataSource(
+            dbInstance.orderDao(),
             dbInstance.ordersDao(),
             dbInstance.orderItemsDao(),
             dbInstance.cartItemsDao()
         )
     }
 
-    suspend fun placeOrder(userId: String, orderId: String,
-                           addressId: String,
-                           items: List<ItemCount>,
-                           total: Float){
+    suspend fun placeOrder(
+        userId: String, orderId: String,
+        addressId: String,
+        items: List<ItemCount>,
+        total: Float
+    ) {
         dataSource.addNewOrder(userId, orderId, addressId, items, total)
     }
 
     suspend fun getOrders(): List<Order> {
-        val orderIds =dataSource.getOrders(FirebaseService.userId)
+        val orderIds = dataSource.getOrders(FirebaseService.userId)
 
         val orders = mutableListOf<Order>()
-        for(orderId in orderIds){
+        for (orderId in orderIds) {
             orders.add(dataSource.getOrder(orderId))
         }
 
         return orders
     }
 
-    suspend fun getOrder(orderId: String): Order{
+    suspend fun getOrder(orderId: String): Order {
         return dataSource.getOrder(orderId)
     }
 
-    suspend fun getOrderItemsId(orderId: String): List<String>{
+    suspend fun getOrderItemsId(orderId: String): List<String> {
         return dataSource.getOrderItemsIds(orderId)
     }
 
-    suspend fun getOrderItemQuantity(orderId: String, productId: String): Int{
+    suspend fun getOrderItemQuantity(orderId: String, productId: String): Int {
         return dataSource.getOrderItemQuantity(orderId, productId)
     }
 
-    companion object{
+    companion object {
         @Volatile
         private var Instance: OrdersRepository? = null
 
-        fun getRepository(): OrdersRepository{
-            return Instance ?: synchronized(this){
+        fun getRepository(): OrdersRepository {
+            return Instance ?: synchronized(this) {
                 OrdersRepository().also {
                     Instance = it
                 }

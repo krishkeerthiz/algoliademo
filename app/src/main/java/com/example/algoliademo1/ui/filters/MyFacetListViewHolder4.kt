@@ -20,8 +20,6 @@ class MyFacetListViewHolder4(view: View) : FacetListViewHolder(view) {
 
     object Factory : FacetListViewHolder.Factory {
         override fun createViewHolder(parent: ViewGroup): FacetListViewHolder {
-//            val view = LayoutInflater.from(parent.context)
-//            val binding = FacetItemBinding.inflate(view, parent, false)
             return MyFacetListViewHolder(parent.inflate(R.layout.facet_item))
         }
     }

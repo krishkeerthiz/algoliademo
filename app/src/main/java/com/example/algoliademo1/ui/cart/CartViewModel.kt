@@ -7,22 +7,20 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.algoliademo1.data.source.local.entity.ItemCount
-import com.example.algoliademo1.model.CartModel
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
-import com.google.firebase.firestore.ktx.toObject
+import com.example.algoliademo1.model.CartModel
 import kotlinx.coroutines.launch
 
-class CartViewModel : ViewModel(){
+class CartViewModel : ViewModel() {
 
     private val cartRepository = CartRepository.getRepository()
 
     private val _cartModel = MutableLiveData<CartModel>()
 
-    val cartModel : LiveData<CartModel>
-    get() = _cartModel
+    val cartModel: LiveData<CartModel>
+        get() = _cartModel
 
-    // New code
     fun getCartItems() {
         viewModelScope.launch {
             val items = cartRepository.getCartItems(FirebaseService.userId)
@@ -37,60 +35,37 @@ class CartViewModel : ViewModel(){
 
             _cartModel.value = model
         }
-
     }
 
-    private fun listToMap(items: List<ItemCount>): Map<String, Int>{
+    private fun listToMap(items: List<ItemCount>): Map<String, Int> {
         val productsQuantity = mutableMapOf<String, Int>()
 
-        for(item in items){
+        for (item in items) {
             productsQuantity[item.productId] = item.quantity
             Log.d(TAG, "listToMap: $item.quantity")
         }
-
-
-
         return productsQuantity
     }
 
-    fun removeItemAndUpdate(productId: String, price: Float){
+    fun removeItemAndUpdate(productId: String, price: Float) {
         viewModelScope.launch {
             cartRepository.removeFromCart(FirebaseService.userId, productId)
             getCartItems()
         }
     }
 
-    fun incrementItemAndUpdate(productId: String){
+    fun incrementItemAndUpdate(productId: String) {
         viewModelScope.launch {
             cartRepository.incrementItemCount(FirebaseService.userId, productId)
             getCartItems()
         }
     }
 
-    fun decrementItemAndUpdate(productId: String){
+    fun decrementItemAndUpdate(productId: String) {
         viewModelScope.launch {
             cartRepository.decrementItemCount(FirebaseService.userId, productId)
             getCartItems()
         }
     }
 
-    // Old code
-
-//    fun getCartItems() {
-//        val cartRef = FirebaseService.getCartReference()
-//
-//        cartRef.get().addOnSuccessListener {
-//            val model = it.toObject<CartModel>()
-//
-//            if(model != null)
-//            _cartModel.value = model
-//            else
-//                _cartModel.value = null
-//        }
-//    }
-
-//    fun removeItemAndUpdate(productId: String, price: Float){
-//        FirebaseService.removeFromCart(productId, price)
-//        getCartItems()
-//    }
 }

@@ -32,7 +32,7 @@
             app:layout_constraintEnd_toStartOf="@id/orderDate"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="No B83 \n wcbr \n kottur \n chennai" />
+            tools:text="No B83 \n lake view \n avenue \n chennai" />
 
         <TextView
             android:id="@+id/orderTotalPrice"

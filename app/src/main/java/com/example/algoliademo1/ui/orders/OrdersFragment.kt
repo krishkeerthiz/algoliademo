@@ -1,17 +1,18 @@
 package com.example.algoliademo1.ui.orders
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.algoliademo1.*
+import com.example.algoliademo1.OrdersAdapter
+import com.example.algoliademo1.OrdersOnClickListener
+import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.FragmentOrdersBinding
-import com.example.algoliademo1.ui.MainActivity
 
 
 class OrdersFragment : Fragment() {
@@ -23,7 +24,7 @@ class OrdersFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_orders, container, false)
     }
 
@@ -36,19 +37,17 @@ class OrdersFragment : Fragment() {
         viewModel.getOrders()
 
         val adapter = OrdersAdapter(
-            OrdersOnClickListener {
-                order -> gotoOrderDetailsFragment(order)
-            //(requireActivity() as MainActivity).showOrderDetailFragment(order)  // Its incorrect to document reference as parameter
+            OrdersOnClickListener { order ->
+                gotoOrderDetailsFragment(order)
             }
         )
 
-        viewModel.orders.observe(viewLifecycleOwner){ orders ->
-            if(orders != null){
-                if(orders.isEmpty()){
+        viewModel.orders.observe(viewLifecycleOwner) { orders ->
+            if (orders != null) {
+                if (orders.isEmpty()) {
                     binding.emptyLayout.visibility = View.VISIBLE
                     binding.ordersList.visibility = View.INVISIBLE
-                }
-                else{
+                } else {
                     binding.emptyLayout.visibility = View.INVISIBLE
                     binding.ordersList.visibility = View.VISIBLE
                 }
@@ -56,7 +55,7 @@ class OrdersFragment : Fragment() {
             }
         }
 
-        binding.ordersList.let{
+        binding.ordersList.let {
             it.itemAnimator = null
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(requireContext())

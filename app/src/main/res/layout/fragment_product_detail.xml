@@ -17,7 +17,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/productName"
@@ -45,7 +45,8 @@
                 android:src="@drawable/loading"
                 app:layout_constraintEnd_toStartOf="@+id/wishlistAnimation"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/productName" />
+                app:layout_constraintTop_toBottomOf="@id/productName"
+                android:contentDescription="@string/product_image"/>
 
             <xyz.hanks.library.bang.SmallBangView
                 android:id="@+id/wishlistAnimation"
@@ -66,7 +67,8 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
                     android:src="@drawable/ic_heart"
-                    app:tint="@color/red" />
+                    app:tint="@color/red"
+                    android:contentDescription="@string/wishlist_button"/>
 
             </xyz.hanks.library.bang.SmallBangView>
 
@@ -131,7 +133,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Add to cart"
+        android:text="@string/add_to_cart"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -144,7 +146,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Goto Cart"
+        android:text="@string/goto_cart"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

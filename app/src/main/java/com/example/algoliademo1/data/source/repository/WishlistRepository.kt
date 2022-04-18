@@ -2,7 +2,6 @@ package com.example.algoliademo1.data.source.repository
 
 import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.datasource.WishlistDataSource
-import com.example.algoliademo1.data.source.local.dao.WishlistDao
 import com.example.algoliademo1.data.source.local.localdatasource.WishlistLocalDataSource
 
 class WishlistRepository {
@@ -14,7 +13,7 @@ class WishlistRepository {
         dataSource = WishlistLocalDataSource(dbInstance.wishlistDao())
     }
 
-    suspend fun addToWishlist(userId: String, productId: String){
+    suspend fun addToWishlist(userId: String, productId: String) {
         dataSource.addToWishlist(userId, productId)
     }
 
@@ -22,11 +21,12 @@ class WishlistRepository {
         return dataSource.getWishlist(userId)
     }
 
-    suspend fun removeFromWishlist(userId: String, productId: String){
+    suspend fun removeFromWishlist(userId: String, productId: String) {
         dataSource.removeFromWishlist(userId, productId)
     }
 
-    suspend fun isInWishlist(userId: String, productId: String) = dataSource.isInWishlist(userId, productId)
+    suspend fun isInWishlist(userId: String, productId: String) =
+        dataSource.isInWishlist(userId, productId)
 
     companion object {
         @Volatile

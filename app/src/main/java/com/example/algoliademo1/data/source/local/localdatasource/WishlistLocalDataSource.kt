@@ -11,17 +11,19 @@ class WishlistLocalDataSource(val wishlistDao: WishlistDao) : WishlistDataSource
 
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    override suspend fun addToWishlist(userId: String, productId: String)= withContext(ioDispatcher) {
-        wishlistDao.insert(Wishlist(userId, productId))
-    }
+    override suspend fun addToWishlist(userId: String, productId: String) =
+        withContext(ioDispatcher) {
+            wishlistDao.insert(Wishlist(userId, productId))
+        }
 
     override suspend fun getWishlist(userId: String): List<String> = withContext(ioDispatcher) {
         return@withContext wishlistDao.getItems(userId)
     }
 
-    override suspend fun removeFromWishlist(userId: String, productId: String) = withContext(ioDispatcher) {
-        wishlistDao.deleteProduct(userId, productId)
-    }
+    override suspend fun removeFromWishlist(userId: String, productId: String) =
+        withContext(ioDispatcher) {
+            wishlistDao.deleteProduct(userId, productId)
+        }
 
     override suspend fun isInWishlist(userId: String, productId: String): Boolean {
         return wishlistDao.getItem(userId, productId) != null

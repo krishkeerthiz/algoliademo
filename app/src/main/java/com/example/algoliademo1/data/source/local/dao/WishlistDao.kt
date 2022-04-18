@@ -1,31 +1,22 @@
 package com.example.algoliademo1.data.source.local.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import com.example.algoliademo1.data.source.local.entity.Wishlist
-import com.example.algoliademo1.data.source.local.entity.ItemCount
 
 @Dao
 interface WishlistDao {
 
     @Query("SELECT product_id FROM wishlist WHERE user_id = :userId")
-    suspend fun getItems(userId: String) : List<String>
+    suspend fun getItems(userId: String): List<String>
 
     @Query("SELECT product_id FROM wishlist WHERE user_id = :userId AND product_id= :productId")
-    suspend fun getItem(userId: String, productId: String) : String?
-
-//    @Query("SELECT quantity FROM wishlist WHERE user_id = :userId AND product_id = :productId")
-//    fun getProductQuantity(userId: String, productId: String) : Int
-//
-//    @Query("UPDATE wishlist SET product_id= :productIds WHERE user_id = :userId")
-//    fun updateItems(userId: String, productIds: List<String>)
+    suspend fun getItem(userId: String, productId: String): String?
 
     @Query("DELETE FROM wishlist WHERE user_id = :userId AND product_id = :productId")
     fun deleteProduct(userId: String, productId: String)
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE)
-//    fun updateItems(userId: String, productIds: List<String>)
-
-
     @Insert
-    suspend fun insert(wishlist : Wishlist)
+    suspend fun insert(wishlist: Wishlist)
 }

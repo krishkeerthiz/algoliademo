@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 
 class NetworkUtil {
-    companion object{
-        fun getConnectivityStatus(context: Context): String{
+    companion object {
+        fun getConnectivityStatus(context: Context): String {
             var status: String? = null
             val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             val activeNetwork = cm.activeNetworkInfo

@@ -1,23 +1,19 @@
 package com.example.algoliademo1.data.source.local
 
 import android.content.Context
-import android.os.strictmode.InstanceCountViolation
-import android.util.Log
-import androidx.room.*
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.local.dao.*
 import com.example.algoliademo1.data.source.local.entity.*
-import com.example.algoliademo1.data.source.remote.FirebaseService
-import com.example.algoliademo1.model.CartModel
 import com.example.algoliademo1.util.DateConverter
 import com.example.algoliademo1.util.JsonUtil
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
 
 @Database(
     entities = [Product::class, Address::class, AddressList::class, CartItems::class, Cart::class,
@@ -25,14 +21,10 @@ import java.io.IOException
     version = 1, exportSchema = false
 )
 @TypeConverters(
-    DateConverter::class,
-    ItemCountConverter::class,
-    StringListConverter::class,
-    IntListConverter::class
+    DateConverter::class
 )
 
-//@TypeConverters(ItemCountConverter::class)
-abstract class  ShoppingRoomDatabase : RoomDatabase() {
+abstract class ShoppingRoomDatabase : RoomDatabase() {
 
     abstract fun productsDao(): ProductsDao
     abstract fun addressDao(): AddressDao
@@ -81,11 +73,13 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
                     val productDetail = productsArray.getJSONObject(i)
 
                     addProductsToDatabase(i, productDetail, productsDao)
-                    addProductCategoriesToDatabase(i, productDetail.getJSONArray("categories"), categoriesDao)
+                    addProductCategoriesToDatabase(
+                        i,
+                        productDetail.getJSONArray("categories"),
+                        categoriesDao
+                    )
 
                 }
-                Log.d("Database", FirebaseService.userId)
-               // initializeCart(Cart(FirebaseService.userId, 0.0f), cartDao)
             }.join()
 
         }
@@ -110,16 +104,8 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
                 val rating = getInt("rating")
                 val type = getString("type")
                 val url = getString("url")
-                val categoriesArray = getJSONArray("categories")
 
                 val productId = index.toString()
-
-
-//                val categories = arrayListOf<String>()
-//
-//                for (i in 0 until categoriesArray.length()) {
-//                    categories.add(categoriesArray.get(i) as String)
-//                }
 
                 product = Product(
                     productId,
@@ -140,11 +126,6 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
             }
             productsDao.insert(product!!)
         }
-
-        private suspend fun initializeCart(cart: Cart, cartDao: CartDao) {
-            cartDao.insert(cart)
-        }
-
 
         private suspend fun addProductCategoriesToDatabase(
             index: Int,
@@ -180,10 +161,5 @@ abstract class  ShoppingRoomDatabase : RoomDatabase() {
                 instance
             }
         }
-
-        fun isDatabaseLoaded() : Boolean{
-            return INSTANCE != null
-        }
-
     }
 }

@@ -4,11 +4,9 @@ import android.content.IntentFilter
 import android.graphics.Typeface
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import android.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -53,10 +51,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-
-        
         navController.addOnDestinationChangedListener(this)
-        //  showProductFragment()
 
         val sharedPreferences = getSharedPreferences("Shopizy", MODE_PRIVATE)
         val firstTime = sharedPreferences.getBoolean(bottomNavPreference, false) // put key in constant
@@ -130,11 +125,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     .targetRadius(60),
             ).listener(object : TapTargetSequence.Listener {
                 override fun onSequenceFinish() {
-                    Toast.makeText(this@MainActivity, "Sequence Finished", Toast.LENGTH_SHORT).show()
-
                     val sharedPreferencesEdit = sharedPreferences.edit()
                     sharedPreferencesEdit.putBoolean(bottomNavPreference, true)
-                    sharedPreferencesEdit.commit()
+                    sharedPreferencesEdit.apply()
                 }
 
                 override fun onSequenceStep(lastTarget: TapTarget, targetClicked: Boolean) {
@@ -148,13 +141,6 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
         checkInternet()
 
-    }
-
-
-
-    override fun onSupportNavigateUp(): Boolean {
-        //supportFragmentManager.popBackStack()
-        return super.onSupportNavigateUp()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

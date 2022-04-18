@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Choose Delivery Address"
+        android:text="@string/choose_delivery_address"
         android:textAppearance="?attr/textAppearanceBody1"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +38,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Place Order"
+        android:text="@string/place_order"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +54,9 @@
         android:clickable="true"
         android:src="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toTopOf="@+id/placeOrderButton"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/add_location"
+        android:focusable="true" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/empty_layout"
@@ -74,7 +76,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintTop_toBottomOf="parent"
+            android:contentDescription="@string/empty_location"/>
 
         <RelativeLayout
             android:id="@+id/loadingPanel"

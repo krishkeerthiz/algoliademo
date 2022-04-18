@@ -3,25 +3,22 @@ package com.example.algoliademo1.ui.wishlist
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.algoliademo1.ui.MainActivity
 import com.example.algoliademo1.R
 import com.example.algoliademo1.WishlistAdapter
 import com.example.algoliademo1.WishlistClickListener
 import com.example.algoliademo1.databinding.FragmentWishlistBinding
-import com.example.algoliademo1.ui.cart.CartFragmentDirections
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class WishlistFragment : Fragment() {
 
@@ -32,7 +29,6 @@ class WishlistFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_wishlist, container, false)
     }
 
@@ -46,20 +42,19 @@ class WishlistFragment : Fragment() {
 
         val wishlistAdapter = WishlistAdapter(
             WishlistClickListener(
-                {productId -> gotoProductDetailFragment(productId)}, //(requireActivity() as MainActivity).showProductDetailFragment(productId)},
-                { productId, price -> addToCart(productId, price)},
-                {productId -> showAlertDialog(productId)}
+                { productId -> gotoProductDetailFragment(productId) }, //(requireActivity() as MainActivity).showProductDetailFragment(productId)},
+                { productId, price -> addToCart(productId, price) },
+                { productId -> showAlertDialog(productId) }
             )
         )
 
-        viewModel.wishlistModel.observe(viewLifecycleOwner){ wishlistModel ->
-            if(wishlistModel != null){ // && !(wishlistModel.products.isNullOrEmpty())
+        viewModel.wishlistModel.observe(viewLifecycleOwner) { wishlistModel ->
+            if (wishlistModel != null) { // && !(wishlistModel.products.isNullOrEmpty())
 
-                if(wishlistModel.products?.size == 0){
+                if (wishlistModel.products?.size == 0) {
                     binding.emptyLayout.visibility = View.VISIBLE
                     binding.wishlistLayout.visibility = View.INVISIBLE
-                }
-                else{
+                } else {
                     binding.emptyLayout.visibility = View.INVISIBLE
                     binding.wishlistLayout.visibility = View.VISIBLE
                 }
@@ -71,43 +66,40 @@ class WishlistFragment : Fragment() {
             }
         }
 
-        viewModel.wishlistModel.observe(viewLifecycleOwner){ wishlistModel ->
-            if(wishlistModel != null && !(wishlistModel.products.isNullOrEmpty())){
+        viewModel.wishlistModel.observe(viewLifecycleOwner) { wishlistModel ->
+            if (wishlistModel != null && !(wishlistModel.products.isNullOrEmpty())) {
                 binding.addAllToCartButton.isClickable = true
             }
         }
 
-        binding.wishlistItemsList.let{
+        binding.wishlistItemsList.let {
             it.adapter = wishlistAdapter
             it.itemAnimator = null
             it.layoutManager = LinearLayoutManager(requireContext())
         }
 
         binding.addAllToCartButton.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO){
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.addAllToCart()
-                withContext(Dispatchers.Main){
-                    Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
-                }
-
             }
-            //viewModel.getWishlistItems()
-            //Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
+          Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
         }
     }
 
-   private fun addToCart(productId: String, price: Float){
-       CoroutineScope(Dispatchers.IO).launch {
-           val productCount = viewModel.getProductCount(productId) //product count in cart
+    private fun addToCart(productId: String, price: Float) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val productCount = viewModel.getProductCount(productId) //product count in cart
 
-           if(productCount == 0)
-               viewModel.addToCart(productId, price)
+            if (productCount == 0)
+                viewModel.addToCart(productId, price)
 
-           viewModel.removeFromWishlistAndUpdate(productId)
-       }
-   }
+            viewModel.removeFromWishlistAndUpdate(productId)
+        }
+    }
+
     private fun gotoProductDetailFragment(productId: String) {
-        val action = WishlistFragmentDirections.actionWishlistFragmentToProductDetailFragment(productId)
+        val action =
+            WishlistFragmentDirections.actionWishlistFragmentToProductDetailFragment(productId)
         view?.findNavController()?.navigate(action)
     }
 
@@ -115,11 +107,11 @@ class WishlistFragment : Fragment() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
             setTitle("Remove product")
             setMessage("Do you want to remove product?")
-            setPositiveButton("Yes") { dialogInterface, i ->
+            setPositiveButton("Yes") { _, _ ->
                 viewModel.removeFromWishlistAndUpdate(productId)
                 Toast.makeText(requireContext(), "removed from wishlist", Toast.LENGTH_SHORT).show()
             }
-            setNegativeButton("No") { dialogInterface, i ->
+            setNegativeButton("No") { dialogInterface, _ ->
                 dialogInterface.cancel()
             }
             setCancelable(true)

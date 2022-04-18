@@ -27,14 +27,17 @@ import com.example.algoliademo1.model.ProductInfo
 import com.example.algoliademo1.model.ProductModel
 import io.ktor.client.features.logging.*
 
-class MyViewModel: ViewModel() {
-    val client = ClientSearch(ApplicationID("9N1YDJJ8DK"), APIKey("dcd5088a151c2e8db47aec60ea0eb6ec"), LogLevel.ALL)
+class MyViewModel : ViewModel() {
+    val client = ClientSearch(
+        ApplicationID("9N1YDJJ8DK"),
+        APIKey("dcd5088a151c2e8db47aec60ea0eb6ec"),
+        LogLevel.ALL
+    )
     val index = client.initIndex(IndexName("products4"))
     val searcher = SearcherSingleIndex(index)
 
     val dataSourceFactory = SearcherSingleIndexDataSource.Factory(searcher) { hit ->
         ProductInfo(
-            //"Hello sample text"
             hit.json["objectID"].toString(),
             hit.json["name"].toString()
         )
@@ -42,7 +45,8 @@ class MyViewModel: ViewModel() {
 
     val pagedListConfig = PagedList.Config.Builder().setPageSize(50).build()
 
-    val products: LiveData<PagedList<ProductInfo>> = LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
+    val products: LiveData<PagedList<ProductInfo>> =
+        LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
 
     val productModels = MutableLiveData<PagedList<ProductModel>>()
 
@@ -85,24 +89,6 @@ class MyViewModel: ViewModel() {
         sortBy = listOf(FacetSortCriterion.CountDescending, FacetSortCriterion.IsRefined),
         limit = 100
     )
-
-//    val hierarchicalCategory = Attribute("hierarchicalCategories")
-//    val hierarchicalCategoryLvl0 = Attribute("$hierarchicalCategory.lvl0")
-//    val hierarchicalCategoryLvl1 = Attribute("$hierarchicalCategory.lvl1")
-//    val hierarchicalCategoryLvl2 = Attribute("$hierarchicalCategory.lvl2")
-//    val hierarchicalAttributes = listOf(
-//        hierarchicalCategoryLvl0,
-//        hierarchicalCategoryLvl1,
-//        hierarchicalCategoryLvl2
-//    )
-//    val separator = " > "
-//    val hierarchical = HierarchicalConnector(
-//        searcher = searcher,
-//        attribute = hierarchicalCategory,
-//        filterState = filterState,
-//        hierarchicalAttributes = hierarchicalAttributes,
-//        separator = separator
-//    )
 
     val connection = ConnectionHandler()
 

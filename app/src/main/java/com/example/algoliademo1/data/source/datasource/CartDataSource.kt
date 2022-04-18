@@ -17,8 +17,6 @@ interface CartDataSource {
 
     suspend fun getProductQuantity(userId: String, productId: String): Int
 
-   // fun getCart(userId: String): Cart
-
     suspend fun getCartTotal(userId: String): Float
 
     suspend fun emptyCart(userId: String)

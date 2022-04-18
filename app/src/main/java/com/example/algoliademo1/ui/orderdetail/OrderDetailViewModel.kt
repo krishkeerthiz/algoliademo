@@ -2,7 +2,10 @@ package com.example.algoliademo1.ui.orderdetail
 
 import android.content.ContentValues.TAG
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
 import com.example.algoliademo1.data.source.repository.OrdersRepository
@@ -14,18 +17,16 @@ class OrderDetailViewModel() : ViewModel() {
 
     lateinit var orderId: String
 
-    val addressFlag= MutableLiveData<Boolean>()
-
-
-    private val _address= MutableLiveData<String>()
+    val addressFlag = MutableLiveData<Boolean>()
+    private val _address = MutableLiveData<String>()
 
     val address: LiveData<String>
-    get() = _address
+        get() = _address
 
 
-    val ordersFlag= MutableLiveData<Boolean>()
+    val ordersFlag = MutableLiveData<Boolean>()
 
-    private val _orders= MutableLiveData<List<String>>()
+    private val _orders = MutableLiveData<List<String>>()
 
     val orders: LiveData<List<String>>
         get() = _orders
@@ -35,17 +36,18 @@ class OrderDetailViewModel() : ViewModel() {
         ordersFlag.value = false
     }
 
-    fun getAddress(){
+    fun getAddress() {
         viewModelScope.launch {
-            val addressId= ordersRepository.getOrder(orderId).addressId
+            val addressId = ordersRepository.getOrder(orderId).addressId
 
-            _address.value = addressRepository.getAddress(addressId, FirebaseService.userId).toString()
+            _address.value =
+                addressRepository.getAddress(addressId, FirebaseService.userId).toString()
             addressFlag.value = true
         }
 
     }
 
-    fun getOrderItems(){
+    fun getOrderItems() {
         Log.d("ContentValues", "Inside ordered items")
         viewModelScope.launch {
             val orders = ordersRepository.getOrderItemsId(orderId)
@@ -56,9 +58,3 @@ class OrderDetailViewModel() : ViewModel() {
     }
 }
 
-
-//class OrderDetailViewModelFactory(val orderId: String) : ViewModelProvider.Factory {
-//    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-//        return OrderDetailViewModel(orderId) as T
-//    }
-//}

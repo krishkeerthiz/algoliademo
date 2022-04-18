@@ -1,6 +1,5 @@
 package com.example.algoliademo1
 
-import com.example.algoliademo1.R
 import android.content.ContentValues.TAG
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,14 +9,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.algoliademo1.databinding.CartItemBinding
-import com.example.algoliademo1.model.CartModel
-import com.example.algoliademo1.model.ProductModel
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.ProductsRepository
-import com.google.firebase.firestore.ktx.toObject
-import io.ktor.utils.io.*
+import com.example.algoliademo1.databinding.CartItemBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -42,21 +37,17 @@ class CartAdapter(val onClickListener: CartOnClickListener) :
         holder.binding.deleteImage.setOnClickListener {
             val priceText = holder.binding.cartItemPrice.text.toString()
             var price = 0.0f
-            if(priceText != "")
+            if (priceText != "")
                 price = priceText.trimStart('$').toFloat()
             //bug occurs here sometimes
             onClickListener.onDeleteClick(productId, price)
         }
 
-//        holder.itemView.setOnClickListener {
-//            onClickListener.onItemClick(productId)
-//        }
-
         holder.binding.cartItemName.setOnClickListener {
             onClickListener.onItemClick(productId)
         }
 
-        holder.binding.cartItemImage.setOnClickListener{
+        holder.binding.cartItemImage.setOnClickListener {
             onClickListener.onItemClick(productId)
         }
         holder.binding.cartItemPrice.setOnClickListener {
@@ -92,40 +83,43 @@ class CartAdapter(val onClickListener: CartOnClickListener) :
     }
 }
 
-class CartViewHolder(val binding: CartItemBinding, val productsRepository: ProductsRepository, val cartRepository: CartRepository) :
+class CartViewHolder(
+    val binding: CartItemBinding,
+    val productsRepository: ProductsRepository,
+    val cartRepository: CartRepository
+) :
     RecyclerView.ViewHolder(binding.root) {
     fun bind(productId: String) {
         Log.d(TAG, "bind: method called")
 
         CoroutineScope(Dispatchers.Main).launch {
-            // Need to update, convert firebase to repository
-//            FirebaseService.testGetProductReference(productId).get().addOnSuccessListener {
-//                val productModel = it.toObject<ProductModel>()
 
             val productModel = withContext(Dispatchers.IO) {
                 productsRepository.getProduct(productId)
             }
-                binding.cartItemName.text = productModel?.name
+            binding.cartItemName.text = productModel?.name
 
-                binding.cartItemPrice.text = binding.cartItemPrice.context.getString(R.string.currency) + String.format("%.2f", productModel.price )
+            binding.cartItemPrice.text =
+                binding.cartItemPrice.context.getString(R.string.currency) + String.format(
+                    "%.2f",
+                    productModel.price
+                )
 
-                Glide.with(binding.cartItemImage.context)
-                    .load(productModel?.image)
-                    .placeholder(R.drawable.spinner1)
-                    .into(binding.cartItemImage)
-
-            //}
+            Glide.with(binding.cartItemImage.context)
+                .load(productModel?.image)
+                .placeholder(R.drawable.spinner1)
+                .into(binding.cartItemImage)
 
             val productQuantity = withContext(Dispatchers.IO) {
                 cartRepository.getProductQuantity(FirebaseService.userId, productId)
             }
 
-            if(productQuantity == 1)
+            if (productQuantity == 1)
                 binding.removeButton.visibility = View.INVISIBLE
             else
                 binding.removeButton.visibility = View.VISIBLE
 
-            if(productQuantity == 5)
+            if (productQuantity == 5)
                 binding.addButton.visibility = View.INVISIBLE
             else
                 binding.addButton.visibility = View.VISIBLE
@@ -139,13 +133,6 @@ class CartViewHolder(val binding: CartItemBinding, val productsRepository: Produ
 
     }
 }
-
-
-//        FirebaseService.getCartReference().get().addOnSuccessListener {
-//            val cartModel = it.toObject<CartModel>()
-//
-//            binding.cartItemCount.text = cartModel?.products?.get(productId).toString() + " n."
-//        }
 
 class CartOnClickListener(
     val itemClickListener: (productId: String) -> Unit,

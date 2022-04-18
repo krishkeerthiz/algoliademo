@@ -9,6 +9,8 @@ data class OrderItems(
     @ColumnInfo(name = "order_id") val orderId: String,
     @ColumnInfo(name = "product_id") val productId: String,
     val quantity: Int
-){
-    @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "order_items_id") var orderItemsId: Int = 0
+) {
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "order_items_id")
+    var orderItemsId: Int = 0
 }
