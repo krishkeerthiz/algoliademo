@@ -18,13 +18,12 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
             android:layout_marginBottom="4dp"
-            tools:src="@drawable/loading"
+            android:contentDescription="@string/product_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:contentDescription="@string/product_image"/>
+            tools:src="@drawable/loading" />
 
 
         <TextView
@@ -99,6 +98,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/orderItemName"
             tools:text="₹5302" />
+
+        <TextView
+            android:id="@+id/orderRatingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/rate"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/orderItemImage"
+            app:layout_constraintTop_toBottomOf="@id/times" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

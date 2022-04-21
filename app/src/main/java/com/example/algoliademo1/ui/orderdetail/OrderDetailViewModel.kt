@@ -9,11 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
 import com.example.algoliademo1.data.source.repository.OrdersRepository
+import com.example.algoliademo1.data.source.repository.ProductsRepository
 import kotlinx.coroutines.launch
 
 class OrderDetailViewModel() : ViewModel() {
     private val ordersRepository = OrdersRepository.getRepository()
     private val addressRepository = AddressRepository.getRepository()
+    private val productsRepository = ProductsRepository.getRepository()
 
     lateinit var orderId: String
 
@@ -54,6 +56,12 @@ class OrderDetailViewModel() : ViewModel() {
             _orders.value = orders.distinct()
             Log.d(TAG, "getOrderItems: ${orders.size}  ${orders.toString()}")
             ordersFlag.value = true
+        }
+    }
+
+    fun addRating(productId: String, rating: Int){
+        viewModelScope.launch {
+            productsRepository.addRating(productId, rating)
         }
     }
 }

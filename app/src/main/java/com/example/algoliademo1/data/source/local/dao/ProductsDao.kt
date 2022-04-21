@@ -20,4 +20,7 @@ interface ProductsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: Product)
+
+    @Query("UPDATE products_table SET rating = :rating WHERE product_id = :productId")
+    fun updateRating(productId: String, rating: Int)
 }

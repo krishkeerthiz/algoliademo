@@ -1,5 +1,6 @@
 package com.example.algoliademo1.ui
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,6 +29,7 @@ import com.example.algoliademo1.model.ProductModel
 import io.ktor.client.features.logging.*
 
 class MyViewModel : ViewModel() {
+    var productView: View?  = null
     val client = ClientSearch(
         ApplicationID("9N1YDJJ8DK"),
         APIKey("dcd5088a151c2e8db47aec60ea0eb6ec"),

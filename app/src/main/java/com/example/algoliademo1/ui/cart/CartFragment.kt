@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import com.example.algoliademo1.CartAdapter
 import com.example.algoliademo1.CartOnClickListener
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentCartBinding
+import com.example.algoliademo1.model.CartModel
 
 class CartFragment : Fragment() {
     private lateinit var viewModel: CartViewModel
@@ -44,6 +46,7 @@ class CartFragment : Fragment() {
                 viewModel.decrementItemAndUpdate(productId)
             }
         ))
+
 
         viewModel.cartModel.observe(viewLifecycleOwner) {
             if (it != null) {

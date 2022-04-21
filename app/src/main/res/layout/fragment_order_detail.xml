@@ -14,25 +14,23 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:maxLines="5"
-        android:minLines="5"
-        android:textSize="18sp"
         android:textAppearance="?attr/textAppearanceBody1"
-        app:layout_constraintEnd_toStartOf="@+id/orderDateTextView"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="No B 83 \n West canal bank road\n kottur chennai \n 600085" />
+        tools:text="No B 83  West canal bank road kottur chennai  600085 No B83 lake view avenue kottur, chennai 600085" />
 
     <TextView
         android:id="@+id/orderDateTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:textSize="16sp"
         android:textAppearance="?attr/textAppearanceBody1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/addressTextView"
         tools:text="12/12/2022" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -47,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/addressTextView"
+        app:layout_constraintTop_toBottomOf="@id/orderDateTextView"
         app:layout_constraintVertical_bias="0.0"
         tools:listitem="@layout/order_item" />
 

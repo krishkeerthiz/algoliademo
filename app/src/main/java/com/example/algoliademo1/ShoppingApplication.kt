@@ -7,7 +7,7 @@ import kotlinx.coroutines.SupervisorJob
 
 class ShoppingApplication : Application() {
 
-    val applicationScope = CoroutineScope(SupervisorJob())
+    private val applicationScope = CoroutineScope(SupervisorJob())
 
     lateinit var database: ShoppingRoomDatabase
 
@@ -18,6 +18,6 @@ class ShoppingApplication : Application() {
     }
 
     companion object {
-        var instance: ShoppingApplication? = null
+        lateinit var instance: ShoppingApplication
     }
 }

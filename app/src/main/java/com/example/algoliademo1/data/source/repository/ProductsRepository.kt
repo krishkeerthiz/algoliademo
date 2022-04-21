@@ -2,6 +2,7 @@ package com.example.algoliademo1.data.source.repository
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.algolia.search.model.search.SortFacetsBy
 import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.datasource.ProductsDataSource
 import com.example.algoliademo1.data.source.local.entity.Product
@@ -9,6 +10,7 @@ import com.example.algoliademo1.data.source.local.localdatasource.ProductsLocalD
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class ProductsRepository {
 
@@ -24,13 +26,22 @@ class ProductsRepository {
         return product
     }
 
-    suspend fun addProduct(product: Product) {
-        dataSource.insertProduct(product)
+    suspend fun addRating(productId: String, rating: Int){
+        CoroutineScope(Dispatchers.IO).launch {
+            dataSource.addRating(productId, rating)
+        }
+    }
+
+    suspend fun getUserRating(productId: String): Int?{
+        val rating = CoroutineScope(Dispatchers.IO).async {
+            dataSource.getUserRating(productId)
+        }.await()
+        return rating
     }
 
     init {
         val dbInstance = ShoppingApplication.instance?.database
-        dataSource = ProductsLocalDataSource(dbInstance!!.productsDao())
+        dataSource = ProductsLocalDataSource(dbInstance!!.productsDao(), dbInstance!!.productRatingsDao())
     }
 
     companion object {

@@ -318,10 +318,8 @@ class AddressFragment : Fragment() {
 
         }
 
-
         doorNumberEditText.addTextChangedListener(doorNumberWatcher)
         streetEditText.addTextChangedListener(streetWatcher)
-
     }
 
     private fun gotoOrderDetailFragment(order: Order) {

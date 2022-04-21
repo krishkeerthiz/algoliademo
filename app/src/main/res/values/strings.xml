@@ -45,4 +45,5 @@
     <string name="search">Search</string>
     <string name="filter">Filter</string>
     <string name="add_address_first">Add Address First</string>
+    <string name="rate"><u>Rate</u></string>
 </resources>

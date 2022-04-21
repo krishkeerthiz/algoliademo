@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.algolia.instantsearch.core.connection.ConnectionHandler
 import com.algolia.instantsearch.helper.android.item.StatsTextView
 import com.algolia.instantsearch.helper.android.list.autoScrollToStart
@@ -32,13 +33,31 @@ class ProductFragment : Fragment() {
     private lateinit var binding: FragmentProductBinding
     private val connection = ConnectionHandler()
 
+    private lateinit var viewModel: MyViewModel
+
+    private var currentVisiblePosition: Int = 0
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_product, container, false)
+
+        Log.d(TAG, "onCreateView: product")
+        viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
+
+        if(viewModel.productView == null){
+            Log.d(TAG, "onCreateView: product if ")
+            val view = inflater.inflate(R.layout.fragment_product, container, false)
+            viewModel.productView = view
+            return view
+        }
+        else{
+            Log.d(TAG, "onCreateView: product else")
+            return viewModel.productView
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,7 +65,9 @@ class ProductFragment : Fragment() {
         Log.d(TAG, "onCreateView: product fragment")
         binding = FragmentProductBinding.bind(view)
         Log.d(TAG, "onCreateView: product fragment1")
-        val viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
+
+
+
 
         Log.d(TAG, "onCreateView: product fragment2")
         val auth = Firebase.auth
@@ -101,6 +122,19 @@ class ProductFragment : Fragment() {
         connection += viewModel.stats.connectView(statsView, StatsPresenterImpl())
 
         Log.d(TAG, "onCreateView: product fragment5")
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        currentVisiblePosition = (binding.productList.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (binding.productList.layoutManager as LinearLayoutManager).scrollToPosition(currentVisiblePosition)
+
+        currentVisiblePosition =0
     }
 
     private fun onItemClicked(id: String) {

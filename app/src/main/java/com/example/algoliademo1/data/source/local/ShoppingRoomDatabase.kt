@@ -17,7 +17,7 @@ import org.json.JSONObject
 
 @Database(
     entities = [Product::class, Address::class, AddressList::class, CartItems::class, Cart::class,
-        Categories::class, Order::class, OrderItems::class, Orders::class, Wishlist::class],
+        Categories::class, Order::class, OrderItems::class, Orders::class, Wishlist::class, ProductRatings::class],
     version = 1, exportSchema = false
 )
 @TypeConverters(
@@ -36,6 +36,7 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
     abstract fun orderItemsDao(): OrderItemsDao
     abstract fun ordersDao(): OrdersDao
     abstract fun wishlistDao(): WishlistDao
+    abstract fun productRatingsDao(): ProductRatingsDao
 
     private class ShoppingDatabaseCallback(
         private val scope: CoroutineScope,

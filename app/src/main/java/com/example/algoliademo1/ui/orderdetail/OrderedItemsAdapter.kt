@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.data.source.repository.OrdersRepository
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.databinding.OrderItemBinding
@@ -16,7 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class OrderedItemsAdapter(val orderId: String) :
+class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemOnClickListener) :
     ListAdapter<String, OrderedItemsViewHolder>(OrderedItemsAdapter) {
 
     private val ordersRepository = OrdersRepository.getRepository()
@@ -35,6 +36,9 @@ class OrderedItemsAdapter(val orderId: String) :
         //       if(countValues.isNotEmpty())
         holder.bind(productId, orderId, ordersRepository)
 
+        holder.binding.orderRatingText.setOnClickListener {
+            onClickListener.onItemClick(productId)
+        }
     }
 
     companion object : DiffUtil.ItemCallback<String>() {
@@ -90,5 +94,10 @@ class OrderedItemsViewHolder(
                 )
         }
     }
+}
 
+class OrderedItemOnClickListener(
+    val itemClickListener: (productId: String) -> Unit
+) {
+    fun onItemClick(productId: String) = itemClickListener(productId)
 }

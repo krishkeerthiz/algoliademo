@@ -22,22 +22,19 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:ellipsize="end"
-            android:maxLines="5"
-            android:minLines="5"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/orderDate"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="No B83 \n lake view \n avenue \n chennai" />
+            tools:text="No B83 lake view avenue kottur, chennai 600085 No B83 lake view avenue kottur, chennai 600085" />
 
         <TextView
             android:id="@+id/orderTotalPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
@@ -45,18 +42,21 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderAddress"
             tools:text="₹5302" />
 
         <TextView
             android:id="@+id/orderDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
             android:textAppearance="?attr/textAppearanceBody1"
             android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderAddress"
             tools:text="12/12/2022" />
 
 

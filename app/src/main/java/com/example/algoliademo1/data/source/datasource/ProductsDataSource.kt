@@ -9,4 +9,8 @@ interface ProductsDataSource {
     suspend fun getProduct(productId: String): Product
 
     suspend fun insertProduct(product: Product)
+
+    suspend fun addRating(productId: String, rating: Int)
+
+    suspend fun getUserRating(productId: String): Int?
 }
