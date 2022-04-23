@@ -1,7 +1,6 @@
 package com.example.algoliademo1.data.source.local.localdatasource
 
 import com.example.algoliademo1.data.source.datasource.OrdersDataSource
-import com.example.algoliademo1.data.source.local.dao.CartItemsDao
 import com.example.algoliademo1.data.source.local.dao.OrderDao
 import com.example.algoliademo1.data.source.local.dao.OrderItemsDao
 import com.example.algoliademo1.data.source.local.dao.OrdersDao
@@ -12,10 +11,9 @@ import com.example.algoliademo1.data.source.local.entity.Orders
 import java.util.*
 
 class OrdersLocalDataSource(
-    val orderDao: OrderDao,
-    val ordersDao: OrdersDao,
-    val orderItemsDao: OrderItemsDao,
-    val cartItemsDao: CartItemsDao
+    private val orderDao: OrderDao,
+    private val ordersDao: OrdersDao,
+    private val orderItemsDao: OrderItemsDao
 ) : OrdersDataSource {
 
     override suspend fun addNewOrder(

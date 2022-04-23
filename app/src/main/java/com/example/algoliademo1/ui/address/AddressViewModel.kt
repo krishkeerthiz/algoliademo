@@ -46,7 +46,7 @@ class AddressViewModel : ViewModel() {
         viewModelScope.launch {
             val addressModel = AddressModel(address, city, doorNumber, pincode, state)
 
-            val addressId = generateId(10)
+            val addressId = generateId()
 
             addressRepository.addAddress(FirebaseService.userId, addressId, addressModel)
 
@@ -54,10 +54,10 @@ class AddressViewModel : ViewModel() {
         }
     }
 
-    private fun generateId(length: Int): String {
+    private fun generateId(): String {
         val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-        return List(length) { charset.random() }
+        return List(10) { charset.random() }
             .joinToString("")
     }
 
@@ -85,7 +85,7 @@ class AddressViewModel : ViewModel() {
     }
 
     suspend fun placeOrder(): Order {
-        val orderId = generateId(10)
+        val orderId = generateId()
         val userId = FirebaseService.userId
         Log.d(TAG, "placeOrder: before async")
         val order = viewModelScope.async {

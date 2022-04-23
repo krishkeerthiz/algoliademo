@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class WishlistLocalDataSource(val wishlistDao: WishlistDao) : WishlistDataSource {
+class WishlistLocalDataSource(private val wishlistDao: WishlistDao) : WishlistDataSource {
 
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 

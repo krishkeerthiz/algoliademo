@@ -9,7 +9,7 @@ class WishlistRepository {
     private val dataSource: WishlistDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance!!.database
+        val dbInstance = ShoppingApplication.instance.database
         dataSource = WishlistLocalDataSource(dbInstance.wishlistDao())
     }
 

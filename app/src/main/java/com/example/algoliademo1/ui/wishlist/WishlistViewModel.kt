@@ -6,8 +6,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
+import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.data.source.repository.WishlistRepository
 import com.example.algoliademo1.model.WishlistModel
 import kotlinx.coroutines.async
@@ -17,6 +19,7 @@ class WishlistViewModel : ViewModel() {
 
     private val wishlistRepository = WishlistRepository.getRepository()
     private val cartRepository = CartRepository.getRepository()
+    private val productRepository = ProductsRepository.getRepository()
 
     private val _wishlistModel = MutableLiveData<WishlistModel>()
 
@@ -30,8 +33,16 @@ class WishlistViewModel : ViewModel() {
                 if (productIds.isEmpty()) WishlistModel(listOf()) else WishlistModel(productIds)
             Log.d(TAG, "getWishlistItems: $productIds")
             _wishlistModel.value = model
-
         }
+    }
+
+    suspend fun getWishlistProducts(productIds: List<String>?): List<Product> {
+        var products = listOf<Product>()
+        viewModelScope.launch { 
+            products = productRepository.getProducts(productIds)
+        }.join()
+        Log.d(TAG, "getWishlistProducts: ${products.size}")
+       return products
     }
 
     fun removeFromWishlistAndUpdate(productId: String) {
@@ -57,7 +68,7 @@ class WishlistViewModel : ViewModel() {
         return count.await()
     }
 
-    suspend fun removeFromWishlist(productId: String) {
+    private suspend fun removeFromWishlist(productId: String) {
         viewModelScope.launch {
             wishlistRepository.removeFromWishlist(FirebaseService.userId, productId)
         }.join()
@@ -72,12 +83,13 @@ class WishlistViewModel : ViewModel() {
             for (productId in productIds) {
                 val productCount = getProductCount(productId) //product count in cart
 
+                Log.d(TAG, "addAllToCart: $productCount")
                 if (productCount == 0)
                     cartRepository.addToCart(productId)
 
                 removeFromWishlist(productId)
                 Log.d(TAG, "addAllToCart: $productId")
-                 cartRepository.addToCart(productId) // Add price if using firebase
+                //cartRepository.addToCart(productId) // Add price if using firebase
 
             }
 

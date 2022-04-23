@@ -7,8 +7,8 @@ interface AddressDataSource {
 
     suspend fun addAddress(userId: String, addressId: String, addressModel: AddressModel)
 
-    suspend fun getAddressList(userId: String): List<Address>  // Its not correct
+    suspend fun getAddressList(userId: String): List<Address>
 
-    suspend fun getAddress(addressId: String, userId: String): Address // Its not correct
+    suspend fun getAddress(addressId: String, userId: String): Address
 
 }

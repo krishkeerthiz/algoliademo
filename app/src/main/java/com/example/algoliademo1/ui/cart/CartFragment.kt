@@ -6,15 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.algoliademo1.CartAdapter
-import com.example.algoliademo1.CartOnClickListener
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentCartBinding
-import com.example.algoliademo1.model.CartModel
+import com.example.algoliademo1.model.ProductQuantityModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CartFragment : Fragment() {
     private lateinit var viewModel: CartViewModel
@@ -58,18 +59,30 @@ class CartFragment : Fragment() {
                     binding.cartLayout.visibility = View.VISIBLE
                 }
 
-                cartAdapter.submitList(it.products?.keys?.toList())
-                cartAdapter.notifyDataSetChanged()
-                binding.totalPrice.text =
-                    getString(R.string.currency) + String.format("%.2f", it.total)
+                val totalPrice = getString(R.string.currency) + String.format("%.2f", it.total)
+                binding.totalPrice.text = totalPrice
+
+                lifecycleScope.launch(Dispatchers.IO){
+                    val productsQuantity = mutableListOf<ProductQuantityModel>()
+                    val products = viewModel.getCartProducts(it.products?.keys?.toList())
+
+                    for(product in products)
+                        productsQuantity.add(ProductQuantityModel(product, it.products?.get(product.productId)!!))
+
+                    withContext(Dispatchers.Main){
+                        cartAdapter.submitList(productsQuantity)
+                    }
+                }
+                //cartAdapter.submitList(it.products?.keys?.toList())
+               // cartAdapter.notifyDataSetChanged()
 
             }
         }
 
-        binding.cartItemsList.let {
-            it.itemAnimator = null
-            it.adapter = cartAdapter
-            it.layoutManager = LinearLayoutManager(requireContext())
+        binding.cartItemsList.apply {
+            itemAnimator = null
+            adapter = cartAdapter
+            layoutManager = LinearLayoutManager(requireContext())
         }
 
         binding.buyButton.setOnClickListener {
@@ -82,14 +95,13 @@ class CartFragment : Fragment() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
             setTitle("Remove product")
             setMessage("Do you want to remove product?")
-            setPositiveButton("Yes") { dialogInterface, i ->
+            setPositiveButton("Yes") { _, _ ->
                 viewModel.removeItemAndUpdate(productId, price)
             }
-            setNegativeButton("No") { dialogInterface, i ->
+            setNegativeButton("No") { dialogInterface, _ ->
                 dialogInterface.cancel()
             }
-            setCancelable(true)
-        }
+       }
 
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
@@ -101,12 +113,7 @@ class CartFragment : Fragment() {
         view?.findNavController()?.navigate(action)
     }
 
-    private fun setTotalPriceView() {
-        viewModel.cartModel.observe(viewLifecycleOwner) { cartModel ->
-            binding.totalPrice.text =
-                getString(R.string.currency) + String.format("%.2f", cartModel.total)
-        }
-    }
+
 
     private fun gotoProductDetailFragment(productId: String) {
         val action = CartFragmentDirections.actionCartFragmentToProductDetailFragment(productId)

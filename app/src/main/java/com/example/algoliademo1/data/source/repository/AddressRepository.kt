@@ -11,7 +11,7 @@ class AddressRepository {
     private val dataSource: AddressDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance!!.database
+        val dbInstance = ShoppingApplication.instance.database
         dataSource = AddressLocalDataSource(dbInstance.addressDao(), dbInstance.addressListDao())
     }
 

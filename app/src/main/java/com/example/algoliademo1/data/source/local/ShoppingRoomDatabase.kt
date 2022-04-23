@@ -23,7 +23,6 @@ import org.json.JSONObject
 @TypeConverters(
     DateConverter::class
 )
-
 abstract class ShoppingRoomDatabase : RoomDatabase() {
 
     abstract fun productsDao(): ProductsDao
@@ -50,8 +49,6 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
                     populateDatabase(
                         database.productsDao(),
                         database.categoriesDao(),
-                        database.wishlistDao(),
-                        database.cartDao(),
                         context
                     )
                 }
@@ -61,8 +58,6 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
         suspend fun populateDatabase(
             productsDao: ProductsDao,
             categoriesDao: CategoriesDao,
-            wishlistDao: WishlistDao,
-            cartDao: CartDao,
             context: Context
         ) {
 

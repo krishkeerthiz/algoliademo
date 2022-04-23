@@ -46,12 +46,12 @@ class FacetFragment : Fragment() {
 
         binding.applyFilter.setOnClickListener {
             val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
-            view?.findNavController()?.navigate(action)
+            view.findNavController().navigate(action)
         }
 
         binding.clearFilter.setOnClickListener {
             val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
-            view?.findNavController()?.navigate(action)
+            view.findNavController().navigate(action)
         }
 
         binding.facetList.let {
@@ -84,7 +84,7 @@ class FacetFragment : Fragment() {
         connection += viewModel.facetList4.connectView(adapterFacet4, viewModel.facetPresenter)
         connection += viewModel.clearAll.connectView(FilterClearViewImpl(binding.clearFilter))
 
-        binding.filterGroup.setOnCheckedChangeListener { chipGroup, chipId ->
+        binding.filterGroup.setOnCheckedChangeListener { _, chipId ->
             when (chipId) {
                 R.id.categoryChip -> {
                     binding.facetList.visibility = View.VISIBLE

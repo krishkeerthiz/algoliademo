@@ -1,8 +1,5 @@
 package com.example.algoliademo1.data.source.repository
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import com.algolia.search.model.search.SortFacetsBy
 import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.datasource.ProductsDataSource
 import com.example.algoliademo1.data.source.local.entity.Product
@@ -18,21 +15,23 @@ class ProductsRepository {
 
     suspend fun getProducts(): List<Product> = dataSource.getProducts()
 
+    suspend fun getProducts(productIds: List<String>?): List<Product> =
+        dataSource.getProducts(productIds)
+
     suspend fun getProduct(productId: String): Product {
         val product = CoroutineScope(Dispatchers.IO).async {
             dataSource.getProduct(productId)
         }.await()
-        Log.d(TAG, "getProduct: $product  $productId  ${productId.length}")
         return product
     }
 
-    suspend fun addRating(productId: String, rating: Int){
+    suspend fun addRating(productId: String, rating: Int) {
         CoroutineScope(Dispatchers.IO).launch {
             dataSource.addRating(productId, rating)
         }
     }
 
-    suspend fun getUserRating(productId: String): Int?{
+    suspend fun getUserRating(productId: String): Int? {
         val rating = CoroutineScope(Dispatchers.IO).async {
             dataSource.getUserRating(productId)
         }.await()
@@ -40,8 +39,9 @@ class ProductsRepository {
     }
 
     init {
-        val dbInstance = ShoppingApplication.instance?.database
-        dataSource = ProductsLocalDataSource(dbInstance!!.productsDao(), dbInstance!!.productRatingsDao())
+        val dbInstance = ShoppingApplication.instance.database
+        dataSource =
+            ProductsLocalDataSource(dbInstance.productsDao(), dbInstance.productRatingsDao())
     }
 
     companion object {

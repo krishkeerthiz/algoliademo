@@ -11,7 +11,7 @@ class CartRepository {
     private val dataSource: CartDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance!!.database
+        val dbInstance = ShoppingApplication.instance.database
         dataSource = CartLocalDataSource(
             dbInstance.cartDao(),
             dbInstance.cartItemsDao(),
@@ -19,7 +19,7 @@ class CartRepository {
         )
     }
 
-    suspend fun addToCart(productId: String, price: Float = 0.0f) {
+    suspend fun addToCart(productId: String, price: Float = 0.0f) { // Price may be needed in remote data source
         dataSource.addToCart(FirebaseService.userId, productId)
     }
 

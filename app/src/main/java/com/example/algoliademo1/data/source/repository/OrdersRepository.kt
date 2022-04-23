@@ -12,12 +12,11 @@ class OrdersRepository {
     private var dataSource: OrdersDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance!!.database
+        val dbInstance = ShoppingApplication.instance.database
         dataSource = OrdersLocalDataSource(
             dbInstance.orderDao(),
             dbInstance.ordersDao(),
-            dbInstance.orderItemsDao(),
-            dbInstance.cartItemsDao()
+            dbInstance.orderItemsDao()
         )
     }
 

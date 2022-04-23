@@ -7,14 +7,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.algoliademo1.data.source.local.entity.ItemCount
+import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
+import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.model.CartModel
 import kotlinx.coroutines.launch
 
 class CartViewModel : ViewModel() {
 
     private val cartRepository = CartRepository.getRepository()
+    private val productRepository = ProductsRepository.getRepository()
 
     private val _cartModel = MutableLiveData<CartModel>()
 
@@ -25,9 +28,6 @@ class CartViewModel : ViewModel() {
         viewModelScope.launch {
             val items = cartRepository.getCartItems(FirebaseService.userId)
 
-            Log.d(TAG, "getCartItems: ${items.toString()}")
-            Log.d(TAG, "getCartItems: ${FirebaseService.userId}")
-
             val productsQuantity: Map<String, Int> = listToMap(items)
             val total = cartRepository.getCartTotal(FirebaseService.userId)
 
@@ -35,6 +35,15 @@ class CartViewModel : ViewModel() {
 
             _cartModel.value = model
         }
+    }
+
+    suspend fun getCartProducts(productIds: List<String>?): List<Product> {
+        var products = listOf<Product>()
+        viewModelScope.launch {
+            products = productRepository.getProducts(productIds)
+        }.join()
+        Log.d(TAG, "getCartProducts: ${products.size}")
+        return products
     }
 
     private fun listToMap(items: List<ItemCount>): Map<String, Int> {

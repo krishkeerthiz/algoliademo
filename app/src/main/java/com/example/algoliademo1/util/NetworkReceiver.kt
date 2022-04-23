@@ -11,7 +11,7 @@ class NetworkReceiver : BroadcastReceiver() {
         var status = NetworkUtil.getConnectivityStatus(context!!)
         if (status.isEmpty()) {
             status = "No Internet Connection"
-            Toast.makeText(context, status, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, status, Toast.LENGTH_LONG).show()
         }
 
     }

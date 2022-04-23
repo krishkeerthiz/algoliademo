@@ -7,7 +7,10 @@ import com.example.algoliademo1.data.source.local.entity.Address
 import com.example.algoliademo1.data.source.local.entity.AddressList
 import com.example.algoliademo1.model.AddressModel
 
-class AddressLocalDataSource(val addressDao: AddressDao, val addressListDao: AddressListDao) :
+class AddressLocalDataSource(
+    private val addressDao: AddressDao,
+    private val addressListDao: AddressListDao
+) :
     AddressDataSource {
 
     override suspend fun addAddress(userId: String, addressId: String, addressModel: AddressModel) {
@@ -38,7 +41,6 @@ class AddressLocalDataSource(val addressDao: AddressDao, val addressListDao: Add
         return addressList
     }
 
-    //return addressListDao.getUserAddresses(userId)
     override suspend fun getAddress(addressId: String, userId: String): Address {
         return addressDao.getAddress(addressId)
     }

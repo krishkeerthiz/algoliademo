@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 data class Cart(
     @ColumnInfo(name = "user_id") val userId: String,
     val total: Float
-) {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "cart_id")
+){
+    @PrimaryKey(autoGenerate = true)  // auto generate primary key field should be here, when in constructor we need to pass cart id while creating cart instance
+    @ColumnInfo(name = "cart_id")     // No error when place in cart constructor, But it should be here.
     var cartId: Int = 0
 }

@@ -14,9 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class CartLocalDataSource(
-    val cartDao: CartDao,
-    val cartItemsDao: CartItemsDao,
-    val productsDao: ProductsDao
+    private val cartDao: CartDao,
+    private val cartItemsDao: CartItemsDao,
+    private val productsDao: ProductsDao
 ) : CartDataSource {
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 

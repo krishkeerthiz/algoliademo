@@ -6,13 +6,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
 import com.example.algoliademo1.data.source.repository.OrdersRepository
 import com.example.algoliademo1.data.source.repository.ProductsRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class OrderDetailViewModel() : ViewModel() {
+class OrderDetailViewModel : ViewModel() {
     private val ordersRepository = OrdersRepository.getRepository()
     private val addressRepository = AddressRepository.getRepository()
     private val productsRepository = ProductsRepository.getRepository()
@@ -54,9 +57,22 @@ class OrderDetailViewModel() : ViewModel() {
         viewModelScope.launch {
             val orders = ordersRepository.getOrderItemsId(orderId)
             _orders.value = orders.distinct()
-            Log.d(TAG, "getOrderItems: ${orders.size}  ${orders.toString()}")
+
             ordersFlag.value = true
         }
+    }
+
+    suspend fun getOrderItemQuantity(orderId: String, productId: String) = withContext(Dispatchers.IO) {
+        ordersRepository.getOrderItemQuantity(orderId, productId)
+    }
+
+    suspend fun getOrderProducts(productIds: List<String>?): List<Product> {
+        var products = listOf<Product>()
+        viewModelScope.launch {
+            products = productsRepository.getProducts(productIds)
+        }.join()
+        Log.d(TAG, "getCartProducts: ${products.size}")
+        return products
     }
 
     fun addRating(productId: String, rating: Int){

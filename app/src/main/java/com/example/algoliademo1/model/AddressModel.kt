@@ -7,7 +7,7 @@ class AddressModel {
     var pincode: Int = 600001
     var state: String = ""
 
-    constructor()
+    constructor() // Firebase needs empty constructor to instantiate
 
     override fun toString(): String {
         return doorNumber + "\n" + address + "\n" + city + "\n" + state + "\n" + pincode

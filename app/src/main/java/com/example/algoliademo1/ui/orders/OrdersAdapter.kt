@@ -1,28 +1,19 @@
-package com.example.algoliademo1
+package com.example.algoliademo1.ui.orders
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
-import com.example.algoliademo1.data.source.remote.FirebaseService
-import com.example.algoliademo1.data.source.repository.AddressRepository
 import com.example.algoliademo1.databinding.OrderCardBinding
-import com.google.firebase.Timestamp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.algoliademo1.model.OrderAddressModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 class OrdersAdapter(val onClickListener: OrdersOnClickListener) :
-    ListAdapter<Order, OrdersViewHolder>(OrdersAdapter) {
-
-    private val addressRepository = AddressRepository.getRepository()
+    ListAdapter<OrderAddressModel, OrdersViewHolder>(OrdersAdapter) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrdersViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -31,27 +22,26 @@ class OrdersAdapter(val onClickListener: OrdersOnClickListener) :
     }
 
     override fun onBindViewHolder(holder: OrdersViewHolder, position: Int) {
-        val order = getItem(position)
-        holder.bind(order, addressRepository)
+        val orderAddress = currentList[position]
+        holder.bind(orderAddress)
 
         holder.itemView.setOnClickListener {
-            Log.d(TAG, "order total: ${order.total}")
-            onClickListener.onItemClick(order)
+            onClickListener.onItemClick(orderAddress.order)
         }
     }
 
-    companion object : DiffUtil.ItemCallback<Order>() {
+    companion object : DiffUtil.ItemCallback<OrderAddressModel>() {
 
         override fun areItemsTheSame(
-            oldItem: Order,
-            newItem: Order
+            oldItem: OrderAddressModel,
+            newItem: OrderAddressModel
         ): Boolean {
-            return oldItem == newItem
+            return oldItem.order.orderId == newItem.order.orderId
         }
 
         override fun areContentsTheSame(
-            oldItem: Order,
-            newItem: Order
+            oldItem: OrderAddressModel,
+            newItem: OrderAddressModel
         ): Boolean {
             return oldItem == newItem
         }
@@ -61,35 +51,23 @@ class OrdersAdapter(val onClickListener: OrdersOnClickListener) :
 
 class OrdersViewHolder(val binding: OrderCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    val scope = CoroutineScope(Dispatchers.IO)
+    fun bind(orderAddress: OrderAddressModel) {
 
-    fun bind(order: Order, addressRepository: AddressRepository) {
-        scope.launch {
-            val address =
-                addressRepository.getAddress(order.addressId, FirebaseService.userId).toString()
+        binding.orderAddress.text = orderAddress.address
+        binding.orderDate.text = formatDate(orderAddress.order.date)
 
-            withContext(Dispatchers.Main) {
-                binding.orderAddress.text = address
-                binding.orderDate.text = formatDate(order.date)
-                binding.orderTotalPrice.text =
-                    binding.orderTotalPrice.context.getString(R.string.currency) + String.format(
-                        "%.2f",
-                        order.total
-                    )
-            }
-        }
+        val totalPrice =
+            binding.orderTotalPrice.context.getString(R.string.currency) + String.format(
+                "%.2f",
+                orderAddress.order.total
+            )
+        binding.orderTotalPrice.text = totalPrice
+
     }
 
-    fun formatDate(date: Date): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy")
+    private fun formatDate(date: Date): String {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.UK)
         return sdf.format(date).toString()
-    }
-
-    fun getDate(timeStamp: Timestamp): String {
-        val sdf = SimpleDateFormat("dd/MM/yyyy")
-        val milliSeconds = timeStamp.seconds * 1000 + timeStamp.nanoseconds / 1000000
-        val netDate = Date(milliSeconds)
-        return sdf.format(netDate).toString()
     }
 
 }
@@ -97,6 +75,5 @@ class OrdersViewHolder(val binding: OrderCardBinding) : RecyclerView.ViewHolder(
 class OrdersOnClickListener(
     val itemClickListener: (order: Order) -> Unit
 ) {
-
     fun onItemClick(order: Order) = itemClickListener(order)
 }

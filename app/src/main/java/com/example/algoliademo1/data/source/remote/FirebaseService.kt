@@ -37,13 +37,6 @@ object FirebaseService {
         return addressDocumentRef
     }
 
-//    fun getAddressReference(path: String): DocumentReference{
-//        val db = FirebaseFirestore.getInstance()
-//        val addressDocumentRef = db.document(path)
-//
-//        return addressDocumentRef
-//    }
-
 
     fun getCartReference(): DocumentReference {
         val db = FirebaseFirestore.getInstance()
@@ -166,13 +159,7 @@ object FirebaseService {
             Log.d(TAG, "Error getting document: ", exception)
             productModel = null
         }
-//         if(docSnap != null){
-//             val productModel = docSnap.toObject<ProductModel>()
-//             return productModel
-//         }
-//         else{
-//             Log.d(TAG, "Document Snapshot missing")
-//         }
+
 
         return productModel
     }

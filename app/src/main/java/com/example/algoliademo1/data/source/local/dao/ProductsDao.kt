@@ -18,6 +18,9 @@ interface ProductsDao {
     @Query("SELECT * FROM products_table")
     fun getProducts(): List<Product>
 
+    @Query("SELECT * FROM products_table WHERE product_id IN (:productIds)")
+    fun getProducts(productIds: List<String>): List<Product>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: Product)
 

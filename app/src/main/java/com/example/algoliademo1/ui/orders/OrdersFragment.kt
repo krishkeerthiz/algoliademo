@@ -6,13 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.algoliademo1.OrdersAdapter
-import com.example.algoliademo1.OrdersOnClickListener
 import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.FragmentOrdersBinding
+import com.example.algoliademo1.model.OrderAddressModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class OrdersFragment : Fragment() {
@@ -36,7 +39,7 @@ class OrdersFragment : Fragment() {
 
         viewModel.getOrders()
 
-        val adapter = OrdersAdapter(
+        val orderAdapter = OrdersAdapter(
             OrdersOnClickListener { order ->
                 gotoOrderDetailsFragment(order)
             }
@@ -51,13 +54,22 @@ class OrdersFragment : Fragment() {
                     binding.emptyLayout.visibility = View.INVISIBLE
                     binding.ordersList.visibility = View.VISIBLE
                 }
-                adapter.submitList(orders)
+                lifecycleScope.launch(Dispatchers.IO){
+                    val orderAddresses = mutableListOf<OrderAddressModel>()
+
+                    for(order in orders)
+                        orderAddresses.add(OrderAddressModel(order, viewModel.getAddress(order.addressId)))
+
+                    withContext(Dispatchers.Main){
+                        orderAdapter.submitList(orderAddresses)
+                    }
+                }
             }
         }
 
         binding.ordersList.let {
             it.itemAnimator = null
-            it.adapter = adapter
+            it.adapter = orderAdapter
             it.layoutManager = LinearLayoutManager(requireContext())
         }
     }

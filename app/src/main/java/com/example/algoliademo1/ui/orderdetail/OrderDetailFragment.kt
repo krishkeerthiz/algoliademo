@@ -11,19 +11,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.algoliademo1.OrderedItemOnClickListener
-import com.example.algoliademo1.OrderedItemsAdapter
 import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.databinding.FragmentOrderDetailBinding
+import com.example.algoliademo1.model.ProductQuantityModel
 import com.example.algoliademo1.util.formatDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +33,7 @@ class OrderDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentOrderDetailBinding
     private lateinit var viewModel: OrderDetailViewModel
+
     private val productsRepository = ProductsRepository.getRepository()
 
     private val args: OrderDetailFragmentArgs by navArgs()
@@ -55,7 +55,8 @@ class OrderDetailFragment : Fragment() {
         binding = FragmentOrderDetailBinding.bind(view)
         viewModel = ViewModelProvider(requireActivity())[OrderDetailViewModel::class.java]
 
-        binding.totalPrice.text = getString(R.string.currency) + String.format("%.2f", order.total)
+        val totalPrice = getString(R.string.currency) + String.format("%.2f", order.total)
+        binding.totalPrice.text = totalPrice
         binding.orderDateTextView.text = formatDate(order.date)
 
         viewModel.orderId = order.orderId
@@ -80,11 +81,25 @@ class OrderDetailFragment : Fragment() {
         viewModel.ordersFlag.observe(viewLifecycleOwner) { flag ->
             if (flag == true) {
                 viewModel.orders.observe(viewLifecycleOwner) { productIds ->
-                    Log.d(TAG, "before submit list ${productIds.toString()}")
-                    orderItemsAdapter.submitList(productIds)
-                    Log.d(TAG, "after submit list ${productIds.toString()}")
 
-                    viewModel.ordersFlag.value = false
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val productsQuantity = mutableListOf<ProductQuantityModel>()
+                        val products = viewModel.getOrderProducts(productIds)
+
+                        for (product in products) {
+                            productsQuantity.add(
+                                ProductQuantityModel(
+                                    product,
+                                    viewModel.getOrderItemQuantity(order.orderId, product.productId)
+                                )
+                            )
+                        }
+
+                        withContext(Dispatchers.Main) {
+                            orderItemsAdapter.submitList(productsQuantity)
+                            viewModel.ordersFlag.value = false
+                        }
+                    }
                 }
             }
         }
@@ -96,7 +111,7 @@ class OrderDetailFragment : Fragment() {
         }
     }
 
-    private fun showRatingDialog(productId: String){
+    private fun showRatingDialog(productId: String) {
         //Toast.makeText(requireContext(), "Rating text clicked",Toast.LENGTH_SHORT).show()
         val builder = AlertDialog.Builder(requireContext())
 
@@ -114,7 +129,7 @@ class OrderDetailFragment : Fragment() {
                 productsRepository.getProduct(productId)
             }
 
-            ratingItemName.text = productModel?.name
+            ratingItemName.text = productModel.name
 
             Glide.with(ratingItemImage.context)
                 .load(productModel.image)
@@ -122,7 +137,7 @@ class OrderDetailFragment : Fragment() {
                 .into(ratingItemImage)
         }
 
-        builder.setPositiveButton("Rate"){ dialogInterface, _ ->
+        builder.setPositiveButton("Rate") { _, _ ->
             //Toast.makeText(requireContext(), "Rating updated ${ratingBar.rating.toInt()}", Toast.LENGTH_SHORT).show()
             viewModel.addRating(productId, (ratingBar.rating * 2).toInt())
         }
@@ -133,19 +148,19 @@ class OrderDetailFragment : Fragment() {
         dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
         dialog.getButton(Dialog.BUTTON_POSITIVE).isVisible = false
 
-        ratingBar.setOnRatingBarChangeListener { ratingBar, value, b ->
+        ratingBar.setOnRatingBarChangeListener { _, value, _ ->
             dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = value != 0.0f
             dialog.getButton(Dialog.BUTTON_POSITIVE).isVisible = true
         }
 
         CoroutineScope(Dispatchers.Main).launch {
-            val userRating = withContext(Dispatchers.IO){
+            val userRating = withContext(Dispatchers.IO) {
                 productsRepository.getUserRating(productId)
             }
 
-            if(userRating != null){
+            if (userRating != null) {
                 //Toast.makeText(requireContext(), "${userRating!!.toFloat()}", Toast.LENGTH_SHORT).show()
-                ratingBar.rating = userRating!!.toFloat() / 2
+                ratingBar.rating = userRating.toFloat() / 2
                 dialog.getButton(Dialog.BUTTON_POSITIVE).isVisible = false
             }
         }

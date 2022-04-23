@@ -1,4 +1,4 @@
-package com.example.algoliademo1
+package com.example.algoliademo1.ui.cart
 
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -9,30 +9,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.algoliademo1.data.source.remote.FirebaseService
-import com.example.algoliademo1.data.source.repository.CartRepository
-import com.example.algoliademo1.data.source.repository.ProductsRepository
+import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.CartItemBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.algoliademo1.model.ProductQuantityModel
 
 class CartAdapter(val onClickListener: CartOnClickListener) :
-    ListAdapter<String, CartViewHolder>(CartAdapter) {
-    val cartRepository = CartRepository.getRepository()
-    val productRepository = ProductsRepository.getRepository()
+    ListAdapter<ProductQuantityModel, CartViewHolder>(CartAdapter) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
-        val view = LayoutInflater.from(parent.context)
-        val binding = CartItemBinding.inflate(view, parent, false)
-        return CartViewHolder(binding, productRepository, cartRepository)
+        return CartViewHolder(CartItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
         Log.d(TAG, "onBindViewHolder: called")
-        val productId = getItem(position)
-        holder.bind(productId)
+        val productQuantity = currentList[position]
+
+        holder.bind(productQuantity)
 
         holder.binding.deleteImage.setOnClickListener {
             val priceText = holder.binding.cartItemPrice.text.toString()
@@ -40,42 +32,42 @@ class CartAdapter(val onClickListener: CartOnClickListener) :
             if (priceText != "")
                 price = priceText.trimStart('$').toFloat()
             //bug occurs here sometimes
-            onClickListener.onDeleteClick(productId, price)
+            onClickListener.onDeleteClick(productQuantity.product.productId, price)
         }
 
         holder.binding.cartItemName.setOnClickListener {
-            onClickListener.onItemClick(productId)
+            onClickListener.onItemClick(productQuantity.product.productId)
         }
 
         holder.binding.cartItemImage.setOnClickListener {
-            onClickListener.onItemClick(productId)
+            onClickListener.onItemClick(productQuantity.product.productId)
         }
         holder.binding.cartItemPrice.setOnClickListener {
-            onClickListener.onItemClick(productId)
+            onClickListener.onItemClick(productQuantity.product.productId)
         }
 
         holder.binding.addButton.setOnClickListener {
-            onClickListener.onIncrementClick(productId)
+            onClickListener.onIncrementClick(productQuantity.product.productId)
         }
 
         holder.binding.removeButton.setOnClickListener {
-            onClickListener.onDecrementClick(productId)
+            onClickListener.onDecrementClick(productQuantity.product.productId)
         }
 
     }
 
-    companion object : DiffUtil.ItemCallback<String>() {
+    companion object : DiffUtil.ItemCallback<ProductQuantityModel>() {
 
         override fun areItemsTheSame(
-            oldItem: String,
-            newItem: String
+            oldItem: ProductQuantityModel,
+            newItem: ProductQuantityModel
         ): Boolean {
-            return oldItem == newItem
+            return oldItem.product.productId == newItem.product.productId
         }
 
         override fun areContentsTheSame(
-            oldItem: String,
-            newItem: String
+            oldItem: ProductQuantityModel,
+            newItem: ProductQuantityModel
         ): Boolean {
             return oldItem == newItem
         }
@@ -84,52 +76,38 @@ class CartAdapter(val onClickListener: CartOnClickListener) :
 }
 
 class CartViewHolder(
-    val binding: CartItemBinding,
-    val productsRepository: ProductsRepository,
-    val cartRepository: CartRepository
+    val binding: CartItemBinding
 ) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(productId: String) {
-        Log.d(TAG, "bind: method called")
+    fun bind(productQuantity: ProductQuantityModel) {
+        val product = productQuantity.product
+        val productCount = productQuantity.quantity
 
-        CoroutineScope(Dispatchers.Main).launch {
+        binding.cartItemName.text = product.name
 
-            val productModel = withContext(Dispatchers.IO) {
-                productsRepository.getProduct(productId)
-            }
-            binding.cartItemName.text = productModel?.name
+        val cartItemPrice = binding.cartItemPrice.context.getString(R.string.currency) + String.format(
+            "%.2f",
+            product.price
+        )
 
-            binding.cartItemPrice.text =
-                binding.cartItemPrice.context.getString(R.string.currency) + String.format(
-                    "%.2f",
-                    productModel.price
-                )
+        binding.cartItemPrice.text = cartItemPrice
 
-            Glide.with(binding.cartItemImage.context)
-                .load(productModel?.image)
-                .placeholder(R.drawable.spinner1)
-                .into(binding.cartItemImage)
+        Glide.with(binding.cartItemImage.context)
+            .load(product.image)
+            .placeholder(R.drawable.spinner1)
+            .into(binding.cartItemImage)
 
-            val productQuantity = withContext(Dispatchers.IO) {
-                cartRepository.getProductQuantity(FirebaseService.userId, productId)
-            }
+        if (productCount == 1)
+            binding.removeButton.visibility = View.INVISIBLE
+        else
+            binding.removeButton.visibility = View.VISIBLE
 
-            if (productQuantity == 1)
-                binding.removeButton.visibility = View.INVISIBLE
-            else
-                binding.removeButton.visibility = View.VISIBLE
+        if (productCount == 5)
+            binding.addButton.visibility = View.INVISIBLE
+        else
+            binding.addButton.visibility = View.VISIBLE
 
-            if (productQuantity == 5)
-                binding.addButton.visibility = View.INVISIBLE
-            else
-                binding.addButton.visibility = View.VISIBLE
-
-            Log.d(TAG, "bind: before binding count")
-            binding.count.text = productQuantity.toString()
-
-            Log.d(TAG, "bind: after binding $productQuantity")
-
-        }
+        binding.count.text = productCount.toString()
 
     }
 }

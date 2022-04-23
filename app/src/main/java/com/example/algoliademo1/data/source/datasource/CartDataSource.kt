@@ -13,7 +13,7 @@ interface CartDataSource {
 
     suspend fun decrementItemCount(userId: String, productId: String)
 
-    suspend fun getCartItems(userId: String): List<ItemCount>  // Map<productId, quantity>
+    suspend fun getCartItems(userId: String): List<ItemCount>
 
     suspend fun getProductQuantity(userId: String, productId: String): Int
 

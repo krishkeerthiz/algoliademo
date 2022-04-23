@@ -1,6 +1,7 @@
 package com.example.algoliademo1.ui.wishlist
 
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,12 +14,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.R
-import com.example.algoliademo1.WishlistAdapter
-import com.example.algoliademo1.WishlistClickListener
 import com.example.algoliademo1.databinding.FragmentWishlistBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WishlistFragment : Fragment() {
 
@@ -61,20 +61,26 @@ class WishlistFragment : Fragment() {
 
                 binding.addAllToCartButton.isClickable = !wishlistModel.products.isNullOrEmpty()
 
-                Log.d("wishlist adapter", wishlistModel.products.toString())
-                wishlistAdapter.submitList(wishlistModel.products)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val wishlistProducts = viewModel.getWishlistProducts(wishlistModel.products)
+                    withContext(Dispatchers.Main){
+                        wishlistAdapter.submitList(wishlistProducts)
+                    }
+
+                }
+
             }
         }
 
-        viewModel.wishlistModel.observe(viewLifecycleOwner) { wishlistModel ->
-            if (wishlistModel != null && !(wishlistModel.products.isNullOrEmpty())) {
-                binding.addAllToCartButton.isClickable = true
-            }
-        }
+//        viewModel.wishlistModel.observe(viewLifecycleOwner) { wishlistModel ->
+//            if (wishlistModel != null && !(wishlistModel.products.isNullOrEmpty())) {
+//                binding.addAllToCartButton.isClickable = true
+//            }
+//        }
 
         binding.wishlistItemsList.let {
             it.adapter = wishlistAdapter
-            it.itemAnimator = null
+            it.itemAnimator = null // Need to look
             it.layoutManager = LinearLayoutManager(requireContext())
         }
 
@@ -90,6 +96,7 @@ class WishlistFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             val productCount = viewModel.getProductCount(productId) //product count in cart
 
+            Log.d(TAG, "addToCart: $productCount")
             if (productCount == 0)
                 viewModel.addToCart(productId, price)
 
