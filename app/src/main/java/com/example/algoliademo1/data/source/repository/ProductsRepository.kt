@@ -4,10 +4,7 @@ import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.datasource.ProductsDataSource
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.local.localdatasource.ProductsLocalDataSource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class ProductsRepository {
 
@@ -15,13 +12,14 @@ class ProductsRepository {
 
     suspend fun getProducts(): List<Product> = dataSource.getProducts()
 
-    suspend fun getProducts(productIds: List<String>?): List<Product> =
+    suspend fun getProducts(productIds: List<String>?): List<Product?> =
         dataSource.getProducts(productIds)
 
-    suspend fun getProduct(productId: String): Product {
-        val product = CoroutineScope(Dispatchers.IO).async {
-            dataSource.getProduct(productId)
-        }.await()
+    suspend fun getProduct(productId: String): Product? {
+        val product =
+            withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
+                dataSource.getProduct(productId)
+            }
         return product
     }
 
@@ -32,9 +30,10 @@ class ProductsRepository {
     }
 
     suspend fun getUserRating(productId: String): Int? {
-        val rating = CoroutineScope(Dispatchers.IO).async {
-            dataSource.getUserRating(productId)
-        }.await()
+        val rating =
+            withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
+                dataSource.getUserRating(productId)
+            }
         return rating
     }
 

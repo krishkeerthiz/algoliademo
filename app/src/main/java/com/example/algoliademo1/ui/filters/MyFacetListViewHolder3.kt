@@ -12,15 +12,17 @@ class MyFacetListViewHolder3(view: View) : FacetListViewHolder(view) {
     override fun bind(facet: Facet, selected: Boolean, onClickListener: View.OnClickListener) {
         val binding = FacetItemBinding.bind(view)
         view.setOnClickListener(onClickListener)
-        binding.facetCount.text = facet.count.toString()
-        binding.facetCount.visibility = View.VISIBLE
-        binding.icon.visibility = if (selected) View.VISIBLE else View.INVISIBLE
-        binding.facetName.text = facet.value
+        binding.apply {
+            facetCount.text = facet.count.toString()
+            facetCount.visibility = View.VISIBLE
+            icon.visibility = if (selected) View.VISIBLE else View.INVISIBLE
+            facetName.text = facet.value
+        }
     }
 
     object Factory : FacetListViewHolder.Factory {
         override fun createViewHolder(parent: ViewGroup): FacetListViewHolder {
-            return MyFacetListViewHolder(parent.inflate(R.layout.facet_item))
+            return MyFacetListViewHolder1(parent.inflate(R.layout.facet_item))
         }
     }
 }

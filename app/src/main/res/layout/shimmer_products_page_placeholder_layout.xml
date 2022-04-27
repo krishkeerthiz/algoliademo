@@ -112,7 +112,6 @@
 
             <!-- Media -->
             <ImageView
-                android:id="@+id/productImage2"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
                 android:contentDescription="@string/content_description_media"
@@ -128,7 +127,6 @@
                 <!-- Title, secondary and supporting text -->
 
                 <TextView
-                    android:id="@+id/productName2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody1"
@@ -138,7 +136,6 @@
                     tools:text="title" />
 
                 <TextView
-                    android:id="@+id/productBrand2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -152,7 +149,6 @@
                     android:layout_height="wrap_content">
 
                     <RatingBar
-                        android:id="@+id/productRating2"
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -161,7 +157,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/productPrice2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBody1"
@@ -197,7 +192,6 @@
 
             <!-- Media -->
             <ImageView
-                android:id="@+id/productImage3"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
                 android:contentDescription="@string/content_description_media"
@@ -213,7 +207,6 @@
                 <!-- Title, secondary and supporting text -->
 
                 <TextView
-                    android:id="@+id/productName3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody1"
@@ -223,7 +216,6 @@
                     tools:text="title" />
 
                 <TextView
-                    android:id="@+id/productBrand3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -237,7 +229,6 @@
                     android:layout_height="wrap_content">
 
                     <RatingBar
-                        android:id="@+id/productRating3"
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -246,7 +237,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/productPrice3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBody1"
@@ -282,7 +272,6 @@
 
             <!-- Media -->
             <ImageView
-                android:id="@+id/productImage4"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
                 android:contentDescription="@string/content_description_media"
@@ -298,7 +287,6 @@
                 <!-- Title, secondary and supporting text -->
 
                 <TextView
-                    android:id="@+id/productName4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody1"
@@ -308,7 +296,6 @@
                     tools:text="title" />
 
                 <TextView
-                    android:id="@+id/productBrand4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -322,7 +309,6 @@
                     android:layout_height="wrap_content">
 
                     <RatingBar
-                        android:id="@+id/productRating4"
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -331,7 +317,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/productPrice4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBody1"
@@ -367,7 +352,6 @@
 
             <!-- Media -->
             <ImageView
-                android:id="@+id/productImage5"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
                 android:contentDescription="@string/content_description_media"
@@ -383,7 +367,6 @@
                 <!-- Title, secondary and supporting text -->
 
                 <TextView
-                    android:id="@+id/productName5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody1"
@@ -393,7 +376,6 @@
                     tools:text="title" />
 
                 <TextView
-                    android:id="@+id/productBrand5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -407,7 +389,6 @@
                     android:layout_height="wrap_content">
 
                     <RatingBar
-                        android:id="@+id/productRating5"
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -416,7 +397,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/productPrice5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBody1"
@@ -452,7 +432,6 @@
 
             <!-- Media -->
             <ImageView
-                android:id="@+id/productImage6"
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
                 android:contentDescription="@string/content_description_media"
@@ -468,7 +447,6 @@
                 <!-- Title, secondary and supporting text -->
 
                 <TextView
-                    android:id="@+id/productName6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceBody1"
@@ -478,7 +456,6 @@
                     tools:text="title" />
 
                 <TextView
-                    android:id="@+id/productBrand6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -492,7 +469,6 @@
                     android:layout_height="wrap_content">
 
                     <RatingBar
-                        android:id="@+id/productRating6"
                         style="@style/Widget.AppCompat.RatingBar.Small"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -501,7 +477,6 @@
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/productPrice6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="?attr/textAppearanceBody1"

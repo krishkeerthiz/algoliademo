@@ -1,94 +1,93 @@
 package com.example.algoliademo1.ui.cart
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.CartItemBinding
 import com.example.algoliademo1.model.ProductQuantityModel
+import kotlinx.coroutines.GlobalScope
 
 class CartAdapter(val onClickListener: CartOnClickListener) :
-    ListAdapter<ProductQuantityModel, CartViewHolder>(CartAdapter) {
+    RecyclerView.Adapter<CartViewHolder>() {
+
+    // Products and quantities
+    private var productQuantityModels: List<ProductQuantityModel> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
-        return CartViewHolder(CartItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+
+        return CartViewHolder(
+            CartItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        Log.d(TAG, "onBindViewHolder: called")
-        val productQuantity = currentList[position]
+        val productQuantity = productQuantityModels[position]
 
         holder.bind(productQuantity)
 
-        holder.binding.deleteImage.setOnClickListener {
-            val priceText = holder.binding.cartItemPrice.text.toString()
-            var price = 0.0f
-            if (priceText != "")
-                price = priceText.trimStart('$').toFloat()
-            //bug occurs here sometimes
-            onClickListener.onDeleteClick(productQuantity.product.productId, price)
-        }
+        holder.binding.apply {
+            // Restricting click to product detail only on item name, item image, item price
 
-        holder.binding.cartItemName.setOnClickListener {
-            onClickListener.onItemClick(productQuantity.product.productId)
-        }
+            cartItemName.setOnClickListener {
+                onClickListener.onItemClick(productQuantity.product.productId)
+            }
 
-        holder.binding.cartItemImage.setOnClickListener {
-            onClickListener.onItemClick(productQuantity.product.productId)
-        }
-        holder.binding.cartItemPrice.setOnClickListener {
-            onClickListener.onItemClick(productQuantity.product.productId)
-        }
+            cartItemImage.setOnClickListener {
+                onClickListener.onItemClick(productQuantity.product.productId)
+            }
 
-        holder.binding.addButton.setOnClickListener {
-            onClickListener.onIncrementClick(productQuantity.product.productId)
-        }
+            cartItemPrice.setOnClickListener {
+                onClickListener.onItemClick(productQuantity.product.productId)
+            }
 
-        holder.binding.removeButton.setOnClickListener {
-            onClickListener.onDecrementClick(productQuantity.product.productId)
-        }
+            // Add button click listener
+            addButton.setOnClickListener {
+                onClickListener.onIncrementClick(productQuantity.product.productId)
+            }
 
+            // Remove button click listener
+            removeButton.setOnClickListener {
+                onClickListener.onDecrementClick(productQuantity.product.productId)
+            }
+
+            // Delete button click listener
+            deleteImage.setOnClickListener {
+                val priceText = holder.binding.cartItemPrice.text.toString()
+                var price = 0.0f
+                if (priceText != "")
+                    price = priceText.trimStart('$').toFloat()
+
+                onClickListener.onDeleteClick(productQuantity.product.productId, price)
+            }
+        }
     }
 
-    companion object : DiffUtil.ItemCallback<ProductQuantityModel>() {
+    override fun getItemCount() = productQuantityModels.size
 
-        override fun areItemsTheSame(
-            oldItem: ProductQuantityModel,
-            newItem: ProductQuantityModel
-        ): Boolean {
-            return oldItem.product.productId == newItem.product.productId
-        }
-
-        override fun areContentsTheSame(
-            oldItem: ProductQuantityModel,
-            newItem: ProductQuantityModel
-        ): Boolean {
-            return oldItem == newItem
-        }
-
+    fun addProductQuantities(models: List<ProductQuantityModel>) {
+        productQuantityModels = models
+        notifyDataSetChanged()
     }
+
 }
 
-class CartViewHolder(
-    val binding: CartItemBinding
-) :
+class CartViewHolder(val binding: CartItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
+
     fun bind(productQuantity: ProductQuantityModel) {
         val product = productQuantity.product
         val productCount = productQuantity.quantity
 
         binding.cartItemName.text = product.name
 
-        val cartItemPrice = binding.cartItemPrice.context.getString(R.string.currency) + String.format(
-            "%.2f",
-            product.price
-        )
+        val cartItemPrice = binding.cartItemPrice.context.getString(R.string.currency) + String.format("%.2f", product.price)
 
         binding.cartItemPrice.text = cartItemPrice
 
@@ -97,15 +96,10 @@ class CartViewHolder(
             .placeholder(R.drawable.spinner1)
             .into(binding.cartItemImage)
 
-        if (productCount == 1)
-            binding.removeButton.visibility = View.INVISIBLE
-        else
-            binding.removeButton.visibility = View.VISIBLE
 
-        if (productCount == 5)
-            binding.addButton.visibility = View.INVISIBLE
-        else
-            binding.addButton.visibility = View.VISIBLE
+        binding.removeButton.visibility = if(productCount == 1) View.INVISIBLE else View.VISIBLE
+
+        binding.addButton.visibility = if(productCount == 5) View.INVISIBLE else View.VISIBLE
 
         binding.count.text = productCount.toString()
 

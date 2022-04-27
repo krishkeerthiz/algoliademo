@@ -5,13 +5,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
+import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.data.source.repository.WishlistRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ProductDetailViewModel : ViewModel() {
+
+    // Repositories
     private val wishlistRepository = WishlistRepository.getRepository()
     private val cartRepository = CartRepository.getRepository()
+    private val productRepository = ProductsRepository.getRepository()
 
     val isInCart = MutableLiveData<Boolean>()
 
@@ -48,4 +54,7 @@ class ProductDetailViewModel : ViewModel() {
         return result.await()
     }
 
+    suspend fun getProduct(productId: String) = withContext(Dispatchers.IO) {
+        productRepository.getProduct(productId)
+    }
 }

@@ -14,8 +14,8 @@ class ProductsLocalDataSource(private val productsDao: ProductsDao, private val 
         return productsDao.getProducts()
     }
 
-    override suspend fun getProducts(productIds: List<String>?): List<Product> {
-        val products = mutableListOf<Product>()
+    override suspend fun getProducts(productIds: List<String>?): List<Product?> {
+        val products = mutableListOf<Product?>()
         if(productIds != null){
             for(productId in productIds){
                 products.add(getProduct(productId.removeSurrounding("\"", "\"")))
@@ -26,7 +26,7 @@ class ProductsLocalDataSource(private val productsDao: ProductsDao, private val 
         return products
     }
 
-    override suspend fun getProduct(productId: String): Product {
+    override suspend fun getProduct(productId: String): Product? {
         return productsDao.getProduct(productId)
     }
 

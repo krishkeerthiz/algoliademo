@@ -10,7 +10,7 @@ import com.example.algoliademo1.data.source.local.entity.Product
 interface ProductsDao {
 
     @Query("SELECT * FROM products_table WHERE product_id = :productId")
-    suspend fun getProduct(productId: String): Product //Product//
+    suspend fun getProduct(productId: String): Product? //Product//
 
     @Query("SELECT price FROM products_table WHERE product_id = :productId")
     fun getProductPrice(productId: String): Float

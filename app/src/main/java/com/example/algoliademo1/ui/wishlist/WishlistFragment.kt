@@ -1,21 +1,18 @@
 package com.example.algoliademo1.ui.wishlist
 
 import android.app.AlertDialog
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentWishlistBinding
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,7 +20,7 @@ import kotlinx.coroutines.withContext
 class WishlistFragment : Fragment() {
 
     private lateinit var binding: FragmentWishlistBinding
-    private lateinit var viewModel: WishlistViewModel
+    private val viewModel: WishlistViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,10 +33,10 @@ class WishlistFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentWishlistBinding.bind(view)
-        viewModel = ViewModelProvider(requireActivity())[WishlistViewModel::class.java]
 
         viewModel.getWishlistItems()
 
+        // Adapter
         val wishlistAdapter = WishlistAdapter(
             WishlistClickListener(
                 { productId -> gotoProductDetailFragment(productId) }, //(requireActivity() as MainActivity).showProductDetailFragment(productId)},
@@ -48,6 +45,13 @@ class WishlistFragment : Fragment() {
             )
         )
 
+        // Recyclerview
+        binding.wishlistItemsList.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = wishlistAdapter
+        }
+
+        // Livedata
         viewModel.wishlistModel.observe(viewLifecycleOwner) { wishlistModel ->
             if (wishlistModel != null) { // && !(wishlistModel.products.isNullOrEmpty())
 
@@ -57,75 +61,72 @@ class WishlistFragment : Fragment() {
                 } else {
                     binding.emptyLayout.visibility = View.INVISIBLE
                     binding.wishlistLayout.visibility = View.VISIBLE
-                }
 
-                binding.addAllToCartButton.isClickable = !wishlistModel.products.isNullOrEmpty()
+                    // binding.addAllToCartButton.isClickable = !wishlistModel.products.isNullOrEmpty()
 
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val wishlistProducts = viewModel.getWishlistProducts(wishlistModel.products)
-                    withContext(Dispatchers.Main){
-                        wishlistAdapter.submitList(wishlistProducts)
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val wishlistProducts = viewModel.getWishlistProducts(wishlistModel.products)
+                        withContext(Dispatchers.Main) {
+                            wishlistAdapter.addWishlistProducts(wishlistProducts)
+                        }
                     }
-
                 }
 
             }
         }
 
-//        viewModel.wishlistModel.observe(viewLifecycleOwner) { wishlistModel ->
-//            if (wishlistModel != null && !(wishlistModel.products.isNullOrEmpty())) {
-//                binding.addAllToCartButton.isClickable = true
-//            }
-//        }
-
-        binding.wishlistItemsList.let {
-            it.adapter = wishlistAdapter
-            it.itemAnimator = null // Need to look
-            it.layoutManager = LinearLayoutManager(requireContext())
-        }
-
+        // Add all to cart button
         binding.addAllToCartButton.setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.addAllToCart()
             }
-          Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun addToCart(productId: String, price: Float) {
-        CoroutineScope(Dispatchers.IO).launch {
-            val productCount = viewModel.getProductCount(productId) //product count in cart
+    private fun addToCart(productId: String?, price: Float) {
+        if(productId != null){
+            lifecycleScope.launch(Dispatchers.IO) {
+                val productCount = viewModel.getProductCount(productId)
 
-            Log.d(TAG, "addToCart: $productCount")
-            if (productCount == 0)
-                viewModel.addToCart(productId, price)
+                if (productCount == 0)
+                    viewModel.addToCart(productId, price)
 
-            viewModel.removeFromWishlistAndUpdate(productId)
-        }
-    }
-
-    private fun gotoProductDetailFragment(productId: String) {
-        val action =
-            WishlistFragmentDirections.actionWishlistFragmentToProductDetailFragment(productId)
-        view?.findNavController()?.navigate(action)
-    }
-
-    private fun showAlertDialog(productId: String) {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
-            setTitle("Remove product")
-            setMessage("Do you want to remove product?")
-            setPositiveButton("Yes") { _, _ ->
                 viewModel.removeFromWishlistAndUpdate(productId)
-                Toast.makeText(requireContext(), "removed from wishlist", Toast.LENGTH_SHORT).show()
             }
-            setNegativeButton("No") { dialogInterface, _ ->
-                dialogInterface.cancel()
-            }
-            setCancelable(true)
         }
 
-        val alertDialog = alertDialogBuilder.create()
-        alertDialog.show()
+    }
 
+    private fun gotoProductDetailFragment(productId: String?) {
+        if(productId != null){
+            val action =
+                WishlistFragmentDirections.actionWishlistFragmentToProductDetailFragment(productId)
+            view?.findNavController()?.navigate(action)
+        }
+
+    }
+
+    private fun showAlertDialog(productId: String?) {
+        if(productId != null){
+            val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
+
+                setTitle("Remove product")
+                setMessage("Do you want to remove product?")
+
+                setPositiveButton("Yes") { _, _ ->
+                    viewModel.removeFromWishlistAndUpdate(productId)
+                    Toast.makeText(requireContext(), "removed from wishlist", Toast.LENGTH_SHORT).show()
+                }
+
+                setNegativeButton("No") { dialogInterface, _ ->
+                    dialogInterface.cancel()
+                }
+                setCancelable(true)
+            }
+
+            val alertDialog = alertDialogBuilder.create()
+            alertDialog.show()
+        }
     }
 }

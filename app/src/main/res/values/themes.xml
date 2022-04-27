@@ -12,18 +12,6 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="android:splitMotionEvents">false</item>
-        <item name="android:windowEnableSplitTouch">false</item>
-    </style>
-
-    <style name="Rounded" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">16dp</item>
-    </style>
-
-    <style name="customRatingBar"
-        parent="android:style/Widget.Material.RatingBar.Small">
-        ... // Additional customizations
     </style>
 
 </resources>

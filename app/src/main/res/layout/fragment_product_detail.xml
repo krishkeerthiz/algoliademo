@@ -37,16 +37,16 @@
 
             <ImageView
                 android:id="@+id/productImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="225dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginEnd="16dp"
-                android:src="@drawable/loading"
+                android:contentDescription="@string/product_image"
+                android:src="@drawable/loadingplain"
                 app:layout_constraintEnd_toStartOf="@+id/wishlistAnimation"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/productName"
-                android:contentDescription="@string/product_image"/>
+                app:layout_constraintTop_toBottomOf="@id/productName" />
 
             <xyz.hanks.library.bang.SmallBangView
                 android:id="@+id/wishlistAnimation"
@@ -140,7 +140,6 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/gotoCart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

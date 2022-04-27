@@ -1,7 +1,5 @@
 package com.example.algoliademo1.ui.cart
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,17 +10,20 @@ import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.model.CartModel
+import com.example.algoliademo1.model.ProductQuantityModel
 import kotlinx.coroutines.launch
 
 class CartViewModel : ViewModel() {
 
+    // Repository
     private val cartRepository = CartRepository.getRepository()
     private val productRepository = ProductsRepository.getRepository()
 
-    private val _cartModel = MutableLiveData<CartModel>()
+    // Live data
+    private val _cartModelLiveData = MutableLiveData<CartModel>()
+    val cartModelLiveData: LiveData<CartModel>
+        get() = _cartModelLiveData
 
-    val cartModel: LiveData<CartModel>
-        get() = _cartModel
 
     fun getCartItems() {
         viewModelScope.launch {
@@ -33,26 +34,48 @@ class CartViewModel : ViewModel() {
 
             val model = CartModel(productsQuantity, total)
 
-            _cartModel.value = model
+            _cartModelLiveData.value = model
         }
     }
 
-    suspend fun getCartProducts(productIds: List<String>?): List<Product> {
-        var products = listOf<Product>()
+    private suspend fun getCartProducts(productIds: List<String>?): List<Product?> {
+        var products = listOf<Product?>()
+
         viewModelScope.launch {
             products = productRepository.getProducts(productIds)
         }.join()
-        Log.d(TAG, "getCartProducts: ${products.size}")
+
         return products
+    }
+
+    suspend fun getProductsQuantity(cartModel: CartModel): List<ProductQuantityModel> {
+        val productsQuantity = mutableListOf<ProductQuantityModel>()
+
+        viewModelScope.launch {
+            val products = getCartProducts(cartModel.products?.keys?.toList())
+
+            for (product in products){
+                if(product != null){
+                    productsQuantity.add(
+                        ProductQuantityModel(
+                            product,
+                            cartModel.products?.get(product.productId)!!
+                        )
+                    )
+                }
+            }
+
+        }.join()
+
+        return productsQuantity
     }
 
     private fun listToMap(items: List<ItemCount>): Map<String, Int> {
         val productsQuantity = mutableMapOf<String, Int>()
 
-        for (item in items) {
+        for (item in items)
             productsQuantity[item.productId] = item.quantity
-            Log.d(TAG, "listToMap: $item.quantity")
-        }
+
         return productsQuantity
     }
 

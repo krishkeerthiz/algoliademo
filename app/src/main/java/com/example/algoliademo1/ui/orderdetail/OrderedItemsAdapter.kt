@@ -2,8 +2,6 @@ package com.example.algoliademo1.ui.orderdetail
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
@@ -11,7 +9,9 @@ import com.example.algoliademo1.databinding.OrderItemBinding
 import com.example.algoliademo1.model.ProductQuantityModel
 
 class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemOnClickListener) :
-    ListAdapter<ProductQuantityModel, OrderedItemsViewHolder>(OrderedItemsAdapter) {
+    RecyclerView.Adapter<OrderedItemsViewHolder>() {
+
+    private var productQuantityModels: List<ProductQuantityModel> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderedItemsViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -20,7 +20,7 @@ class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemO
     }
 
     override fun onBindViewHolder(holder: OrderedItemsViewHolder, position: Int) {
-        val productQuantity = currentList[position]
+        val productQuantity = productQuantityModels[position]
 
         holder.bind(productQuantity)
 
@@ -29,22 +29,13 @@ class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemO
         }
     }
 
-    companion object : DiffUtil.ItemCallback<ProductQuantityModel>() {
+    override fun getItemCount() = productQuantityModels.size
 
-        override fun areItemsTheSame(
-            oldItem: ProductQuantityModel,
-            newItem: ProductQuantityModel
-        ): Boolean {
-            return oldItem.product.productId == newItem.product.productId
-        }
-
-        override fun areContentsTheSame(
-            oldItem: ProductQuantityModel,
-            newItem: ProductQuantityModel
-        ): Boolean {
-            return oldItem == newItem
-        }
+    fun addProductQuantityModels(models: List<ProductQuantityModel>){
+        productQuantityModels = models
+        notifyDataSetChanged()
     }
+
 }
 
 class OrderedItemsViewHolder(
@@ -57,12 +48,9 @@ class OrderedItemsViewHolder(
 
         binding.orderItemName.text = product.name
 
-        val price = binding.orderItemPrice.context.getString(R.string.currency) + String.format(
-            "%.2f",
-            product.price
-        )
-        binding.orderItemPrice.text = price
+        val price = binding.orderItemPrice.context.getString(R.string.currency) + String.format("%.2f", product.price)
 
+        binding.orderItemPrice.text = price
 
         Glide.with(binding.orderItemImage.context)
             .load(product.image)
@@ -71,19 +59,14 @@ class OrderedItemsViewHolder(
 
         binding.orderItemCount.text = productCount.toString()
 
-        val totalPrice = binding.orderItemTotalPrice.context.getString(R.string.currency) + String.format(
-            "%.2f",
-            (product.price) * productCount
-        )
+        val totalPrice = binding.orderItemTotalPrice.context.getString(R.string.currency) + String.format("%.2f", (product.price) * productCount)
 
         binding.orderItemTotalPrice.text = totalPrice
-
 
     }
 }
 
 class OrderedItemOnClickListener(
-    val itemClickListener: (productId: String) -> Unit
-) {
+    val itemClickListener: (productId: String) -> Unit) {
     fun onItemClick(productId: String) = itemClickListener(productId)
 }

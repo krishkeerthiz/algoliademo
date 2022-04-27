@@ -18,7 +18,7 @@
         tools:listitem="@layout/order_card"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/empty_layout"
+        android:id="@+id/emptyLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
@@ -29,7 +29,6 @@
         tools:visibility="invisible">
 
         <ImageView
-            android:id="@+id/empty_cart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/emptyorder"

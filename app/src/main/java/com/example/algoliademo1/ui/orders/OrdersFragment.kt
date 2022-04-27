@@ -5,23 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.FragmentOrdersBinding
-import com.example.algoliademo1.model.OrderAddressModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class OrdersFragment : Fragment() {
 
     private lateinit var binding: FragmentOrdersBinding
-    private lateinit var viewModel: OrdersViewModel
+    private val viewModel: OrdersViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,16 +33,27 @@ class OrdersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentOrdersBinding.bind(view)
-        viewModel = ViewModelProvider(requireActivity())[OrdersViewModel::class.java]
 
-        viewModel.getOrders()
-
+        // Adapter
         val orderAdapter = OrdersAdapter(
             OrdersOnClickListener { order ->
                 gotoOrderDetailsFragment(order)
             }
         )
 
+        // Getting orders
+        viewModel.getOrders()
+
+        // Recycler view
+        binding.ordersList.apply {
+            adapter = orderAdapter
+            layoutManager = LinearLayoutManager(requireContext()).apply {
+                reverseLayout = true
+                stackFromEnd = true
+            }
+        }
+
+        // Live data
         viewModel.orders.observe(viewLifecycleOwner) { orders ->
             if (orders != null) {
                 if (orders.isEmpty()) {
@@ -55,23 +64,15 @@ class OrdersFragment : Fragment() {
                     binding.ordersList.visibility = View.VISIBLE
                 }
                 lifecycleScope.launch(Dispatchers.IO){
-                    val orderAddresses = mutableListOf<OrderAddressModel>()
-
-                    for(order in orders)
-                        orderAddresses.add(OrderAddressModel(order, viewModel.getAddress(order.addressId)))
+                    val orderAddresses = viewModel.getAddresses(orders)
 
                     withContext(Dispatchers.Main){
-                        orderAdapter.submitList(orderAddresses)
+                        orderAdapter.addOrderAddresses(orderAddresses)
                     }
                 }
             }
         }
 
-        binding.ordersList.let {
-            it.itemAnimator = null
-            it.adapter = orderAdapter
-            it.layoutManager = LinearLayoutManager(requireContext())
-        }
     }
 
     private fun gotoOrderDetailsFragment(order: Order) {

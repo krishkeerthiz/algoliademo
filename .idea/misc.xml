@@ -27,6 +27,7 @@
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/ic_check.xml" value="0.1645" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/ic_heart.xml" value="0.169" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/ic_heart_red.xml" value="0.169" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1405" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/drawable/rounded_corner_view.xml" value="0.169" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/activity_sign_in.xml" value="0.26811594202898553" />
@@ -36,7 +37,7 @@
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/facet_item.xml" value="0.26811594202898553" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/facet_item2.xml" value="0.26811594202898553" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_address.xml" value="0.2" />
-        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_cart.xml" value="0.2" />
+        <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_cart.xml" value="0.1" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_facet.xml" value="0.2391304347826087" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_hierarchical_menu.xml" value="0.27943840579710144" />
         <entry key="..\:/Users/keerthi-con927/AndroidStudioProjects/algoliademo/app/src/main/res/layout/fragment_order_detail.xml" value="0.264" />

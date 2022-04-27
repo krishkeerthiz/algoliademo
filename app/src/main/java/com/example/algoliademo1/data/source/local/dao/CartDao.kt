@@ -15,7 +15,7 @@ interface CartDao {
     @Query("UPDATE cart SET total= :newTotal WHERE user_id = :userId")
     fun updateCartTotal(userId: String, newTotal: Float)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cart: Cart)
 
     @Query("SELECT * FROM cart WHERE user_id = :userId")

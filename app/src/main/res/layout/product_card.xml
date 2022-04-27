@@ -26,8 +26,6 @@
             android:background="@color/background"
             android:orientation="vertical">
 
-            <!-- Media -->
-
             <ImageView
                 android:id="@+id/productImage"
                 android:layout_width="match_parent"

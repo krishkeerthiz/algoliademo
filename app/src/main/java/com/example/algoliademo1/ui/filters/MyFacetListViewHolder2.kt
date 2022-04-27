@@ -12,10 +12,12 @@ class MyFacetListViewHolder2(view: View) : FacetListViewHolder(view) {
     override fun bind(facet: Facet, selected: Boolean, onClickListener: View.OnClickListener) {
         val binding = FacetItem2Binding.bind(view)
         view.setOnClickListener(onClickListener)
-        binding.facetCount.text = facet.count.toString()
-        binding.facetCount.visibility = View.VISIBLE
-        binding.icon.visibility = if (selected) View.VISIBLE else View.INVISIBLE
-        binding.facetName.text = facet.value
+        binding.apply {
+            facetCount.text = facet.count.toString()
+            facetCount.visibility = View.VISIBLE
+            icon.visibility = if (selected) View.VISIBLE else View.INVISIBLE
+            facetName.text = facet.value
+        }
     }
 
     object Factory : FacetListViewHolder.Factory {

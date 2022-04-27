@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.algolia.instantsearch.core.connection.ConnectionHandler
 import com.algolia.instantsearch.helper.android.filter.clear.FilterClearViewImpl
 import com.algolia.instantsearch.helper.android.filter.facet.FacetListAdapter
-import com.algolia.instantsearch.helper.android.list.autoScrollToStart
 import com.algolia.instantsearch.helper.filter.clear.connectView
 import com.algolia.instantsearch.helper.filter.facet.connectView
 import com.example.algoliademo1.R
@@ -23,62 +22,67 @@ class FacetFragment : Fragment() {
     private val connection = ConnectionHandler()
     private lateinit var binding: FragmentFacetBinding
 
+   // private val viewModel: MyViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_facet, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding = FragmentFacetBinding.bind(view)
 
-        val viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
+         val viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
 
-        val adapterFacet = FacetListAdapter(MyFacetListViewHolder.Factory)
-
+        val adapterFacet1 = FacetListAdapter(MyFacetListViewHolder1.Factory)
         val adapterFacet2 = FacetListAdapter(MyFacetListViewHolder2.Factory)
         val adapterFacet3 = FacetListAdapter(MyFacetListViewHolder3.Factory)
-
         val adapterFacet4 = FacetListAdapter(MyFacetListViewHolder4.Factory)
 
         binding.applyFilter.setOnClickListener {
             val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
             view.findNavController().navigate(action)
         }
+//
+//        binding.clearFilter.setOnClickListener {
+//            val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
+//            view.findNavController().navigate(action)
+//        }
 
-        binding.clearFilter.setOnClickListener {
-            val action = FacetFragmentDirections.actionFacetFragmentToProductFragment()
-            view.findNavController().navigate(action)
+        // Setting default selected chip
+        binding.categoryChip.isChecked = true
+
+        binding.facetList1.apply {
+            adapter = adapterFacet1
+            layoutManager = LinearLayoutManager(requireContext())
+            //autoScrollToStart(adapterFacet1)
         }
 
-        binding.facetList.let {
-            it.adapter = adapterFacet
-            it.layoutManager = LinearLayoutManager(requireContext())
-            it.autoScrollToStart(adapterFacet)
+        binding.facetList2.apply {
+            adapter = adapterFacet2
+            layoutManager = LinearLayoutManager(requireContext())
+            //autoScrollToStart(adapterFacet1)
         }
 
-        binding.facetList2.let {
-            it.adapter = adapterFacet2
-            it.layoutManager = LinearLayoutManager(requireContext())
-            it.autoScrollToStart(adapterFacet)
+        binding.facetList3.apply {
+            adapter = adapterFacet3
+            layoutManager = LinearLayoutManager(requireContext())
+            //autoScrollToStart(adapterFacet1)
         }
 
-        binding.facetList3.let {
-            it.adapter = adapterFacet3
-            it.layoutManager = LinearLayoutManager(requireContext())
-            it.autoScrollToStart(adapterFacet)
+        binding.facetList4.apply {
+            adapter = adapterFacet4
+            layoutManager = LinearLayoutManager(requireContext())
+            //autoScrollToStart(adapterFacet1)
         }
 
-        binding.facetList4.let {
-            it.adapter = adapterFacet4
-            it.layoutManager = LinearLayoutManager(requireContext())
-            it.autoScrollToStart(adapterFacet)
-        }
-
-        connection += viewModel.facetList.connectView(adapterFacet, viewModel.facetPresenter)
+        connection += viewModel.facetList1.connectView(adapterFacet1, viewModel.facetPresenter)
         connection += viewModel.facetList2.connectView(adapterFacet2, viewModel.facetPresenter)
         connection += viewModel.facetList3.connectView(adapterFacet3, viewModel.facetPresenter)
         connection += viewModel.facetList4.connectView(adapterFacet4, viewModel.facetPresenter)
@@ -87,28 +91,36 @@ class FacetFragment : Fragment() {
         binding.filterGroup.setOnCheckedChangeListener { _, chipId ->
             when (chipId) {
                 R.id.categoryChip -> {
-                    binding.facetList.visibility = View.VISIBLE
-                    binding.facetList2.visibility = View.GONE
-                    binding.facetList3.visibility = View.GONE
-                    binding.facetList4.visibility = View.GONE
+                    binding.apply {
+                        facetList1.visibility = View.VISIBLE
+                        facetList2.visibility = View.GONE
+                        facetList3.visibility = View.GONE
+                        facetList4.visibility = View.GONE
+                    }
                 }
                 R.id.typeChip -> {
-                    binding.facetList.visibility = View.GONE
-                    binding.facetList2.visibility = View.VISIBLE
-                    binding.facetList3.visibility = View.GONE
-                    binding.facetList4.visibility = View.GONE
+                    binding.apply {
+                        facetList1.visibility = View.GONE
+                        facetList2.visibility = View.VISIBLE
+                        facetList3.visibility = View.GONE
+                        facetList4.visibility = View.GONE
+                    }
                 }
                 R.id.brandChip -> {
-                    binding.facetList.visibility = View.GONE
-                    binding.facetList2.visibility = View.GONE
-                    binding.facetList3.visibility = View.VISIBLE
-                    binding.facetList4.visibility = View.GONE
+                    binding.apply {
+                        facetList1.visibility = View.GONE
+                        facetList2.visibility = View.GONE
+                        facetList3.visibility = View.VISIBLE
+                        facetList4.visibility = View.GONE
+                    }
                 }
                 R.id.priceRangeChip -> {
-                    binding.facetList.visibility = View.GONE
-                    binding.facetList2.visibility = View.GONE
-                    binding.facetList3.visibility = View.GONE
-                    binding.facetList4.visibility = View.VISIBLE
+                    binding.apply {
+                        facetList1.visibility = View.GONE
+                        facetList2.visibility = View.GONE
+                        facetList3.visibility = View.GONE
+                        facetList4.visibility = View.VISIBLE
+                    }
                 }
             }
         }
@@ -119,4 +131,5 @@ class FacetFragment : Fragment() {
         super.onDestroyView()
         connection.clear()
     }
+
 }

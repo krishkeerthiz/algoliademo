@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Shopizy</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="content_description_media">Product image</string>
     <string name="product_detail">Product detail</string>
     <string name="product_price">Price</string>
@@ -11,7 +10,7 @@
     <string name="currency">$</string>
     <string name="door_number">Door number</string>
     <string name="street">Street</string>
-    <string name="city">City</string>
+    <string name="select_city">Select City</string>
     <string name="state">State</string>
     <string name="pincode">Pincode</string>
     <string name="checked">checked</string>
@@ -20,7 +19,6 @@
     <string name="empty_location">Empty Location</string>
     <string name="empty_cart">Empty Cart</string>
     <string name="empty_orders">Empty Orders</string>
-    <string name="empty_wishlist">Empty Wishlist</string>
     <string name="add_location">Add Location</string>
     <string name="total">Total</string>
     <string name="buy">Buy</string>
@@ -30,6 +28,7 @@
     <string name="price_range">Price Range</string>
     <string name="apply">Apply</string>
     <string name="clear">Clear</string>
+    <string name="retry">Retry</string>
     <string name="no_result">No Result</string>
     <string name="goto_cart">Goto Cart</string>
     <string name="add_to_cart">Add to cart</string>
@@ -47,4 +46,6 @@
     <string name="filter">Filter</string>
     <string name="add_address_first">Add Address First</string>
     <string name="rate"><u>Rate</u></string>
+    <string name="cart_image">Cart Image</string>
+    <string name="trash">Trash</string>
 </resources>

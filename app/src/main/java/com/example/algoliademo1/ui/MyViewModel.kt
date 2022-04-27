@@ -1,7 +1,5 @@
 package com.example.algoliademo1.ui
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,15 +27,15 @@ import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.model.ProductInfo
 import io.ktor.client.features.logging.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MyViewModel : ViewModel() {
+
     private val client = ClientSearch(
-        ApplicationID("9N1YDJJ8DK"),
-        APIKey("dcd5088a151c2e8db47aec60ea0eb6ec"),
+        ApplicationID(ApplicationID),
+        APIKey(APIKEY),
         LogLevel.ALL
     )
     private val index = client.initIndex(IndexName("products4"))
@@ -65,7 +63,7 @@ class MyViewModel : ViewModel() {
 
     val clearAll = FilterClearConnector(filterState = filterState)
 
-    val facetList = FacetListConnector(
+    val facetList1 = FacetListConnector(
         searcher = searcher,
         filterState = filterState,
         attribute = Attribute("categories"),
@@ -103,7 +101,7 @@ class MyViewModel : ViewModel() {
         connection += searchBox
         connection += stats
 
-        connection += facetList
+        connection += facetList1
         connection += facetList2
         connection += facetList3
         connection += facetList4
@@ -115,12 +113,14 @@ class MyViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
+        //products.removeObserver()
         searcher.cancel()
         connection.clear()
+
     }
 
-    suspend fun getProducts(productInfos: List<ProductInfo>?): List<Product> {
-        val products = mutableListOf<Product>()
+    suspend fun getProducts(productInfos: List<ProductInfo>?): List<Product?> {
+        val products = mutableListOf<Product?>()
 
         if (productInfos != null) {
             for(productInfo in productInfos){
@@ -130,16 +130,23 @@ class MyViewModel : ViewModel() {
             }
         }
 
-        Log.d(TAG, "getProducts: ${products.size}")
         return products
     }
 
-    private suspend fun getProduct(productId: String): Product {
-        val product = CoroutineScope(Dispatchers.IO).async {
-            productsRepository.getProduct(productId.removeSurrounding("\"", "\""))
-        }.await()
+     suspend fun getProduct(productId: String) = withContext(Dispatchers.IO){
+         productsRepository.getProduct(productId.removeSurrounding("\"", "\""))
+     }
 
-        return product
+//    fun search(){
+//        viewModelScope.launch {
+//            searcher.query.
+//        }
+//    }
+
+    companion object{
+        private const val ApplicationID = "9N1YDJJ8DK"
+        private const val APIKEY = "dcd5088a151c2e8db47aec60ea0eb6ec"
+
     }
 
 }

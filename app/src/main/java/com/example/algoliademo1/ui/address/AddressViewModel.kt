@@ -15,6 +15,7 @@ import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.OrdersRepository
 import com.example.algoliademo1.model.AddressModel
 import com.example.algoliademo1.model.PincodeDetail
+import com.example.algoliademo1.model.PincodeInfo
 import com.example.algoliademo1.model.PincodeModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -59,9 +60,6 @@ class AddressViewModel : ViewModel() {
 
         return List(10) { charset.random() }
             .joinToString("")
-    }
-
-    fun getAddress() {
     }
 
     fun getAddresses() {
@@ -117,11 +115,20 @@ class AddressViewModel : ViewModel() {
 
     fun getPincodeDetails(pincode: String) {
         viewModelScope.launch {
-            Log.d(TAG, "getPincodeDetails: before getting pincode $pincode")
             val details = PostalPincodeApi.service.getPincodeDetails(pincode)
-            Log.d(TAG, "getPincodeDetails: $details")
             pincodeModel.value = details
         }
+    }
+
+    fun addPincodeDetail(postOffices: List<PincodeInfo>) {
+        val cities = mutableListOf<String>()
+        for(postOffice in postOffices)
+            cities.add(postOffice.name + ", " + postOffice.district)
+
+        pincodeDetail = PincodeDetail(
+            cities,
+            postOffices[0].state!!, postOffices[0].pincode!!.toInt()
+        )
     }
 
 }

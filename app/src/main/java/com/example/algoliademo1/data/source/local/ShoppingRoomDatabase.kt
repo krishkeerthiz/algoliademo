@@ -44,7 +44,7 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
 
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
-            INSTANCE?.let { database ->
+            instance?.let { database ->
                 scope.launch {
                     populateDatabase(
                         database.productsDao(),
@@ -60,6 +60,7 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
             categoriesDao: CategoriesDao,
             context: Context
         ) {
+
 
             scope.launch {
                 val obj = JSONObject(JsonUtil.loadJSONFromAsset(context))
@@ -77,6 +78,7 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
 
                 }
             }.join()
+
 
         }
 
@@ -140,22 +142,25 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: ShoppingRoomDatabase? = null
+        private var instance: ShoppingRoomDatabase? = null
 
         fun getDatabase(
             context: Context, scope: CoroutineScope
         ): ShoppingRoomDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    ShoppingRoomDatabase::class.java,
-                    "shopping_database"
-                )
-                    .addCallback(ShoppingDatabaseCallback(scope, context))
-                    .build()
-                INSTANCE = instance
-                instance
+
+            return instance ?: synchronized(this) {
+                instance ?: buildDatabase(context, scope).also { instance = it }
             }
+        }
+
+        private fun buildDatabase(context: Context, scope: CoroutineScope): ShoppingRoomDatabase {
+            return Room.databaseBuilder(
+                context.applicationContext,
+                ShoppingRoomDatabase::class.java,
+                "shopping_database"
+            )
+                .addCallback(ShoppingDatabaseCallback(scope, context))
+                .build()
         }
     }
 }

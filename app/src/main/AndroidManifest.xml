@@ -10,10 +10,13 @@
         android:icon="@drawable/store"
         android:label="@string/app_name"
         android:roundIcon="@drawable/store"
+        android:supportsRtl="true"
         android:theme="@style/Theme.AlgoliaDemo1">
+
         <activity
             android:name=".ui.signIn.SignInActivity"
             />
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -23,13 +26,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".util.NetworkReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-                <action android:name = "android.net.wifi.WIFI_STATE_CHANGED" />
-            </intent-filter>
-        </receiver>
+
     </application>
 
 </manifest>

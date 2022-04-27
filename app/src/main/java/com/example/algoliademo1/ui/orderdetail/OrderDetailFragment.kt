@@ -2,9 +2,7 @@ package com.example.algoliademo1.ui.orderdetail
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,18 +11,14 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
-import com.example.algoliademo1.data.source.local.entity.Order
-import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.databinding.FragmentOrderDetailBinding
-import com.example.algoliademo1.model.ProductQuantityModel
 import com.example.algoliademo1.util.formatDate
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,9 +26,7 @@ import kotlinx.coroutines.withContext
 class OrderDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentOrderDetailBinding
-    private lateinit var viewModel: OrderDetailViewModel
-
-    private val productsRepository = ProductsRepository.getRepository()
+    private val viewModel: OrderDetailViewModel by viewModels()
 
     private val args: OrderDetailFragmentArgs by navArgs()
 
@@ -42,27 +34,41 @@ class OrderDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         return inflater.inflate(R.layout.fragment_order_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val order: Order = args.order
+        val order = args.order
 
-        Log.d(TAG, "order total: ${order.total}")
+        // Adapter
+        val orderItemsAdapter = OrderedItemsAdapter(order.orderId,
+            OrderedItemOnClickListener { productId ->
+                showRatingDialog(productId)
+            }
+        )
 
         binding = FragmentOrderDetailBinding.bind(view)
-        viewModel = ViewModelProvider(requireActivity())[OrderDetailViewModel::class.java]
-
-        val totalPrice = getString(R.string.currency) + String.format("%.2f", order.total)
-        binding.totalPrice.text = totalPrice
-        binding.orderDateTextView.text = formatDate(order.date)
+        // viewModel = ViewModelProvider(requireActivity())[OrderDetailViewModel::class.java]
 
         viewModel.orderId = order.orderId
         viewModel.getAddress()
         viewModel.getOrderItems()
 
+        // Updating UI
+        val totalPrice = getString(R.string.currency) + String.format("%.2f", order.total)
+        binding.totalPrice.text = totalPrice
+        binding.orderDateTextView.text = formatDate(order.date)
+
+        // Recyclerview
+        binding.orderItemsList.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = orderItemsAdapter
+        }
+
+        // Updating Address
         viewModel.addressFlag.observe(viewLifecycleOwner) { flag ->
             if (flag == true) {
                 viewModel.address.observe(viewLifecycleOwner) { address ->
@@ -72,31 +78,18 @@ class OrderDetailFragment : Fragment() {
             }
         }
 
-        val orderItemsAdapter = OrderedItemsAdapter(order.orderId,
-            OrderedItemOnClickListener { productId ->
-                showRatingDialog(productId)
-            }
-        )
-
+        // Live Data
         viewModel.ordersFlag.observe(viewLifecycleOwner) { flag ->
             if (flag == true) {
                 viewModel.orders.observe(viewLifecycleOwner) { productIds ->
 
                     lifecycleScope.launch(Dispatchers.IO) {
-                        val productsQuantity = mutableListOf<ProductQuantityModel>()
-                        val products = viewModel.getOrderProducts(productIds)
 
-                        for (product in products) {
-                            productsQuantity.add(
-                                ProductQuantityModel(
-                                    product,
-                                    viewModel.getOrderItemQuantity(order.orderId, product.productId)
-                                )
-                            )
-                        }
+                        val productsQuantity =
+                            viewModel.getProductsQuantity(productIds, order.orderId)
 
                         withContext(Dispatchers.Main) {
-                            orderItemsAdapter.submitList(productsQuantity)
+                            orderItemsAdapter.addProductQuantityModels(productsQuantity)
                             viewModel.ordersFlag.value = false
                         }
                     }
@@ -104,15 +97,10 @@ class OrderDetailFragment : Fragment() {
             }
         }
 
-        binding.orderItemsList.let {
-            it.itemAnimator = null
-            it.adapter = orderItemsAdapter
-            it.layoutManager = LinearLayoutManager(requireContext())
-        }
     }
 
     private fun showRatingDialog(productId: String) {
-        //Toast.makeText(requireContext(), "Rating text clicked",Toast.LENGTH_SHORT).show()
+
         val builder = AlertDialog.Builder(requireContext())
 
         builder.setTitle("Product Rating")
@@ -124,21 +112,22 @@ class OrderDetailFragment : Fragment() {
         val ratingItemName = ratingDialog.findViewById<TextView>(R.id.ratingItemName)
         val ratingBar = ratingDialog.findViewById<RatingBar>(R.id.productRatingBar)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            val productModel = withContext(Dispatchers.IO) {
-                productsRepository.getProduct(productId)
+        // Displaying dialog views
+        lifecycleScope.launch(Dispatchers.Main) {
+            val product = viewModel.getProduct(productId)
+
+            if(product != null){
+                ratingItemName.text = product.name
+
+                Glide.with(ratingItemImage.context)
+                    .load(product.image)
+                    .placeholder(R.drawable.spinner1)
+                    .into(ratingItemImage)
             }
 
-            ratingItemName.text = productModel.name
-
-            Glide.with(ratingItemImage.context)
-                .load(productModel.image)
-                .placeholder(R.drawable.spinner1)
-                .into(ratingItemImage)
         }
 
         builder.setPositiveButton("Rate") { _, _ ->
-            //Toast.makeText(requireContext(), "Rating updated ${ratingBar.rating.toInt()}", Toast.LENGTH_SHORT).show()
             viewModel.addRating(productId, (ratingBar.rating * 2).toInt())
         }
 
@@ -148,18 +137,17 @@ class OrderDetailFragment : Fragment() {
         dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = false
         dialog.getButton(Dialog.BUTTON_POSITIVE).isVisible = false
 
+        // Change listener
         ratingBar.setOnRatingBarChangeListener { _, value, _ ->
             dialog.getButton(Dialog.BUTTON_POSITIVE).isEnabled = value != 0.0f
             dialog.getButton(Dialog.BUTTON_POSITIVE).isVisible = true
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            val userRating = withContext(Dispatchers.IO) {
-                productsRepository.getUserRating(productId)
-            }
+        // Showing previous rating
+        lifecycleScope.launch(Dispatchers.Main) {
+            val userRating = viewModel.getUserRating(productId)
 
             if (userRating != null) {
-                //Toast.makeText(requireContext(), "${userRating!!.toFloat()}", Toast.LENGTH_SHORT).show()
                 ratingBar.rating = userRating.toFloat() / 2
                 dialog.getButton(Dialog.BUTTON_POSITIVE).isVisible = false
             }

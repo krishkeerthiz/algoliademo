@@ -8,7 +8,7 @@
     tools:context=".ui.wishlist.WishlistFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/wishlist_layout"
+        android:id="@+id/wishlistLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
@@ -47,7 +47,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/empty_layout"
+        android:id="@+id/emptyLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible"
@@ -58,7 +58,6 @@
         tools:visibility="invisible">
 
         <ImageView
-            android:id="@+id/empty_cart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/emptywishlist1"

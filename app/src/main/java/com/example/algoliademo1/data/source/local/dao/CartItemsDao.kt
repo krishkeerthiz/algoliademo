@@ -22,7 +22,7 @@ interface CartItemsDao {
     @Query("UPDATE cart_items SET quantity = :quantity WHERE user_id = :userId AND product_id = :productId")
     fun updateProductQuantity(userId: String, productId: String, quantity: Int)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cartItems: CartItems): Long
 
     @Query("DELETE FROM cart_items WHERE user_id = :userId AND product_id = :productId")

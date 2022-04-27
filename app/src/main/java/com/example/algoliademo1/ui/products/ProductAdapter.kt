@@ -1,9 +1,9 @@
 package com.example.algoliademo1.ui.products
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
@@ -12,8 +12,17 @@ import com.example.algoliademo1.databinding.ProductCardBinding
 
 class ProductAdapter(
     val onClickListener: OnClickListener
-) : ListAdapter<Product, ProductViewHolder>(ProductAdapter) {  // diffutils can also be passed as parameter to list adapter, when diffutils
-    // is created as a separate class.
+) : RecyclerView.Adapter<ProductViewHolder>() {
+
+    private var products: List<Product?> = listOf()
+
+    private val limit = 50
+
+    fun addProducts(products: List<Product?>){
+        Log.d(TAG, "addProducts: product adapter")
+        this.products = products
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -22,34 +31,22 @@ class ProductAdapter(
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
+        //holder.setIsRecyclable(false) // to prevent showing old data while loading new data
+        val product = products[position]
 
-        val product = currentList[position]
-        if (product != null) {
+        if(product != null)  // First time product could become null
             holder.bind(product)
-        }
+
 
         holder.itemView.setOnClickListener {
             onClickListener.onClick(product!!.productId)
         }
     }
 
-    companion object : DiffUtil.ItemCallback<Product>() {
-
-        override fun areItemsTheSame(
-            oldItem: Product,
-            newItem: Product
-        ): Boolean {
-            return oldItem.productId == newItem.productId
-        }
-
-        override fun areContentsTheSame(
-            oldItem: Product,
-            newItem: Product
-        ): Boolean {
-            return oldItem == newItem
-        }
+    override fun getItemCount(): Int {
+        return if(products.size > limit) limit else products.size
+        //return products.size
     }
-
 }
 
 class ProductViewHolder(

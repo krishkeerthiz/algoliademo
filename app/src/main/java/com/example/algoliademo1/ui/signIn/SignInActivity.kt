@@ -2,12 +2,11 @@ package com.example.algoliademo1.ui.signIn
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.algoliademo1.data.source.remote.FirebaseService
-import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.databinding.ActivitySignInBinding
 import com.example.algoliademo1.ui.MainActivity
 import com.firebase.ui.auth.AuthUI
@@ -15,19 +14,22 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class SignInActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivitySignInBinding
+
+    private val viewModel: SignInViewModel by viewModels()
+
     private val signIn: ActivityResultLauncher<Intent> = registerForActivityResult(
         FirebaseAuthUIActivityResultContract(), this::onSignInResult
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivitySignInBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
     }
 
@@ -43,34 +45,17 @@ class SignInActivity : AppCompatActivity() {
                 ).build()
             signIn.launch(signInIntent)
         } else {
-            val repository = CartRepository.getRepository()
-            CoroutineScope(Dispatchers.IO).launch {
-                val cart = repository.getCart(FirebaseService.userId)
-
-                if (cart == null)
-                    repository.createCartEntry(FirebaseService.userId)
-            }
+            viewModel.initializeCart()
             goToMainActivity()
         }
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-        if (result.resultCode == RESULT_OK) {
+        if (result.resultCode == RESULT_OK)
             goToMainActivity()
-        } else {
-            Toast.makeText(
-                this,
-                "There was an error signing in",
-                Toast.LENGTH_LONG
-            ).show()
+        else
+            Toast.makeText(this, "There was an error signing in", Toast.LENGTH_LONG).show()
 
-            val response = result.idpResponse
-            if (response == null) {
-                Log.w(TAG, "Sign in canceled")
-            } else {
-                Log.w(TAG, "Sign in error", response.error)
-            }
-        }
     }
 
     private fun goToMainActivity() {
@@ -81,10 +66,6 @@ class SignInActivity : AppCompatActivity() {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         startActivity(intent)
-
     }
 
-    companion object {
-        private const val TAG = "SignInActivity"
-    }
 }

@@ -3,8 +3,6 @@ package com.example.algoliademo1.ui.wishlist
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
@@ -12,7 +10,9 @@ import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.databinding.WishlistItemBinding
 
 class WishlistAdapter(val onClickListener: WishlistClickListener) :
-    ListAdapter<Product, WishlistViewHolder>(WishlistAdapter) {
+    RecyclerView.Adapter<WishlistViewHolder>() {
+
+    private var wishlistProducts: List<Product?> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishlistViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -21,41 +21,33 @@ class WishlistAdapter(val onClickListener: WishlistClickListener) :
     }
 
     override fun onBindViewHolder(holder: WishlistViewHolder, position: Int) {
-        val product = currentList[position]
+        val product = wishlistProducts[position]
+
+        if(product != null)
         holder.bind(product)
 
         holder.binding.addToCartButton.setOnClickListener {
             val price = holder.binding.wishlistItemPrice.text.trimStart('$').toString().toFloat()
-            onClickListener.onAddItemClick(product.productId, price)
+            onClickListener.onAddItemClick(product?.productId, price)
             Toast.makeText(it.context, "Added to cart", Toast.LENGTH_SHORT).show()
         }
 
         holder.binding.removeButton.setOnClickListener {
-            onClickListener.onRemoveItemClick(product.productId)
+            onClickListener.onRemoveItemClick(product?.productId)
         }
 
         holder.itemView.setOnClickListener {
-            onClickListener.onItemClick(product.productId)
+            onClickListener.onItemClick(product?.productId)
         }
     }
 
-    companion object : DiffUtil.ItemCallback<Product>() {
+    override fun getItemCount() = wishlistProducts.size
 
-        override fun areItemsTheSame(
-            oldItem: Product,
-            newItem: Product
-        ): Boolean {
-            return oldItem.productId == newItem.productId
-        }
-
-        override fun areContentsTheSame(
-            oldItem: Product,
-            newItem: Product
-        ): Boolean {
-            return oldItem == newItem
-        }
-
+    fun addWishlistProducts(products: List<Product?>) {
+        wishlistProducts = products
+        notifyDataSetChanged()
     }
+
 }
 
 class WishlistViewHolder(
@@ -77,14 +69,14 @@ class WishlistViewHolder(
 }
 
 class WishlistClickListener(
-    val itemClickListener: (productId: String) -> Unit,
-    val addItemClickListener: (productId: String, price: Float) -> Unit,
-    val removeItemClickListener: (productId: String) -> Unit
+    val itemClickListener: (productId: String?) -> Unit,
+    val addItemClickListener: (productId: String?, price: Float) -> Unit,
+    val removeItemClickListener: (productId: String?) -> Unit
 ) {
 
-    fun onItemClick(productId: String) = itemClickListener(productId)
+    fun onItemClick(productId: String?) = itemClickListener(productId)
 
-    fun onAddItemClick(productId: String, price: Float) = addItemClickListener(productId, price)
+    fun onAddItemClick(productId: String?, price: Float) = addItemClickListener(productId, price)
 
-    fun onRemoveItemClick(productId: String) = removeItemClickListener(productId)
+    fun onRemoveItemClick(productId: String?) = removeItemClickListener(productId)
 }
