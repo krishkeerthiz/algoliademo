@@ -15,14 +15,12 @@ import com.algolia.instantsearch.helper.filter.clear.connectView
 import com.algolia.instantsearch.helper.filter.facet.connectView
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentFacetBinding
-import com.example.algoliademo1.ui.MyViewModel
+import com.example.algoliademo1.ui.ProductsFiltersViewModel
 
 class FacetFragment : Fragment() {
 
     private val connection = ConnectionHandler()
     private lateinit var binding: FragmentFacetBinding
-
-   // private val viewModel: MyViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +36,7 @@ class FacetFragment : Fragment() {
 
         binding = FragmentFacetBinding.bind(view)
 
-         val viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
+         val viewModel = ViewModelProvider(requireActivity())[ProductsFiltersViewModel::class.java]
 
         val adapterFacet1 = FacetListAdapter(MyFacetListViewHolder1.Factory)
         val adapterFacet2 = FacetListAdapter(MyFacetListViewHolder2.Factory)

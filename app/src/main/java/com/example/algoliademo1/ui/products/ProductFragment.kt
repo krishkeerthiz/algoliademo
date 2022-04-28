@@ -26,7 +26,7 @@ import com.algolia.instantsearch.helper.stats.connectView
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentProductBinding
 import com.example.algoliademo1.model.ProductInfo
-import com.example.algoliademo1.ui.MyViewModel
+import com.example.algoliademo1.ui.ProductsFiltersViewModel
 import com.example.algoliademo1.ui.signIn.SignInActivity
 import com.example.algoliademo1.util.NetworkUtil
 import com.firebase.ui.auth.AuthUI
@@ -41,7 +41,7 @@ class ProductFragment : Fragment() {
 
     private val connection = ConnectionHandler()
 
-    private lateinit var viewModel: MyViewModel
+    private lateinit var viewModel: ProductsFiltersViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +64,7 @@ class ProductFragment : Fragment() {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
 
-        viewModel = ViewModelProvider(requireActivity())[MyViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[ProductsFiltersViewModel::class.java]
 
         binding = FragmentProductBinding.bind(view)
 

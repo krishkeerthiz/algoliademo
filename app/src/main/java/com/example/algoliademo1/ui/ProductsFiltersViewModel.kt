@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MyViewModel : ViewModel() {
+class ProductsFiltersViewModel : ViewModel() {
 
     private val client = ClientSearch(
         ApplicationID(ApplicationID),
@@ -49,6 +49,8 @@ class MyViewModel : ViewModel() {
             hit.json["name"].toString()
         )
     }
+
+    private val connection = ConnectionHandler()
 
     private val pagedListConfig = PagedList.Config.Builder().setPageSize(50).build()
 
@@ -95,8 +97,6 @@ class MyViewModel : ViewModel() {
         limit = 100
     )
 
-    private val connection = ConnectionHandler()
-
     init {
         connection += searchBox
         connection += stats
@@ -113,7 +113,6 @@ class MyViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        //products.removeObserver()
         searcher.cancel()
         connection.clear()
 
@@ -137,11 +136,6 @@ class MyViewModel : ViewModel() {
          productsRepository.getProduct(productId.removeSurrounding("\"", "\""))
      }
 
-//    fun search(){
-//        viewModelScope.launch {
-//            searcher.query.
-//        }
-//    }
 
     companion object{
         private const val ApplicationID = "9N1YDJJ8DK"
