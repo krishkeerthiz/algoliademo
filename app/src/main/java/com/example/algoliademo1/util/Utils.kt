@@ -9,7 +9,7 @@ fun formatDate(date: Date): String {
 }
 
 fun doorNumberCheck(value: String): Boolean {
-    return !value.matches("^[a-zA-Z0-9. /,-]+$".toRegex())
+    return !value.matches("^[a-zA-Z0-9. /,-]+$".toRegex()) || !value.contains("\\d".toRegex())
 }
 
 fun streetCheck(value: String): Boolean {

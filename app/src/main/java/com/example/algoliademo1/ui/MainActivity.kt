@@ -20,8 +20,6 @@ import com.example.algoliademo1.util.NetworkUtil
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 
-private const val BOTTOM_NAV_PREFERENCE = "COMPLETED_ON_BOARDING_BOTTOM_NAVIGATION"
-private const val SHOPIZY = "SHOPIZY"
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -205,4 +203,8 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         startActivity(intent)
     }
 
+    companion object{
+        private const val BOTTOM_NAV_PREFERENCE = "COMPLETED_ON_BOARDING_BOTTOM_NAVIGATION"
+        private const val SHOPIZY = "SHOPIZY"
+    }
 }

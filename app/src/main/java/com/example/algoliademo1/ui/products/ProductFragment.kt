@@ -90,6 +90,12 @@ class ProductFragment : Fragment() {
             if (hits.isEmpty()) {
                 binding.emptyLayout.visibility = View.VISIBLE
                 binding.productList.visibility = View.INVISIBLE
+
+                if(NetworkUtil.isNetworkAvailable(requireContext()))
+                    binding.retryButton.visibility = View.GONE
+                else
+                    binding.retryButton.visibility = View.VISIBLE
+
             } else {
                 binding.emptyLayout.visibility = View.INVISIBLE
                 binding.productList.visibility = View.VISIBLE

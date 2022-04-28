@@ -1,6 +1,6 @@
 package com.example.algoliademo1.model
 
-class AddressModel(
+data class AddressModel(
     var address: String,
     var city: String,
     var doorNumber: String,

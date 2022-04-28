@@ -249,6 +249,11 @@ class AddressFragment : Fragment() {
         stateText.text = viewModel.pincodeDetail?.state
         pincodeText.text = viewModel.pincodeDetail?.pincode.toString()
 
+        citiesDropdown.apply{
+            isCursorVisible = false
+            isFocusable = false
+        }
+
         stateText.apply {
             isClickable = false
             isCursorVisible = false

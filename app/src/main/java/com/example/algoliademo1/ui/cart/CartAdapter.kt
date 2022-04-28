@@ -8,7 +8,6 @@ import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.CartItemBinding
 import com.example.algoliademo1.model.ProductQuantityModel
-import kotlinx.coroutines.GlobalScope
 
 class CartAdapter(val onClickListener: CartOnClickListener) :
     RecyclerView.Adapter<CartViewHolder>() {
