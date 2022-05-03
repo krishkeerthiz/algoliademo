@@ -17,6 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.ActivityMainBinding
 import com.example.algoliademo1.util.NetworkUtil
+import com.example.toastlibrary.ECToast
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 
@@ -90,7 +91,9 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     private fun checkInternet() {
         if(!NetworkUtil.isNetworkAvailable(applicationContext))
-            Toast.makeText(applicationContext, "Please check internet connection", Toast.LENGTH_SHORT).show()
+            ECToast.show(applicationContext, "Please check internet connection")
+            //ECToast.show(applicationContext, "hi")
+            //Toast.makeText(applicationContext, "Please check internet connection", Toast.LENGTH_SHORT).show()
     }
 
     private fun onBoarding(

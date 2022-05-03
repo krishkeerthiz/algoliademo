@@ -41,6 +41,8 @@ class OrdersFragment : Fragment() {
             }
         )
 
+
+
         // Getting orders
         viewModel.getOrders()
 

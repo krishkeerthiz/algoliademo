@@ -18,7 +18,7 @@ import org.json.JSONObject
 @Database(
     entities = [Product::class, Address::class, AddressList::class, CartItems::class, Cart::class,
         Categories::class, Order::class, OrderItems::class, Orders::class, Wishlist::class, ProductRatings::class],
-    version = 1, exportSchema = false
+    version = 1
 )
 @TypeConverters(
     DateConverter::class

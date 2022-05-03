@@ -8,7 +8,9 @@ import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.OrderItemBinding
 import com.example.algoliademo1.model.ProductQuantityModel
 
-class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemOnClickListener) :
+class OrderedItemsAdapter(private val onClickListener: OrderedItemOnClickListener,
+
+) :
     RecyclerView.Adapter<OrderedItemsViewHolder>() {
 
     private var productQuantityModels: List<ProductQuantityModel> = listOf()
@@ -17,6 +19,7 @@ class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemO
         val view = LayoutInflater.from(parent.context)
         val binding = OrderItemBinding.inflate(view, parent, false)
         return OrderedItemsViewHolder(binding)
+
     }
 
     override fun onBindViewHolder(holder: OrderedItemsViewHolder, position: Int) {
@@ -27,6 +30,7 @@ class OrderedItemsAdapter(val orderId: String, val onClickListener: OrderedItemO
         holder.binding.orderRatingText.setOnClickListener {
             onClickListener.onItemClick(productQuantity.product.productId)
         }
+
     }
 
     override fun getItemCount() = productQuantityModels.size
@@ -67,6 +71,6 @@ class OrderedItemsViewHolder(
 }
 
 class OrderedItemOnClickListener(
-    val itemClickListener: (productId: String) -> Unit) {
+    private val itemClickListener: (productId: String) -> Unit) {
     fun onItemClick(productId: String) = itemClickListener(productId)
 }

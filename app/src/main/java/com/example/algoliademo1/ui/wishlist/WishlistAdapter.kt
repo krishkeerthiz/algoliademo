@@ -9,7 +9,7 @@ import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.databinding.WishlistItemBinding
 
-class WishlistAdapter(val onClickListener: WishlistClickListener) :
+class WishlistAdapter(private val onClickListener: WishlistClickListener) :
     RecyclerView.Adapter<WishlistViewHolder>() {
 
     private var wishlistProducts: List<Product?> = listOf()
@@ -69,9 +69,9 @@ class WishlistViewHolder(
 }
 
 class WishlistClickListener(
-    val itemClickListener: (productId: String?) -> Unit,
-    val addItemClickListener: (productId: String?, price: Float) -> Unit,
-    val removeItemClickListener: (productId: String?) -> Unit
+    private val itemClickListener: (productId: String?) -> Unit,
+    private val addItemClickListener: (productId: String?, price: Float) -> Unit,
+    private val removeItemClickListener: (productId: String?) -> Unit
 ) {
 
     fun onItemClick(productId: String?) = itemClickListener(productId)

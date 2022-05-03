@@ -44,7 +44,7 @@ class OrderDetailFragment : Fragment() {
         val order = args.order
 
         // Adapter
-        val orderItemsAdapter = OrderedItemsAdapter(order.orderId,
+        val orderItemsAdapter = OrderedItemsAdapter(
             OrderedItemOnClickListener { productId ->
                 showRatingDialog(productId)
             }

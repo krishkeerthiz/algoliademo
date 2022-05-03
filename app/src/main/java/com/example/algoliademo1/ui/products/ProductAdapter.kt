@@ -11,7 +11,7 @@ import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.databinding.ProductCardBinding
 
 class ProductAdapter(
-    val onClickListener: OnClickListener
+    private val onClickListener: OnClickListener
 ) : RecyclerView.Adapter<ProductViewHolder>() {
 
     private var products: List<Product?> = listOf()
@@ -41,6 +41,9 @@ class ProductAdapter(
         holder.itemView.setOnClickListener {
             onClickListener.onClick(product!!.productId)
         }
+
+        Log.d(TAG, "onBindViewHolder: bind viewholder ${product?.productId}")
+
     }
 
     override fun getItemCount(): Int {
@@ -70,11 +73,13 @@ class ProductViewHolder(
                 .into(binding.productImage)
         }
 
+        Log.d(TAG, "bind: products ${product.productId}")
+
     }
 }
 
 class OnClickListener(
-    val clickListener: (productId: String) -> Unit
+    private val clickListener: (productId: String) -> Unit
 ) {
     fun onClick(productId: String) = clickListener(productId)
 }

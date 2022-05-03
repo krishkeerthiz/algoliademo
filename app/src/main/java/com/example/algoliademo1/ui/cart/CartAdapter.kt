@@ -9,7 +9,7 @@ import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.CartItemBinding
 import com.example.algoliademo1.model.ProductQuantityModel
 
-class CartAdapter(val onClickListener: CartOnClickListener) :
+class CartAdapter(private val onClickListener: CartOnClickListener) :
     RecyclerView.Adapter<CartViewHolder>() {
 
     // Products and quantities
@@ -106,10 +106,10 @@ class CartViewHolder(val binding: CartItemBinding) :
 }
 
 class CartOnClickListener(
-    val itemClickListener: (productId: String) -> Unit,
-    val deleteClickListener: (productId: String, price: Float) -> Unit,
-    val incrementClickListener: (productId: String) -> Unit,
-    val decrementClickListener: (productId: String) -> Unit
+    private val itemClickListener: (productId: String) -> Unit,
+    private val deleteClickListener: (productId: String, price: Float) -> Unit,
+    private val incrementClickListener: (productId: String) -> Unit,
+    private val decrementClickListener: (productId: String) -> Unit
 ) {
 
     fun onItemClick(productId: String) = itemClickListener(productId)

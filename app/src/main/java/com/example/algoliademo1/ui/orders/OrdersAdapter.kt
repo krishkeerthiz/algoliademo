@@ -9,7 +9,7 @@ import com.example.algoliademo1.databinding.OrderCardBinding
 import com.example.algoliademo1.model.OrderAddressModel
 import com.example.algoliademo1.util.formatDate
 
-class OrdersAdapter(val onClickListener: OrdersOnClickListener) :
+class OrdersAdapter(private val onClickListener: OrdersOnClickListener) :
     RecyclerView.Adapter<OrdersViewHolder>() {
 
     private var orderAddresses: List<OrderAddressModel> = listOf()
@@ -17,16 +17,23 @@ class OrdersAdapter(val onClickListener: OrdersOnClickListener) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrdersViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = OrderCardBinding.inflate(view, parent, false)
-        return OrdersViewHolder(binding)
+
+        val viewHolder = OrdersViewHolder(binding).apply {
+            itemView .setOnClickListener {
+                onClickListener.onItemClick(orderAddresses[absoluteAdapterPosition].order)
+            }
+        }
+
+        return viewHolder
     }
 
     override fun onBindViewHolder(holder: OrdersViewHolder, position: Int) {
         val orderAddress = orderAddresses[position]
         holder.bind(orderAddress)
 
-        holder.itemView.setOnClickListener {
-            onClickListener.onItemClick(orderAddress.order)
-        }
+//        holder.itemView.setOnClickListener {
+//            onClickListener.onItemClick(orderAddress.order)
+//        }
 
     }
 
@@ -35,6 +42,7 @@ class OrdersAdapter(val onClickListener: OrdersOnClickListener) :
     fun addOrderAddresses(models: List<OrderAddressModel>){
         orderAddresses = models
         notifyDataSetChanged()
+       // OrderCardBinding.inflate()
     }
 }
 
@@ -52,7 +60,7 @@ class OrdersViewHolder(val binding: OrderCardBinding) : RecyclerView.ViewHolder(
 }
 
 class OrdersOnClickListener(
-    val itemClickListener: (order: Order) -> Unit
+    private val itemClickListener: (order: Order) -> Unit
 ) {
     fun onItemClick(order: Order) = itemClickListener(order)
 }

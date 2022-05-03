@@ -16,7 +16,13 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner
+
+        javaCompileOptions{
+            annotationProcessorOptions{
+                arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
 
     buildFeatures {
@@ -144,4 +150,7 @@ dependencies {
 
     // sdp library
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
+
+    // My toast library
+    implementation 'com.github.krishkeerthiz:toastlibrary:0.1.0'
 }
