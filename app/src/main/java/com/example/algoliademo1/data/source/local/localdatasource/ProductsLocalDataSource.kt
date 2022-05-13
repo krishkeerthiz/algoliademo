@@ -14,6 +14,8 @@ class ProductsLocalDataSource(private val productsDao: ProductsDao, private val 
         return productsDao.getProducts()
     }
 
+    override suspend fun getProductsSize() = getProducts().size
+
     override suspend fun getProducts(productIds: List<String>?): List<Product?> {
         val products = mutableListOf<Product?>()
         if(productIds != null){

@@ -27,14 +27,14 @@ class CartLocalDataSource(
     }
 
     override suspend fun removeFromCart(userId: String, productId: String) =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             val quantity = cartItemsDao.getProductQuantity(userId, productId)
             cartItemsDao.deleteProduct(userId, productId)
             reduceItemPrice(userId, productId, quantity)
         }
 
     override suspend fun incrementItemCount(userId: String, productId: String) =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             val productQuantity = cartItemsDao.getProductQuantity(userId, productId)
             cartItemsDao.updateProductQuantity(userId, productId, productQuantity + 1)
 
@@ -48,7 +48,7 @@ class CartLocalDataSource(
     }
 
     override suspend fun decrementItemCount(userId: String, productId: String) =
-        withContext(Dispatchers.IO) {
+        withContext(ioDispatcher) {
             val productQuantity = cartItemsDao.getProductQuantity(userId, productId)
 
             if (productQuantity > 0) {

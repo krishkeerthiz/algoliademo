@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -45,8 +46,15 @@ class ProductDetailFragment : Fragment() {
         }
 
         viewModel.isInCart.observe(viewLifecycleOwner) {
-            binding.cartAdd.text =
-                if (it) getString(R.string.added_to_cart) else getString(R.string.add_to_cart)
+
+            if(it){
+                binding.cartAdd.text = resources.getString(R.string.added_to_cart)
+                binding.cartAdd.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.yellow))
+            }
+            else{
+                binding.cartAdd.text = resources.getString(R.string.add_to_cart)
+                binding.cartAdd.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.teal_200))
+            }
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
@@ -78,8 +86,10 @@ class ProductDetailFragment : Fragment() {
                 viewModel.isInCart.value = true
                 viewModel.addProductToCart(id)
                 Toast.makeText(requireContext(), "Added to cart", Toast.LENGTH_SHORT).show()
+
             } else
                 Toast.makeText(requireContext(), "Already in cart", Toast.LENGTH_SHORT).show()
+
 
 
         }

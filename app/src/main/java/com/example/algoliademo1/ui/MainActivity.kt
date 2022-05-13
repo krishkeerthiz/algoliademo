@@ -5,7 +5,6 @@ import android.graphics.Typeface
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.NavController
@@ -15,12 +14,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.algoliademo1.R
+//import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.databinding.ActivityMainBinding
 import com.example.algoliademo1.util.NetworkUtil
 import com.example.toastlibrary.ECToast
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
-
 
 class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedListener {
 
@@ -29,6 +28,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -80,12 +80,16 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         arguments: Bundle?
     ) {
         when (destination.id) {
-            R.id.productDetailFragment -> binding.bottomNavigation.visibility = View.GONE
-            R.id.orderDetailFragment -> binding.bottomNavigation.visibility = View.GONE
-            R.id.facetFragment -> binding.bottomNavigation.visibility = View.GONE
-            R.id.addressFragment -> binding.bottomNavigation.visibility = View.GONE
+            R.id.productFragment -> binding.bottomNavigation.visibility = View.VISIBLE
+            R.id.cartFragment -> binding.bottomNavigation.visibility = View.VISIBLE
+            R.id.wishlistFragment -> binding.bottomNavigation.visibility = View.VISIBLE
+            R.id.ordersFragment -> binding.bottomNavigation.visibility = View.VISIBLE
+//            R.id.productDetailFragment -> binding.bottomNavigation.visibility = View.GONE
+//            R.id.orderDetailFragment -> binding.bottomNavigation.visibility = View.GONE
+//            R.id.facetFragment -> binding.bottomNavigation.visibility = View.GONE
+//            R.id.addressFragment -> binding.bottomNavigation.visibility = View.GONE
 
-            else -> binding.bottomNavigation.visibility = View.VISIBLE
+            else -> binding.bottomNavigation.visibility = View.GONE
         }
     }
 
@@ -193,7 +197,7 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                 }
 
                 override fun onSequenceStep(lastTarget: TapTarget, targetClicked: Boolean) {
-                    Toast.makeText(this@MainActivity, "GREAT!", Toast.LENGTH_SHORT).show()
+                   // Toast.makeText(this@MainActivity, "GREAT!", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onSequenceCanceled(lastTarget: TapTarget) {}

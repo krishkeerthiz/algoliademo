@@ -17,9 +17,9 @@ import kotlinx.coroutines.withContext
 class WishlistViewModel : ViewModel() {
 
     // Repositories
-    private val wishlistRepository = WishlistRepository.getRepository()
-    private val cartRepository = CartRepository.getRepository()
-    private val productRepository = ProductsRepository.getRepository()
+    private val wishlistRepository = WishlistRepository //.getRepository()
+    private val cartRepository = CartRepository //.getRepository()
+    private val productRepository = ProductsRepository //.getRepository()
 
     // Livedata
     private val _wishlistModel = MutableLiveData<WishlistModel>()

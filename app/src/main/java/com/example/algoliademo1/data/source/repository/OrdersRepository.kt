@@ -7,12 +7,13 @@ import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.data.source.local.localdatasource.OrdersLocalDataSource
 import com.example.algoliademo1.data.source.remote.FirebaseService
 
-class OrdersRepository {
+object OrdersRepository {
 
     private var dataSource: OrdersDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance.database
+        val dbInstance = ShoppingApplication.database
+        //val dbInstance = ShoppingRoomDatabase.getDatabase()
         dataSource = OrdersLocalDataSource(
             dbInstance.orderDao(),
             dbInstance.ordersDao(),
@@ -52,18 +53,16 @@ class OrdersRepository {
         return dataSource.getOrderItemQuantity(orderId, productId)
     }
 
-    companion object {
-        @Volatile
-        private var Instance: OrdersRepository? = null
-
-        fun getRepository(): OrdersRepository {
-            return Instance ?: synchronized(this) {
-                OrdersRepository().also {
-                    Instance = it
-                }
-            }
-        }
-
-
-    }
+//    companion object {
+//        @Volatile
+//        private var Instance: OrdersRepository? = null
+//
+//        fun getRepository(): OrdersRepository {
+//            return Instance ?: synchronized(this) {
+//                OrdersRepository().also {
+//                    Instance = it
+//                }
+//            }
+//        }
+//    }
 }

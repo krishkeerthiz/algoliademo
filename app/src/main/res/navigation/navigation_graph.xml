@@ -19,6 +19,9 @@
             app:destination="@id/productFragment"
             app:popUpTo="@id/productFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_productFragment_to_addProductDetailFragment"
+            app:destination="@id/addProductDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/productDetailFragment"
@@ -90,6 +93,44 @@
         android:label="Filters" >
         <action
             android:id="@+id/action_facetFragment_to_productFragment"
+            app:destination="@id/productFragment"
+            app:popUpTo="@id/productFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/addProductDetailFragment"
+        android:name="com.example.algoliademo1.ui.addproductdetail.AddProductDetailFragment"
+        android:label="Product Detail"
+        tools:layout="@layout/fragment_add_product_detail" >
+        <action
+            android:id="@+id/action_addProductDetailFragment_to_addProductImageFragment"
+            app:destination="@id/addProductImageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addProductImageFragment"
+        android:name="com.example.algoliademo1.ui.addproductimage.AddProductImageFragment"
+        android:label="Product Image"
+        tools:layout="@layout/fragment_add_product_image" >
+        <action
+            android:id="@+id/action_addProductImageFragment_to_productPreviewFragment"
+            app:destination="@id/productPreviewFragment" />
+        <argument
+            android:name="productModel"
+            app:argType="com.example.algoliademo1.model.ProductModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/productPreviewFragment"
+        android:name="com.example.algoliademo1.ui.productpreview.ProductPreviewFragment"
+        android:label="Product Preview"
+        tools:layout="@layout/fragment_product_preview" >
+        <argument
+            android:name="productModel"
+            app:argType="com.example.algoliademo1.model.ProductModel" />
+        <argument
+            android:name="imageUri"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_productPreviewFragment_to_productFragment"
             app:destination="@id/productFragment"
             app:popUpTo="@id/productFragment"
             app:popUpToInclusive="true" />

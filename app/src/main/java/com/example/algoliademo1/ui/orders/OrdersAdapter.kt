@@ -30,7 +30,6 @@ class OrdersAdapter(private val onClickListener: OrdersOnClickListener) :
     override fun onBindViewHolder(holder: OrdersViewHolder, position: Int) {
         val orderAddress = orderAddresses[position]
         holder.bind(orderAddress)
-
 //        holder.itemView.setOnClickListener {
 //            onClickListener.onItemClick(orderAddress.order)
 //        }

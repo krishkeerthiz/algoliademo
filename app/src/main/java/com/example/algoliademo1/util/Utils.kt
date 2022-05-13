@@ -15,3 +15,15 @@ fun doorNumberCheck(value: String): Boolean {
 fun streetCheck(value: String): Boolean {
     return !value.matches("^[a-zA-Z0-9. /,]+$".toRegex())
 }
+
+fun nameDescriptionCheck(value: String): Boolean{
+    return value.matches("^[a-zA-Z0-9-&\"'.\n /,]+$".toRegex())
+}
+
+fun categoryCheck(value: String): Boolean{
+    return value.matches("^[a-zA-Z-&. /,]+$".toRegex())
+}
+
+fun brandTypeCheck(value: String): Boolean{
+    return value.matches("^[a-zA-Z .&]+$".toRegex())
+}

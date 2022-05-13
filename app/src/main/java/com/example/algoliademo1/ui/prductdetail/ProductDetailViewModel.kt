@@ -15,9 +15,9 @@ import kotlinx.coroutines.withContext
 class ProductDetailViewModel : ViewModel() {
 
     // Repositories
-    private val wishlistRepository = WishlistRepository.getRepository()
-    private val cartRepository = CartRepository.getRepository()
-    private val productRepository = ProductsRepository.getRepository()
+    private val wishlistRepository = WishlistRepository //.getRepository()
+    private val cartRepository = CartRepository //.getRepository()
+    private val productRepository = ProductsRepository //.getRepository()
 
     val isInCart = MutableLiveData<Boolean>()
 

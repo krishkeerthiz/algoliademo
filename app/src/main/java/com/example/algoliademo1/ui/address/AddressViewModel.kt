@@ -23,9 +23,9 @@ import java.util.*
 
 class AddressViewModel : ViewModel() {
 
-    private val addressRepository = AddressRepository.getRepository()
-    private val ordersRepository = OrdersRepository.getRepository()
-    private val cartRepository = CartRepository.getRepository()
+    private val addressRepository = AddressRepository //.getRepository()
+    private val ordersRepository = OrdersRepository //.getRepository()
+    private val cartRepository = CartRepository //.getRepository()
 
     private val _address = MutableLiveData<String>()  // Not sure where used
 

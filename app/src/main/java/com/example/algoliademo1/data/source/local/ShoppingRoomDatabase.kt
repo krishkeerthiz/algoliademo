@@ -1,6 +1,8 @@
 package com.example.algoliademo1.data.source.local
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -61,7 +63,6 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
             context: Context
         ) {
 
-
             scope.launch {
                 val obj = JSONObject(JsonUtil.loadJSONFromAsset(context))
                 val productsArray = obj.getJSONArray("products4")
@@ -105,6 +106,7 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
 
                 val productId = index.toString()
 
+                Log.d(TAG, "addProductsToDatabase: $objectId    ")
                 product = Product(
                     productId,
                     brand,
@@ -149,7 +151,9 @@ abstract class ShoppingRoomDatabase : RoomDatabase() {
         ): ShoppingRoomDatabase {
 
             return instance ?: synchronized(this) {
-                instance ?: buildDatabase(context, scope).also { instance = it }
+                instance ?: buildDatabase(context, scope).also {
+                    instance = it
+                }
             }
         }
 

@@ -18,7 +18,11 @@ class OrderedItemsAdapter(private val onClickListener: OrderedItemOnClickListene
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderedItemsViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = OrderItemBinding.inflate(view, parent, false)
-        return OrderedItemsViewHolder(binding)
+        return OrderedItemsViewHolder(binding).apply {
+            binding.orderRatingText.setOnClickListener{
+                onClickListener.onItemClick(productQuantityModels[absoluteAdapterPosition].product.productId)
+            }
+        }
 
     }
 
@@ -27,9 +31,9 @@ class OrderedItemsAdapter(private val onClickListener: OrderedItemOnClickListene
 
         holder.bind(productQuantity)
 
-        holder.binding.orderRatingText.setOnClickListener {
-            onClickListener.onItemClick(productQuantity.product.productId)
-        }
+//        holder.binding.orderRatingText.setOnClickListener {
+//            onClickListener.onItemClick(productQuantity.product.productId)
+//        }
 
     }
 

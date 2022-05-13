@@ -48,4 +48,15 @@
     <string name="rate"><u>Rate</u></string>
     <string name="cart_image">Cart Image</string>
     <string name="trash">Trash</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_product">Add Product</string>
+    <string name="next">Next</string>
+    <string name="choose_image">Choose Image</string>
+    <string name="capture_image">Capture Image</string>
+    <string name="upload">Upload</string>
+    <string name="capture">Capture</string>
+    <string name="rating">Rating(1 - 10)</string>
+    <string name="save">Save</string>
+    <string name="free_shipping">Free Shipping</string>
+    <string name="gallery">Gallery</string>
 </resources>

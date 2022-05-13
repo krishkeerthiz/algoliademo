@@ -17,27 +17,48 @@ class WishlistAdapter(private val onClickListener: WishlistClickListener) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WishlistViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = WishlistItemBinding.inflate(view, parent, false)
-        return WishlistViewHolder(binding)
+        return WishlistViewHolder(binding).apply {
+
+//            val product = wishlistProducts[absoluteAdapterPosition]
+//
+//            if(product != null) {
+//                binding.addToCartButton.setOnClickListener {
+//                    val price = binding.wishlistItemPrice.text.trimStart('$').toString().toFloat()
+//                    onClickListener.onAddItemClick(product.productId, price)
+//                    Toast.makeText(it.context, "Added to cart", Toast.LENGTH_SHORT).show()
+//                }
+//
+//                binding.removeButton.setOnClickListener {
+//                    onClickListener.onRemoveItemClick(product.productId)
+//                }
+//
+//                itemView.setOnClickListener {
+//                    onClickListener.onItemClick(product.productId)
+//                }
+//                }
+
+        }
     }
 
     override fun onBindViewHolder(holder: WishlistViewHolder, position: Int) {
         val product = wishlistProducts[position]
 
-        if(product != null)
-        holder.bind(product)
+        if(product != null){
+            holder.bind(product)
 
-        holder.binding.addToCartButton.setOnClickListener {
-            val price = holder.binding.wishlistItemPrice.text.trimStart('$').toString().toFloat()
-            onClickListener.onAddItemClick(product?.productId, price)
-            Toast.makeText(it.context, "Added to cart", Toast.LENGTH_SHORT).show()
-        }
+            holder.binding.addToCartButton.setOnClickListener {
+                val price = holder.binding.wishlistItemPrice.text.trimStart('$').toString().toFloat()
+                onClickListener.onAddItemClick(product.productId, price)
+                Toast.makeText(it.context, "Added to cart", Toast.LENGTH_SHORT).show()
+            }
 
-        holder.binding.removeButton.setOnClickListener {
-            onClickListener.onRemoveItemClick(product?.productId)
-        }
+            holder.binding.removeButton.setOnClickListener {
+                onClickListener.onRemoveItemClick(product.productId)
+            }
 
-        holder.itemView.setOnClickListener {
-            onClickListener.onItemClick(product?.productId)
+            holder.itemView.setOnClickListener {
+                onClickListener.onItemClick(product.productId)
+            }
         }
     }
 
@@ -54,6 +75,12 @@ class WishlistViewHolder(
     val binding: WishlistItemBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    init {
+
+        binding.addToCartButton.setOnClickListener {
+            absoluteAdapterPosition
+        }
+    }
     fun bind(product: Product) {
 
         binding.wishlistItemName.text = product.name

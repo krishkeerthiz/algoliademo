@@ -4,6 +4,7 @@ import android.content.Context
 import java.io.IOException
 
 class JsonUtil {
+
     companion object {
         fun loadJSONFromAsset(context: Context): String {
             val json: String?

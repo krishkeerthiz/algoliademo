@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class SignInViewModel : ViewModel() {
 
-    private val repository = CartRepository.getRepository()
+    private val repository = CartRepository //.getRepository()
 
     fun initializeCart(){
         viewModelScope.launch(Dispatchers.IO) {

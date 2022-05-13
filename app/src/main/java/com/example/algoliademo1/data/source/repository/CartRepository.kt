@@ -6,12 +6,13 @@ import com.example.algoliademo1.data.source.local.entity.ItemCount
 import com.example.algoliademo1.data.source.local.localdatasource.CartLocalDataSource
 import com.example.algoliademo1.data.source.remote.FirebaseService
 
-class CartRepository {
+object CartRepository {
 
     private val dataSource: CartDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance.database
+        val dbInstance = ShoppingApplication.database
+        //val dbInstance = ShoppingRoomDatabase.getDatabase()
         dataSource = CartLocalDataSource(
             dbInstance.cartDao(),
             dbInstance.cartItemsDao(),
@@ -60,16 +61,16 @@ class CartRepository {
 
     suspend fun getCart(userId: String) = dataSource.getCart(userId)
 
-    companion object {
-        @Volatile
-        private var INSTANCE: CartRepository? = null
-
-        fun getRepository(): CartRepository {
-            return INSTANCE ?: synchronized(this) {
-                CartRepository().also {
-                    INSTANCE = it
-                }
-            }
-        }
-    }
+//    companion object {
+//        @Volatile
+//        private var INSTANCE: CartRepository? = null
+//
+//        fun getRepository(): CartRepository {
+//            return INSTANCE ?: synchronized(this) {
+//                CartRepository().also {
+//                    INSTANCE = it
+//                }
+//            }
+//        }
+//    }
 }

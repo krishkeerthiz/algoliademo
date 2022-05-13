@@ -6,12 +6,13 @@ import com.example.algoliademo1.data.source.local.entity.Address
 import com.example.algoliademo1.data.source.local.localdatasource.AddressLocalDataSource
 import com.example.algoliademo1.model.AddressModel
 
-class AddressRepository {
+object AddressRepository {
 
     private val dataSource: AddressDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance.database
+        val dbInstance = ShoppingApplication.database
+        //val dbInstance = ShoppingRoomDatabase.getDatabase()
         dataSource = AddressLocalDataSource(dbInstance.addressDao(), dbInstance.addressListDao())
     }
 
@@ -27,16 +28,16 @@ class AddressRepository {
         return dataSource.getAddress(addressId, userId)
     }
 
-    companion object {
-        @Volatile
-        private var INSTANCE: AddressRepository? = null
-
-        fun getRepository(): AddressRepository {
-            return INSTANCE ?: synchronized(this) {
-                AddressRepository().also {
-                    INSTANCE = it
-                }
-            }
-        }
-    }
+//    companion object {
+//        @Volatile
+//        private var INSTANCE: AddressRepository? = null
+//
+//        fun getRepository(): AddressRepository {
+//            return INSTANCE ?: synchronized(this) {
+//                AddressRepository().also {
+//                    INSTANCE = it
+//                }
+//            }
+//        }
+//    }
 }

@@ -6,6 +6,8 @@ interface ProductsDataSource {
 
     suspend fun getProducts(): List<Product>
 
+    suspend fun getProductsSize(): Int
+
     suspend fun getProducts(productIds: List<String>?): List<Product?>
 
     suspend fun getProduct(productId: String): Product?

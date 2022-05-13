@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 class CartViewModel : ViewModel() {
 
     // Repository
-    private val cartRepository = CartRepository.getRepository()
-    private val productRepository = ProductsRepository.getRepository()
+    private val cartRepository = CartRepository //.getRepository()
+    private val productRepository = ProductsRepository //.getRepository()
 
     // Live data
     private val _cartModelLiveData = MutableLiveData<CartModel>()

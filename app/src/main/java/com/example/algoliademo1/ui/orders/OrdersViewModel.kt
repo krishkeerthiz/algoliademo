@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 class OrdersViewModel : ViewModel() {
 
     // Repositories
-    private val ordersRepository = OrdersRepository.getRepository()
-    private val addressRepository = AddressRepository.getRepository()
+    private val ordersRepository = OrdersRepository //.getRepository()
+    private val addressRepository = AddressRepository //.getRepository()
 
     // Live data
     private val _orders = MutableLiveData<List<Order>>()

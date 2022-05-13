@@ -18,30 +18,27 @@ import com.algolia.instantsearch.helper.filter.state.FilterState
 import com.algolia.instantsearch.helper.searcher.SearcherSingleIndex
 import com.algolia.instantsearch.helper.searcher.connectFilterState
 import com.algolia.instantsearch.helper.stats.StatsConnector
-import com.algolia.search.client.ClientSearch
-import com.algolia.search.model.APIKey
-import com.algolia.search.model.ApplicationID
 import com.algolia.search.model.Attribute
 import com.algolia.search.model.IndexName
 import com.example.algoliademo1.data.source.local.entity.Product
+import com.example.algoliademo1.data.source.remote.AlgoliaIndex
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.model.ProductInfo
-import io.ktor.client.features.logging.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProductsFiltersViewModel : ViewModel() {
 
-    private val client = ClientSearch(
-        ApplicationID(ApplicationID),
-        APIKey(APIKEY),
-        LogLevel.ALL
-    )
-    private val index = client.initIndex(IndexName("products4"))
+//    private val client = ClientSearch(
+//        ApplicationID(ApplicationID),
+//        APIKey(APIKEY),
+//        LogLevel.ALL
+//    )
+    private val index = AlgoliaIndex.getClient().initIndex(IndexName("products4"))
     private val searcher = SearcherSingleIndex(index)
 
-    private val productsRepository = ProductsRepository.getRepository()
+    private val productsRepository = ProductsRepository //.getRepository()
 
     private val dataSourceFactory = SearcherSingleIndexDataSource.Factory(searcher) { hit ->
         ProductInfo(
@@ -137,10 +134,9 @@ class ProductsFiltersViewModel : ViewModel() {
      }
 
 
-    companion object{
-        private const val ApplicationID = "9N1YDJJ8DK"
-        private const val APIKEY = "dcd5088a151c2e8db47aec60ea0eb6ec"
-
-    }
+//    companion object{
+//        private const val ApplicationID = "9N1YDJJ8DK"
+//        private const val APIKEY = "dcd5088a151c2e8db47aec60ea0eb6ec"
+//    }
 
 }

@@ -27,7 +27,14 @@ class ProductAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = ProductCardBinding.inflate(view, parent, false)
-        return ProductViewHolder(binding)
+        Log.d(TAG, "onCreateViewHolder: Adapter click listener")
+        return ProductViewHolder(binding).apply {
+            itemView.setOnClickListener {
+                val product = products[absoluteAdapterPosition]
+                if(product != null)
+                onClickListener.onClick(product.productId)
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
@@ -37,12 +44,9 @@ class ProductAdapter(
         if(product != null)  // First time product could become null
             holder.bind(product)
 
+        //Log.d(TAG, "onBindViewHolder: bind viewholder ${product?.productId}")
 
-        holder.itemView.setOnClickListener {
-            onClickListener.onClick(product!!.productId)
-        }
-
-        Log.d(TAG, "onBindViewHolder: bind viewholder ${product?.productId}")
+        Log.d(TAG, "onBindViewHolder: Adapter click listener")
 
     }
 

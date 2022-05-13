@@ -16,9 +16,9 @@ import kotlinx.coroutines.withContext
 
 class OrderDetailViewModel : ViewModel() {
     // Repositories
-    private val ordersRepository = OrdersRepository.getRepository()
-    private val addressRepository = AddressRepository.getRepository()
-    private val productsRepository = ProductsRepository.getRepository()
+    private val ordersRepository = OrdersRepository //.getRepository()
+    private val addressRepository = AddressRepository //.getRepository()
+    private val productsRepository = ProductsRepository //.getRepository()
 
     lateinit var orderId: String
 

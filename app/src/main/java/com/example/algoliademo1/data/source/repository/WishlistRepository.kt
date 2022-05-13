@@ -4,12 +4,13 @@ import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.datasource.WishlistDataSource
 import com.example.algoliademo1.data.source.local.localdatasource.WishlistLocalDataSource
 
-class WishlistRepository {
+object WishlistRepository {
 
     private val dataSource: WishlistDataSource
 
     init {
-        val dbInstance = ShoppingApplication.instance.database
+        val dbInstance = ShoppingApplication.database
+        //val dbInstance = ShoppingRoomDatabase.getDatabase()
         dataSource = WishlistLocalDataSource(dbInstance.wishlistDao())
     }
 
@@ -28,16 +29,16 @@ class WishlistRepository {
     suspend fun isInWishlist(userId: String, productId: String) =
         dataSource.isInWishlist(userId, productId)
 
-    companion object {
-        @Volatile
-        private var INSTANCE: WishlistRepository? = null
-
-        fun getRepository(): WishlistRepository {
-            return INSTANCE ?: synchronized(this) {
-                WishlistRepository().also {
-                    INSTANCE = it
-                }
-            }
-        }
-    }
+//    companion object {
+//        @Volatile
+//        private var INSTANCE: WishlistRepository? = null
+//
+//        fun getRepository(): WishlistRepository {
+//            return INSTANCE ?: synchronized(this) {
+//                WishlistRepository().also {
+//                    INSTANCE = it
+//                }
+//            }
+//        }
+//    }
 }

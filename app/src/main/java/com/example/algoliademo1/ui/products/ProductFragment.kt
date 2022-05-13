@@ -24,6 +24,7 @@ import com.algolia.instantsearch.helper.android.searchbox.connectView
 import com.algolia.instantsearch.helper.stats.StatsPresenterImpl
 import com.algolia.instantsearch.helper.stats.connectView
 import com.example.algoliademo1.R
+import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.databinding.FragmentProductBinding
 import com.example.algoliademo1.model.ProductInfo
 import com.example.algoliademo1.ui.ProductsFiltersViewModel
@@ -178,6 +179,10 @@ class ProductFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.product_fragment_menu, menu)
+
+        val addProductsMenuItem = menu.findItem(R.id.add_product)
+
+        addProductsMenuItem.isVisible = FirebaseService.userId == "b30r97HxJCgED0Y6JYd8L1j9yEj1"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -191,9 +196,17 @@ class ProductFragment : Fragment() {
             R.id.search -> {
                 search(item)
             }
+            R.id.add_product -> {
+                gotoAddProductDetailFragment()
+            }
             else -> super.onOptionsItemSelected(item)
         }
         return true
+    }
+
+    private fun gotoAddProductDetailFragment() {
+        val action = ProductFragmentDirections.actionProductFragmentToAddProductDetailFragment()
+        view?.findNavController()?.navigate(action)
     }
 
     private fun search(searchItem: MenuItem) {
