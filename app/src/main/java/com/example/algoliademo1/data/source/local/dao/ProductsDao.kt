@@ -13,17 +13,17 @@ interface ProductsDao {
     suspend fun getProduct(productId: String): Product? //Product//
 
     @Query("SELECT price FROM products_table WHERE product_id = :productId")
-    fun getProductPrice(productId: String): Float
+    suspend fun getProductPrice(productId: String): Float
 
     @Query("SELECT * FROM products_table")
-    fun getProducts(): List<Product>
+    suspend fun getProducts(): List<Product>
 
     @Query("SELECT * FROM products_table WHERE product_id IN (:productIds)")
-    fun getProducts(productIds: List<String>): List<Product>
+    suspend fun getProducts(productIds: List<String>): List<Product>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: Product)
 
     @Query("UPDATE products_table SET rating = :rating WHERE product_id = :productId")
-    fun updateRating(productId: String, rating: Int)
+    suspend fun updateRating(productId: String, rating: Int)
 }

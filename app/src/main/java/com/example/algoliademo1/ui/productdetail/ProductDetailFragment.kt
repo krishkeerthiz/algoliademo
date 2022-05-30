@@ -1,4 +1,4 @@
-package com.example.algoliademo1.ui.prductdetail
+package com.example.algoliademo1.ui.productdetail
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,9 +14,7 @@ import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentProductDetailBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProductDetailFragment : Fragment() {
 
@@ -24,7 +22,9 @@ class ProductDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentProductDetailBinding
 
-    private val viewModel: ProductDetailViewModel by viewModels()
+    private val viewModel: ProductDetailViewModel by viewModels {
+        ProductDetailViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,37 +47,43 @@ class ProductDetailFragment : Fragment() {
 
         viewModel.isInCart.observe(viewLifecycleOwner) {
 
-            if(it){
+            if (it) {
                 binding.cartAdd.text = resources.getString(R.string.added_to_cart)
-                binding.cartAdd.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.yellow))
-            }
-            else{
+                binding.cartAdd.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.yellow
+                    )
+                )
+            } else {
                 binding.cartAdd.text = resources.getString(R.string.add_to_cart)
-                binding.cartAdd.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.teal_200))
+                binding.cartAdd.setBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.teal_200
+                    )
+                )
             }
         }
 
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch {
             val product = viewModel.getProduct(id)
 
-            if(product != null){
-                withContext(Dispatchers.Main) {
+            if (product != null) {
+                binding.productName.text = product.name
+                binding.productBrand.text = product.brand
 
-                    binding.productName.text = product.name
-                    binding.productBrand.text = product.brand
+                val price = getString(R.string.currency) + product.price
+                binding.productPrice.text = price
 
-                    val price = getString(R.string.currency) + product.price
-                    binding.productPrice.text = price
+                binding.productRating.rating = product.rating.div(2).toFloat()
 
-                    binding.productRating.rating = product.rating.div(2).toFloat()
+                binding.productDescription.text = product.description
 
-                    binding.productDescription.text = product.description
-
-                    Glide.with(binding.productImage.context)
-                        .load(product.image)
-                        .placeholder(R.drawable.spinner1)
-                        .into(binding.productImage)
-                }
+                Glide.with(binding.productImage.context)
+                    .load(product.image)
+                    .placeholder(R.drawable.spinner1)
+                    .into(binding.productImage)
             }
         }
 
@@ -91,55 +97,51 @@ class ProductDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), "Already in cart", Toast.LENGTH_SHORT).show()
 
 
-
         }
 
-        //set icon state while entering the page
-        lifecycleScope.launch(Dispatchers.IO) {
+        //set wishlist button state while entering the page
+        lifecycleScope.launch {
             val result = viewModel.isInWishlist(id)
-            withContext(Dispatchers.Main) {
-                if (result) {
-                    binding.wishlistButton.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            requireContext(),
-                            R.drawable.ic_heart_red
-                        )
+
+            if (result) {
+                binding.wishlistButton.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_heart_red
                     )
-                } else {
+                )
+            } else {
+                binding.wishlistButton.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        requireContext(),
+                        R.drawable.ic_heart
+                    )
+                )
+            }
+        }
+
+        // set wishlist button state while click
+        binding.wishlistButton.setOnClickListener {
+            lifecycleScope.launch {
+                val result = viewModel.isInWishlist(id)
+
+                if (result) {
+                    viewModel.removeProductFromWishlist(id)
                     binding.wishlistButton.setImageDrawable(
                         AppCompatResources.getDrawable(
                             requireContext(),
                             R.drawable.ic_heart
                         )
                     )
-                }
-            }
-        }
-
-        // set icon state while click
-        binding.wishlistButton.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                val result = viewModel.isInWishlist(id)
-
-                withContext(Dispatchers.Main) {
-                    if (result) {
-                        viewModel.removeProductFromWishlist(id)
-                        binding.wishlistButton.setImageDrawable(
-                            AppCompatResources.getDrawable(
-                                requireContext(),
-                                R.drawable.ic_heart
-                            )
+                } else {
+                    viewModel.addProductToWishlist(id)
+                    binding.wishlistButton.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_heart_red
                         )
-                    } else {
-                        viewModel.addProductToWishlist(id)
-                        binding.wishlistButton.setImageDrawable(
-                            AppCompatResources.getDrawable(
-                                requireContext(),
-                                R.drawable.ic_heart_red
-                            )
-                        )
-                        binding.wishlistAnimation.likeAnimation()
-                    }
+                    )
+                    binding.wishlistAnimation.likeAnimation()
                 }
             }
         }

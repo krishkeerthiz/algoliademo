@@ -1,23 +1,23 @@
 package com.example.algoliademo1.ui.cart
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.algoliademo1.data.source.local.entity.ItemCount
+import android.content.Context
+import androidx.lifecycle.*
+import com.example.algoliademo1.model.ItemCountModel
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.model.CartModel
 import com.example.algoliademo1.model.ProductQuantityModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class CartViewModel : ViewModel() {
+class CartViewModel(context: Context) : ViewModel() {
 
     // Repository
-    private val cartRepository = CartRepository //.getRepository()
-    private val productRepository = ProductsRepository //.getRepository()
+    private val cartRepository = CartRepository.getRepository(context)
+    private val productRepository = ProductsRepository.getRepository(context)
 
     // Live data
     private val _cartModelLiveData = MutableLiveData<CartModel>()
@@ -39,19 +39,35 @@ class CartViewModel : ViewModel() {
     }
 
     private suspend fun getCartProducts(productIds: List<String>?): List<Product?> {
-        var products = listOf<Product?>()
-
-        viewModelScope.launch {
-            products = productRepository.getProducts(productIds)
-        }.join()
-
-        return products
+        return productRepository.getProducts(productIds)
     }
 
-    suspend fun getProductsQuantity(cartModel: CartModel): List<ProductQuantityModel> {
-        val productsQuantity = mutableListOf<ProductQuantityModel>()
+//    suspend fun getProductsQuantity(cartModel: CartModel): List<ProductQuantityModel> {
+//        val productsQuantity = mutableListOf<ProductQuantityModel>()
+//
+//        viewModelScope.launch {
+//            val products = getCartProducts(cartModel.products?.keys?.toList())
+//
+//            for (product in products){
+//                if(product != null){
+//                    productsQuantity.add(
+//                        ProductQuantityModel(
+//                            product,
+//                            cartModel.products?.get(product.productId)!!
+//                        )
+//                    )
+//                }
+//            }
+//        }.join()
+//
+//        return productsQuantity
+//    }
 
-        viewModelScope.launch {
+    suspend fun getProductsQuantity(cartModel: CartModel): List<ProductQuantityModel> {
+
+        return withContext(Dispatchers.Default){
+            val productsQuantity = mutableListOf<ProductQuantityModel>()
+
             val products = getCartProducts(cartModel.products?.keys?.toList())
 
             for (product in products){
@@ -65,12 +81,12 @@ class CartViewModel : ViewModel() {
                 }
             }
 
-        }.join()
+            productsQuantity
+        }
 
-        return productsQuantity
     }
 
-    private fun listToMap(items: List<ItemCount>): Map<String, Int> {
+    private fun listToMap(items: List<ItemCountModel>): Map<String, Int> {
         val productsQuantity = mutableMapOf<String, Int>()
 
         for (item in items)
@@ -100,4 +116,14 @@ class CartViewModel : ViewModel() {
         }
     }
 
+}
+
+
+class CartViewModelFactory(private val context: Context) :
+    ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return CartViewModel(context) as T
+    }
 }

@@ -5,9 +5,9 @@ import com.example.algoliademo1.model.AddressModel
 
 interface AddressDataSource {
 
-    suspend fun addAddress(userId: String, addressId: String, addressModel: AddressModel)
+    suspend fun addAddress(userId: String, addressId: String, addressModel: AddressModel)  // AddressModel model does not contains address id
 
-    suspend fun getAddressList(userId: String): List<Address>
+    suspend fun getAddressList(userId: String): List<Address> // Address model contains address id also
 
     suspend fun getAddress(addressId: String, userId: String): Address
 

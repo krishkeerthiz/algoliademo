@@ -18,13 +18,11 @@ class OrdersAdapter(private val onClickListener: OrdersOnClickListener) :
         val view = LayoutInflater.from(parent.context)
         val binding = OrderCardBinding.inflate(view, parent, false)
 
-        val viewHolder = OrdersViewHolder(binding).apply {
-            itemView .setOnClickListener {
+        return OrdersViewHolder(binding).apply {
+            itemView.setOnClickListener {
                 onClickListener.onItemClick(orderAddresses[absoluteAdapterPosition].order)
             }
         }
-
-        return viewHolder
     }
 
     override fun onBindViewHolder(holder: OrdersViewHolder, position: Int) {

@@ -1,6 +1,7 @@
 package com.example.algoliademo1.ui.addproductimage
 
 import android.Manifest
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,7 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -38,11 +39,46 @@ class AddProductImageFragment : Fragment() {
 
     private var imageCapture: ImageCapture? = null
 
+    private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()){ permissions ->
+        val granted = permissions.entries.all {
+            it.value == true
+        }
+
+        if(granted){
+            startCamera()
+        }
+        else{
+            Toast.makeText(
+                requireContext(),
+                "Permissions not granted by the user.",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            requireActivity().onBackPressed()
+        }
+    }
+
+    private val photoResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // There are no request codes
+            val data: Intent? = result.data
+
+            val imageUri = data?.data
+
+            if (imageUri != null)
+                gotoProductPreviewFragment(imageUri)
+            else
+                Toast.makeText(requireContext(), "Error processing image", Toast.LENGTH_SHORT)
+                    .show()
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_add_product_image, container, false)
     }
 
@@ -55,10 +91,9 @@ class AddProductImageFragment : Fragment() {
             Log.d(TAG, "onCreate: permission granted")
             startCamera()
         } else {
-            Log.d(TAG, "onCreate: permission not granted")
-            ActivityCompat.requestPermissions(
-                requireActivity(), REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS
-            )
+
+            permissionRequestLauncher.launch(REQUIRED_PERMISSIONS)
+            //requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
         binding.captureButton.setOnClickListener {
@@ -66,32 +101,19 @@ class AddProductImageFragment : Fragment() {
         }
 
         binding.galleryButton.setOnClickListener {
-            startImageChooserIntent()
+            //startImageChooserIntent()
+            selectPhoto()
         }
     }
 
-    private fun startImageChooserIntent() {
+    private fun selectPhoto() {
+
         val intent = Intent().apply {
             action = Intent.ACTION_GET_CONTENT
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "image/*"
         }
-        startActivityForResult(Intent.createChooser(intent, "Select a picture"), 10)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == AppCompatActivity.RESULT_OK) {
-            if (requestCode == 10) {
-                val imageUri = data?.data
-
-                if (imageUri != null)
-                    gotoProductPreviewFragment(imageUri)
-                else
-                    Toast.makeText(requireContext(), "Error processing image", Toast.LENGTH_SHORT)
-                        .show()
-            }
-        }
+        photoResultLauncher.launch(intent)
     }
 
     private fun takePhoto() {
@@ -171,7 +193,6 @@ class AddProductImageFragment : Fragment() {
                     this, cameraSelector, preview, imageCapture
                 )
 
-
             } catch (exc: Exception) {
             }
 
@@ -180,30 +201,9 @@ class AddProductImageFragment : Fragment() {
     }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
-        ContextCompat.checkSelfPermission(
+        ActivityCompat.checkSelfPermission(
             requireContext(), it
         ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults:
-        IntArray
-    ) {
-
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (allPermissionsGranted()) {
-                startCamera()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Permissions not granted by the user.",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                requireActivity().finish()
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun gotoProductPreviewFragment(imageUri: Uri) {
@@ -218,7 +218,6 @@ class AddProductImageFragment : Fragment() {
     companion object {
         private const val TAG = "CameraXApp"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-        private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS =
             mutableListOf(
                 Manifest.permission.CAMERA,

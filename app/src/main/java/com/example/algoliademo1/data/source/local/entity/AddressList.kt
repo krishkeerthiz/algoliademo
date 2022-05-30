@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Can get all addresses belongs to individual users
 @Entity(tableName = "address_list")
 data class AddressList(
     @ColumnInfo(name = "user_id") val userId: String,

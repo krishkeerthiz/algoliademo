@@ -1,11 +1,9 @@
 package com.example.algoliademo1.ui.address
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.algoliademo1.api.PostalPincodeApi
 import com.example.algoliademo1.data.source.local.entity.Address
 import com.example.algoliademo1.data.source.local.entity.Order
@@ -17,15 +15,16 @@ import com.example.algoliademo1.model.AddressModel
 import com.example.algoliademo1.model.PincodeDetail
 import com.example.algoliademo1.model.PincodeInfo
 import com.example.algoliademo1.model.PincodeModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
-class AddressViewModel : ViewModel() {
+class AddressViewModel(context: Context) : ViewModel() {
 
-    private val addressRepository = AddressRepository //.getRepository()
-    private val ordersRepository = OrdersRepository //.getRepository()
-    private val cartRepository = CartRepository //.getRepository()
+    private val addressRepository = AddressRepository.getRepository(context)
+    private val ordersRepository = OrdersRepository.getRepository(context)
+    private val cartRepository = CartRepository.getRepository(context)
 
     private val _address = MutableLiveData<String>()  // Not sure where used
 
@@ -36,6 +35,8 @@ class AddressViewModel : ViewModel() {
 
     val addresses: LiveData<List<Address>>
         get() = _addresses
+
+    val apiError = MutableLiveData<Boolean>()
 
     val pincodeModel = MutableLiveData<List<PincodeModel>?>()
 
@@ -58,7 +59,7 @@ class AddressViewModel : ViewModel() {
     private fun generateId(): String {
         val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 
-        return List(10) { charset.random() }
+        return List(15) { charset.random() }
             .joinToString("")
     }
 
@@ -82,18 +83,46 @@ class AddressViewModel : ViewModel() {
         return addressList
     }
 
-    suspend fun placeOrder(): Order {
-        val orderId = generateId()
-        val userId = FirebaseService.userId
-        Log.d(TAG, "placeOrder: before async")
-        val order = viewModelScope.async {
-            var total = 0.0f
-            Log.d(TAG, "placeOrder: inside vm scope")
+//    suspend fun placeOrder(): Order {
+//        val orderId = generateId()
+//        val userId = FirebaseService.userId
+//        Log.d(TAG, "placeOrder: before async")
+//        val order = viewModelScope.async {
+//            var total = 0.0f
+//            Log.d(TAG, "placeOrder: inside vm scope")
+//            if (addressId != null) {
+//                Log.d(TAG, "placeOrder: $addressId")
+//                total = cartRepository.getCartTotal(userId)
+//
+//                Log.d(TAG, "placeOrder: placing order")
+//                ordersRepository.placeOrder(
+//                    userId,
+//                    orderId,
+//                    addressId!!,
+//                    cartRepository.getCartItems(userId),
+//                    total
+//                )
+//
+//                Log.d(TAG, "placeOrder: empty cart")
+//                cartRepository.emptyCart(userId)
+//            }
+//
+//            //Log.d(TAG, "placeOrder: ${Order(orderId, addressId!!, Date(), total)}")
+//            return@async Order(orderId, addressId!!, Date(), total)
+//        }
+//        Log.d(TAG, "placeOrder: before await")
+//        return order.await()
+//    }
+
+    suspend fun placeOrder(): Order? {
+        return withContext(IO) {
+            val orderId = generateId()
+            val userId = FirebaseService.userId
+            val total: Float
+
             if (addressId != null) {
-                Log.d(TAG, "placeOrder: $addressId")
                 total = cartRepository.getCartTotal(userId)
 
-                Log.d(TAG, "placeOrder: placing order")
                 ordersRepository.placeOrder(
                     userId,
                     orderId,
@@ -102,27 +131,32 @@ class AddressViewModel : ViewModel() {
                     total
                 )
 
-                Log.d(TAG, "placeOrder: empty cart")
                 cartRepository.emptyCart(userId)
-            }
-
-            Log.d(TAG, "placeOrder: ${Order(orderId, addressId!!, Date(), total)}")
-            return@async Order(orderId, addressId!!, Date(), total)
+                Order(orderId, addressId!!, Date(), total)
+            } else
+                null
         }
-        Log.d(TAG, "placeOrder: before await")
-        return order.await()
     }
 
+    // performs api hit
     fun getPincodeDetails(pincode: String) {
-        viewModelScope.launch {
-            val details = PostalPincodeApi.service.getPincodeDetails(pincode)
-            pincodeModel.value = details
+        viewModelScope.launch {  //(Dispatchers.IO) cannot able to run on IO thread because livedata value is only set on main thread
+            Log.d(TAG, "getPincodeDetails: before api hit")
+            try {
+                val details = PostalPincodeApi.service.getPincodeDetails(pincode)
+                Log.d(TAG, "getPincodeDetails: after api hit")
+                pincodeModel.value = details
+            } catch (e: Exception) {
+                apiError.value = true
+                //Log.d(TAG, "getPincodeDetails: $e")
+            }
+
         }
     }
 
     fun addPincodeDetail(postOffices: List<PincodeInfo>) {
         val cities = mutableListOf<String>()
-        for(postOffice in postOffices)
+        for (postOffice in postOffices)
             cities.add(postOffice.name + ", " + postOffice.district)
 
         pincodeDetail = PincodeDetail(
@@ -131,4 +165,14 @@ class AddressViewModel : ViewModel() {
         )
     }
 
+}
+
+
+class AddressViewModelFactory(private val context: Context) :
+    ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return AddressViewModel(context) as T//super.create(modelClass)
+    }
 }

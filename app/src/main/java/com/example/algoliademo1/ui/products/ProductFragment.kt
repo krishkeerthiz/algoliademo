@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.algolia.instantsearch.core.connection.ConnectionHandler
@@ -26,16 +27,15 @@ import com.algolia.instantsearch.helper.stats.connectView
 import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.databinding.FragmentProductBinding
-import com.example.algoliademo1.model.ProductInfo
+import com.example.algoliademo1.model.ProductInfoModel
 import com.example.algoliademo1.ui.ProductsFiltersViewModel
+import com.example.algoliademo1.ui.ProductsFiltersViewModelFactory
 import com.example.algoliademo1.ui.signIn.SignInActivity
 import com.example.algoliademo1.util.NetworkUtil
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProductFragment : Fragment() {
     private lateinit var binding: FragmentProductBinding
@@ -51,7 +51,12 @@ class ProductFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
 
-        Log.d(TAG, "onCreateView: product fragment")
+        val viewModelFactory = ProductsFiltersViewModelFactory(requireContext())
+        viewModel = ViewModelProvider(
+            requireActivity(),
+            viewModelFactory
+        )[ProductsFiltersViewModel::class.java]
+
         return inflater.inflate(R.layout.fragment_product, container, false)
     }
 
@@ -64,8 +69,6 @@ class ProductFragment : Fragment() {
         ).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
-
-        viewModel = ViewModelProvider(requireActivity())[ProductsFiltersViewModel::class.java]
 
         binding = FragmentProductBinding.bind(view)
 
@@ -92,30 +95,45 @@ class ProductFragment : Fragment() {
                 binding.emptyLayout.visibility = View.VISIBLE
                 binding.productList.visibility = View.INVISIBLE
 
-                if(NetworkUtil.isNetworkAvailable(requireContext()))
+                if (NetworkUtil.isNetworkAvailable(requireContext()))
                     binding.retryButton.visibility = View.GONE
                 else
                     binding.retryButton.visibility = View.VISIBLE
 
-            } else {
+            }
+            else {
+                Log.d(TAG, "onViewCreated: ${hits.size}")
                 binding.emptyLayout.visibility = View.INVISIBLE
                 binding.productList.visibility = View.VISIBLE
 
-                lifecycleScope.launch(Dispatchers.IO) {
-                    val productInfos = hits as List<ProductInfo>
+                if (viewModel.running.value == true) {
+                    Log.d(TAG, "onViewCreated: ${hits.size} already running true")
+                    viewModel.pendingHits = hits
+                }
+                else {
+                    lifecycleScope.launch {
+                        viewModel.running.value = true
 
-                    val products = viewModel.getProducts(productInfos)
+                        showProducts(hits, productAdapter)
 
-                    withContext(Dispatchers.Main) {
-                        // Shimmer off
-                        binding.apply {
-                            shimmerFrameLayout.visibility = View.INVISIBLE
-                            shimmerFrameLayout.stopShimmer()
-                            productList.visibility = View.VISIBLE
-                        }
-
-                        productAdapter.addProducts(products)
+                        viewModel.running.value = false
                     }
+                }
+            }
+
+        }
+
+        viewModel.running.observe(viewLifecycleOwner) { running ->
+            if (running != null && running == false) {
+                if (viewModel.pendingHits != null) {
+                    Log.d(TAG, "onViewCreated: called after previous product pending hits size ${viewModel.pendingHits?.size ?: 0} ")
+                    val hits = viewModel.pendingHits
+                    lifecycleScope.launch {
+                        Log.d(TAG, "onViewCreated: called after previous product loading finished")
+                      //  Log.d(TAG, "onViewCreated: next product size ${viewModel.pendingHits!!.size}")
+                        showProducts(hits, productAdapter)
+                    }
+                    viewModel.pendingHits = null
                 }
             }
 
@@ -141,14 +159,42 @@ class ProductFragment : Fragment() {
         connection += viewModel.searchBox.connectView(searchBoxView)
         connection += viewModel.stats.connectView(statsView, StatsPresenterImpl())
 
-        Log.d(TAG, "onViewCreated: product fragment")
+    }
+
+    private suspend fun showProducts(
+        hits: PagedList<ProductInfoModel>?,
+        productAdapter: ProductAdapter
+    ) {
+        lifecycleScope.launch {
+            if(hits != null){
+                Log.d(TAG, "onViewCreated showProducts: ${hits.size} inside show products ")
+                val productInfos = hits as List<ProductInfoModel>
+                val products = viewModel.getProducts(productInfos)
+
+                if (products.contains(null)) {
+                    showProducts(hits, productAdapter)
+                } else {
+                    // Shimmer off
+                    binding.apply {
+                        shimmerFrameLayout.visibility = View.INVISIBLE
+                        shimmerFrameLayout.stopShimmer()
+                        productList.visibility = View.VISIBLE
+                    }
+
+                    productAdapter.addProducts(products)
+                }
+
+                Log.d(TAG, "onViewCreated showProducts: finished ${hits.size}")
+            }
+            else
+
+                Log.d(TAG, "onViewCreated showProducts: else case hits null  pending hits size${viewModel.pendingHits?.size ?: 0}")
+        }.join()
     }
 
     private fun restart() {
         requireActivity().finish()
-        //requireActivity().overridePendingTransition(0, 0)
         startActivity(requireActivity().intent)
-        //requireActivity().overridePendingTransition(0, 0)
     }
 
     private fun handleSignIn() {
@@ -159,12 +205,12 @@ class ProductFragment : Fragment() {
         }
     }
 
-
     // handles error(View cannot call navigate to product detail fragment)
     private fun onItemClicked(id: String) {
         val currentDestinationIsProductsPage =
             this.findNavController().currentDestination == this.findNavController()
                 .findDestination(R.id.productFragment)
+
         val currentDestinationIsProductsDetails =
             this.findNavController().currentDestination == this.findNavController()
                 .findDestination(R.id.productDetailFragment)
@@ -213,8 +259,7 @@ class ProductFragment : Fragment() {
         if (binding.searchView.visibility == View.GONE) {
             binding.searchView.visibility = View.VISIBLE
             binding.searchView.requestFocus()
-            val imm =
-                context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
             searchItem.icon =
                 AppCompatResources.getDrawable(requireContext(), R.drawable.ic_baseline_close_24)
@@ -223,7 +268,7 @@ class ProductFragment : Fragment() {
             searchItem.icon =
                 AppCompatResources.getDrawable(requireContext(), R.drawable.ic_baseline_search_24)
 
-            //binding.searchView.setQuery("", true)
+            binding.searchView.setQuery("", true)
             binding.searchView.clearFocus()
         }
     }
@@ -233,7 +278,6 @@ class ProductFragment : Fragment() {
         fragmentActivity.finish()
         AuthUI.getInstance().signOut(fragmentActivity)
         startActivity(Intent(fragmentActivity, SignInActivity::class.java))
-
     }
 
     private fun gotoFilterFragment() {

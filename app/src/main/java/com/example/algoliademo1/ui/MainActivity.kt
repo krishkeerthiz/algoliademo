@@ -1,8 +1,11 @@
 package com.example.algoliademo1.ui
 
+//import com.example.algoliademo1.ShoppingApplication
+import android.content.ContentValues.TAG
 import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +17,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.algoliademo1.R
-//import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.databinding.ActivityMainBinding
 import com.example.algoliademo1.util.NetworkUtil
 import com.example.toastlibrary.ECToast
@@ -29,13 +31,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
         val sharedPreferences = getSharedPreferences(SHOPIZY, MODE_PRIVATE)
-        val firstTime = sharedPreferences.getBoolean(BOTTOM_NAV_PREFERENCE, false)
+        val firstTime = sharedPreferences.getBoolean(BOTTOM_NAV_PREFERENCE, true)
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
@@ -93,19 +94,28 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    private fun checkInternet() {
-        if(!NetworkUtil.isNetworkAvailable(applicationContext))
-            ECToast.show(applicationContext, "Please check internet connection")
-            //ECToast.show(applicationContext, "hi")
-            //Toast.makeText(applicationContext, "Please check internet connection", Toast.LENGTH_SHORT).show()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
+    private fun checkInternet() {
+        if (!NetworkUtil.isNetworkAvailable(applicationContext))
+            ECToast.show(applicationContext, "Please check internet connection")
+        //ECToast.show(applicationContext, "hi")
+        //Toast.makeText(applicationContext, "Please check internet connection", Toast.LENGTH_SHORT).show()
+    }
+
 
     private fun onBoarding(
         firstTime: Boolean,
         view: ConstraintLayout,
         sharedPreferences: SharedPreferences
     ) {
-        if (!firstTime) {
+        if (firstTime) {
             TapTargetSequence(this).targets(
                 TapTarget.forView(
                     view.findViewById(R.id.productFragment),
@@ -189,15 +199,17 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
                     .targetRadius(60),
             ).listener(object : TapTargetSequence.Listener {
                 override fun onSequenceFinish() {
+
+                    Log.d(TAG, "onSequenceFinish: First time error")
                     val sharedPreferencesEdit = sharedPreferences.edit()
-                    sharedPreferencesEdit.putBoolean(BOTTOM_NAV_PREFERENCE, true)
+                    sharedPreferencesEdit.putBoolean(BOTTOM_NAV_PREFERENCE, false)
                     sharedPreferencesEdit.apply()
 
-                    restart()
+                    //  restart()
                 }
 
                 override fun onSequenceStep(lastTarget: TapTarget, targetClicked: Boolean) {
-                   // Toast.makeText(this@MainActivity, "GREAT!", Toast.LENGTH_SHORT).show()
+                    // Toast.makeText(this@MainActivity, "GREAT!", Toast.LENGTH_SHORT).show()
                 }
 
                 override fun onSequenceCanceled(lastTarget: TapTarget) {}
@@ -205,12 +217,12 @@ class MainActivity : AppCompatActivity(), NavController.OnDestinationChangedList
         }
     }
 
-    private fun restart(){
-        finish()
-        startActivity(intent)
-    }
+//    private fun restart() {
+//        finish()
+//        startActivity(intent)
+//    }
 
-    companion object{
+    companion object {
         private const val BOTTOM_NAV_PREFERENCE = "COMPLETED_ON_BOARDING_BOTTOM_NAVIGATION"
         private const val SHOPIZY = "SHOPIZY"
     }

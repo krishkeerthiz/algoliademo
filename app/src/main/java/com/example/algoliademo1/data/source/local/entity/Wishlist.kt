@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
+// User's wishlist products are stored here
 @Entity
 data class Wishlist(
     @ColumnInfo(name = "user_id") val userId: String,

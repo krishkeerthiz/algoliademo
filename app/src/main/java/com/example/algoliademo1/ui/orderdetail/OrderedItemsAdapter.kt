@@ -8,9 +8,9 @@ import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.OrderItemBinding
 import com.example.algoliademo1.model.ProductQuantityModel
 
-class OrderedItemsAdapter(private val onClickListener: OrderedItemOnClickListener,
-
-) :
+class OrderedItemsAdapter(
+    private val onClickListener: OrderedItemOnClickListener,
+    ) :
     RecyclerView.Adapter<OrderedItemsViewHolder>() {
 
     private var productQuantityModels: List<ProductQuantityModel> = listOf()
@@ -18,12 +18,12 @@ class OrderedItemsAdapter(private val onClickListener: OrderedItemOnClickListene
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderedItemsViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = OrderItemBinding.inflate(view, parent, false)
+
         return OrderedItemsViewHolder(binding).apply {
-            binding.orderRatingText.setOnClickListener{
+            binding.orderRatingText.setOnClickListener {
                 onClickListener.onItemClick(productQuantityModels[absoluteAdapterPosition].product.productId)
             }
         }
-
     }
 
     override fun onBindViewHolder(holder: OrderedItemsViewHolder, position: Int) {
@@ -39,7 +39,7 @@ class OrderedItemsAdapter(private val onClickListener: OrderedItemOnClickListene
 
     override fun getItemCount() = productQuantityModels.size
 
-    fun addProductQuantityModels(models: List<ProductQuantityModel>){
+    fun addProductQuantityModels(models: List<ProductQuantityModel>) {
         productQuantityModels = models
         notifyDataSetChanged()
     }
@@ -56,7 +56,10 @@ class OrderedItemsViewHolder(
 
         binding.orderItemName.text = product.name
 
-        val price = binding.orderItemPrice.context.getString(R.string.currency) + String.format("%.2f", product.price)
+        val price = binding.orderItemPrice.context.getString(R.string.currency) + String.format(
+            "%.2f",
+            product.price
+        )
 
         binding.orderItemPrice.text = price
 
@@ -67,7 +70,11 @@ class OrderedItemsViewHolder(
 
         binding.orderItemCount.text = productCount.toString()
 
-        val totalPrice = binding.orderItemTotalPrice.context.getString(R.string.currency) + String.format("%.2f", (product.price) * productCount)
+        val totalPrice =
+            binding.orderItemTotalPrice.context.getString(R.string.currency) + String.format(
+                "%.2f",
+                (product.price) * productCount
+            )
 
         binding.orderItemTotalPrice.text = totalPrice
 
@@ -75,6 +82,7 @@ class OrderedItemsViewHolder(
 }
 
 class OrderedItemOnClickListener(
-    private val itemClickListener: (productId: String) -> Unit) {
+    private val itemClickListener: (productId: String) -> Unit
+) {
     fun onItemClick(productId: String) = itemClickListener(productId)
 }

@@ -16,6 +16,7 @@ import com.algolia.instantsearch.helper.filter.facet.connectView
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentFacetBinding
 import com.example.algoliademo1.ui.ProductsFiltersViewModel
+import com.example.algoliademo1.ui.ProductsFiltersViewModelFactory
 
 class FacetFragment : Fragment() {
 
@@ -36,7 +37,10 @@ class FacetFragment : Fragment() {
 
         binding = FragmentFacetBinding.bind(view)
 
-         val viewModel = ViewModelProvider(requireActivity())[ProductsFiltersViewModel::class.java]
+        //connection.clear()
+
+        val viewModelFactory = ProductsFiltersViewModelFactory(requireContext())
+        val viewModel = ViewModelProvider(requireActivity(), viewModelFactory)[ProductsFiltersViewModel::class.java]
 
         val adapterFacet1 = FacetListAdapter(MyFacetListViewHolder1.Factory)
         val adapterFacet2 = FacetListAdapter(MyFacetListViewHolder2.Factory)

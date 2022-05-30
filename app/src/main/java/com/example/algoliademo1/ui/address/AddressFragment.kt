@@ -20,14 +20,13 @@ import com.example.algoliademo1.util.doorNumberCheck
 import com.example.algoliademo1.util.streetCheck
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AddressFragment : Fragment() {
     private lateinit var binding: FragmentAddressBinding
-    private val viewModel: AddressViewModel by viewModels()
+    private val viewModel: AddressViewModel by viewModels {
+        AddressViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -103,6 +102,36 @@ class AddressFragment : Fragment() {
 
     }
 
+//    private fun showAlertDialog() {
+//        val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
+//
+//            setTitle("Confirm order")
+//            setMessage("Do you want to place order?")
+//
+//            setPositiveButton("Yes") { _, _ ->
+//                lifecycleScope.launch(IO) {
+//                    val order = viewModel.placeOrder()
+//
+//                    withContext(Main) { // Dispatchers is redundant
+//                        Toast.makeText(
+//                            requireContext(),
+//                            "Order placed successfully",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                        gotoOrderDetailFragment(order)
+//                    }
+//                }
+//            }
+//            setNegativeButton("No") { dialogInterface, _ ->
+//                dialogInterface.cancel()
+//            }
+//            setCancelable(true)
+//        }
+//
+//        val alertDialog = alertDialogBuilder.create()
+//        alertDialog.show()
+//    }
+
     private fun showAlertDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
 
@@ -110,10 +139,17 @@ class AddressFragment : Fragment() {
             setMessage("Do you want to place order?")
 
             setPositiveButton("Yes") { _, _ ->
-                lifecycleScope.launch(IO) {
+                lifecycleScope.launch {
                     val order = viewModel.placeOrder()
 
-                    withContext(Main) { // Dispatchers is redundant
+                    if(order == null){
+                        Toast.makeText(
+                            requireContext(),
+                            "Error placing order",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    else{
                         Toast.makeText(
                             requireContext(),
                             "Order placed successfully",
@@ -131,7 +167,6 @@ class AddressFragment : Fragment() {
 
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
-
     }
 
     private fun showPincodeDialog() {
@@ -153,9 +188,8 @@ class AddressFragment : Fragment() {
             viewModel.getPincodeDetails(pincodeEditText.text.toString())
 
             viewModel.pincodeModel.observe(viewLifecycleOwner) { pincodeList ->
+                binding.loadingPanel.visibility = View.INVISIBLE
                 if (pincodeList != null) {
-                    binding.loadingPanel.visibility = View.INVISIBLE
-
                     if (pincodeList[0].postOffice == null) {
                         Toast.makeText(
                             requireContext(),
@@ -167,7 +201,6 @@ class AddressFragment : Fragment() {
                         showPincodeDialog()
                     } else {
                         turnOnButttons()
-
                         val postOffices = pincodeList[0].postOffice!!
                         viewModel.addPincodeDetail(postOffices)
 
@@ -175,8 +208,22 @@ class AddressFragment : Fragment() {
                         dialogInterface.dismiss()
                         showAddAddressDialog()
                     }
-
                 }
+            }
+        }
+
+        viewModel.apiError.observe(viewLifecycleOwner) { error ->
+            if (error) {
+                binding.loadingPanel.visibility = View.INVISIBLE
+                turnOnButttons()
+
+                Toast.makeText(
+                    requireContext(),
+                    "API Service unavailable",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                viewModel.apiError.value = false
             }
         }
 
@@ -249,7 +296,7 @@ class AddressFragment : Fragment() {
         stateText.text = viewModel.pincodeDetail?.state
         pincodeText.text = viewModel.pincodeDetail?.pincode.toString()
 
-        citiesDropdown.apply{
+        citiesDropdown.apply {
             isCursorVisible = false
             isFocusable = false
         }
@@ -351,4 +398,5 @@ class AddressFragment : Fragment() {
         binding.placeOrderButton.isClickable = true
         binding.addAddressButton.isClickable = true
     }
+
 }

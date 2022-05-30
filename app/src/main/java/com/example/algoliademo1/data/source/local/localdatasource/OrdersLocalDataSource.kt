@@ -4,7 +4,7 @@ import com.example.algoliademo1.data.source.datasource.OrdersDataSource
 import com.example.algoliademo1.data.source.local.dao.OrderDao
 import com.example.algoliademo1.data.source.local.dao.OrderItemsDao
 import com.example.algoliademo1.data.source.local.dao.OrdersDao
-import com.example.algoliademo1.data.source.local.entity.ItemCount
+import com.example.algoliademo1.model.ItemCountModel
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.data.source.local.entity.OrderItems
 import com.example.algoliademo1.data.source.local.entity.Orders
@@ -20,7 +20,7 @@ class OrdersLocalDataSource(
         userId: String,
         orderId: String,
         addressId: String,
-        items: List<ItemCount>,
+        items: List<ItemCountModel>,
         total: Float
     ) {
         //Create new order
@@ -35,7 +35,7 @@ class OrdersLocalDataSource(
             orderItemsDao.insert(OrderItems(orderId, item.productId, item.quantity))
     }
 
-    override suspend fun getOrderItems(orderId: String): List<ItemCount> {
+    override suspend fun getOrderItems(orderId: String): List<ItemCountModel> {
         return orderItemsDao.getProductsAndQuantities(orderId)
     }
 

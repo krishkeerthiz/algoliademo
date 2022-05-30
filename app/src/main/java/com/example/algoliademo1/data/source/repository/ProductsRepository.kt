@@ -1,73 +1,66 @@
 package com.example.algoliademo1.data.source.repository
 
-import android.content.ContentValues.TAG
-import android.util.Log
+import android.content.Context
 import androidx.lifecycle.LiveData
-import com.example.algoliademo1.ShoppingApplication
 import com.example.algoliademo1.data.source.datasource.ProductsDataSource
+import com.example.algoliademo1.data.source.local.ShoppingRoomDatabase
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.local.localdatasource.ProductsLocalDataSource
 import com.example.algoliademo1.data.source.remote.remotedatasource.ProductRemoteDataSource
 import com.example.algoliademo1.model.ProductModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-object ProductsRepository {
+class ProductsRepository(context: Context) {
 
     private val dataSource: ProductsDataSource
     private val remoteDataSource: ProductRemoteDataSource
 
-    suspend fun getProducts(): List<Product> = dataSource.getProducts()
+    init {
+        val dbInstance = ShoppingRoomDatabase.getDatabase(context, CoroutineScope(IO))
+        dataSource =
+            ProductsLocalDataSource(dbInstance.productsDao(), dbInstance.productRatingsDao())
 
-    suspend fun getProducts(productIds: List<String>?): List<Product?> =
-        dataSource.getProducts(productIds)
-
-    suspend fun getProductsSize() = withContext(Dispatchers.IO){
-        return@withContext dataSource.getProductsSize()
+        remoteDataSource = ProductRemoteDataSource()
     }
 
-    suspend fun getProduct(productId: String): Product? {
-        val product =
-            withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                dataSource.getProduct(productId)
-            }
-        return product
+    suspend fun getProducts(): List<Product> = withContext(IO) { dataSource.getProducts() }
+
+    suspend fun getProducts(productIds: List<String>?): List<Product?> = withContext(IO) {
+        dataSource.getProducts(productIds)
+    }
+
+    suspend fun getProductsSize() = withContext(IO) {
+        dataSource.getProductsSize()
+    }
+
+    suspend fun getProduct(productId: String): Product? = withContext(IO) {
+        dataSource.getProduct(productId)
     }
 
     suspend fun addRating(productId: String, rating: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(IO).launch {
             dataSource.addRating(productId, rating)
-        }
+        }.join()
     }
 
-    suspend fun getUserRating(productId: String): Int? {
-        val rating =
-            withContext(CoroutineScope(Dispatchers.IO).coroutineContext) {
-                dataSource.getUserRating(productId)
-            }
-        return rating
+    suspend fun getUserRating(productId: String): Int? = withContext(IO) {
+        dataSource.getUserRating(productId)
     }
 
-    suspend fun addProductToLocal(productModel: ProductModel, dbSize: Int){
-        dataSource.insertProduct(productModelToProduct(productModel, dbSize))
+    suspend fun addProductToLocal(productModel: ProductModel, dbSize: Int) {
+        CoroutineScope(IO).launch {
+            dataSource.insertProduct(productModelToProduct(productModel, dbSize))
+        }.join()
     }
 
     fun addProductToRemote(productModel: ProductModel): LiveData<Boolean?> {
-
-        Log.d(TAG, "upload: addProductToRemote: ")
         return remoteDataSource.addProduct("6227", productModel)
-
     }
 
     private fun productModelToProduct(productModel: ProductModel, dbSize: Int): Product {
-//        var dbSize = 0
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            dbSize = dataSource.getProductsSize()
-//        }.join()
-
         return Product(
             dbSize.toString(),
             productModel.brand,
@@ -85,25 +78,17 @@ object ProductsRepository {
         )
     }
 
-    init {
-        val dbInstance = ShoppingApplication.database
-//        val dbInstance = ShoppingRoomDatabase.getDatabase()
-        dataSource =
-            ProductsLocalDataSource(dbInstance.productsDao(), dbInstance.productRatingsDao())
 
-        remoteDataSource = ProductRemoteDataSource()
+    companion object {
+        @Volatile
+        private var INSTANCE: ProductsRepository? = null
+
+        fun getRepository(context: Context): ProductsRepository {
+            return INSTANCE ?: synchronized(this) {
+                ProductsRepository(context).also {
+                    INSTANCE = it
+                }
+            }
+        }
     }
-
-//    companion object {
-//        @Volatile
-//        private var INSTANCE: ProductsRepository? = null
-//
-//        fun getRepository(): ProductsRepository {
-//            return INSTANCE ?: synchronized(this) {
-//                ProductsRepository().also {
-//                    INSTANCE = it
-//                }
-//            }
-//        }
-//    }
 }

@@ -1,19 +1,23 @@
 package com.example.algoliademo1.data.source.repository
 
-import com.example.algoliademo1.ShoppingApplication
+import android.content.Context
 import com.example.algoliademo1.data.source.datasource.OrdersDataSource
-import com.example.algoliademo1.data.source.local.entity.ItemCount
+import com.example.algoliademo1.data.source.local.ShoppingRoomDatabase
+import com.example.algoliademo1.model.ItemCountModel
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.data.source.local.localdatasource.OrdersLocalDataSource
 import com.example.algoliademo1.data.source.remote.FirebaseService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-object OrdersRepository {
+class OrdersRepository(context: Context) {
 
     private var dataSource: OrdersDataSource
 
     init {
-        val dbInstance = ShoppingApplication.database
-        //val dbInstance = ShoppingRoomDatabase.getDatabase()
+        val dbInstance = ShoppingRoomDatabase.getDatabase(context, CoroutineScope(IO))
         dataSource = OrdersLocalDataSource(
             dbInstance.orderDao(),
             dbInstance.ordersDao(),
@@ -24,45 +28,49 @@ object OrdersRepository {
     suspend fun placeOrder(
         userId: String, orderId: String,
         addressId: String,
-        items: List<ItemCount>,
+        items: List<ItemCountModel>,
         total: Float
     ) {
-        dataSource.addNewOrder(userId, orderId, addressId, items, total)
+        CoroutineScope(IO).launch {
+            dataSource.addNewOrder(userId, orderId, addressId, items, total)
+        }.join()
     }
 
     suspend fun getOrders(): List<Order> {
-        val orderIds = dataSource.getOrders(FirebaseService.userId)
+        return withContext(IO) {
+            val orderIds = dataSource.getOrders(FirebaseService.userId)
 
-        val orders = mutableListOf<Order>()
-        for (orderId in orderIds) {
-            orders.add(dataSource.getOrder(orderId))
+            val orders = mutableListOf<Order>()
+            for (orderId in orderIds) {
+                orders.add(dataSource.getOrder(orderId))
+            }
+
+            orders
         }
-
-        return orders
     }
 
-    suspend fun getOrder(orderId: String): Order {
-        return dataSource.getOrder(orderId)
+    suspend fun getOrder(orderId: String): Order = withContext(IO) {
+        dataSource.getOrder(orderId)
     }
 
-    suspend fun getOrderItemsId(orderId: String): List<String> {
-        return dataSource.getOrderItemsIds(orderId)
+    suspend fun getOrderItemsId(orderId: String): List<String> = withContext(IO) {
+        dataSource.getOrderItemsIds(orderId)
     }
 
-    suspend fun getOrderItemQuantity(orderId: String, productId: String): Int {
-        return dataSource.getOrderItemQuantity(orderId, productId)
+    suspend fun getOrderItemQuantity(orderId: String, productId: String): Int = withContext(IO) {
+        dataSource.getOrderItemQuantity(orderId, productId)
     }
 
-//    companion object {
-//        @Volatile
-//        private var Instance: OrdersRepository? = null
-//
-//        fun getRepository(): OrdersRepository {
-//            return Instance ?: synchronized(this) {
-//                OrdersRepository().also {
-//                    Instance = it
-//                }
-//            }
-//        }
-//    }
+    companion object {
+        @Volatile
+        private var Instance: OrdersRepository? = null
+
+        fun getRepository(context: Context): OrdersRepository {
+            return Instance ?: synchronized(this) {
+                OrdersRepository(context).also {
+                    Instance = it
+                }
+            }
+        }
+    }
 }

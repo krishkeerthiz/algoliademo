@@ -1,9 +1,7 @@
 package com.example.algoliademo1.ui.orders
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import androidx.lifecycle.*
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
@@ -11,12 +9,13 @@ import com.example.algoliademo1.data.source.repository.OrdersRepository
 import com.example.algoliademo1.model.OrderAddressModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class OrdersViewModel : ViewModel() {
+class OrdersViewModel(context: Context) : ViewModel() {
 
     // Repositories
-    private val ordersRepository = OrdersRepository //.getRepository()
-    private val addressRepository = AddressRepository //.getRepository()
+    private val ordersRepository = OrdersRepository.getRepository(context)
+    private val addressRepository = AddressRepository.getRepository(context)
 
     // Live data
     private val _orders = MutableLiveData<List<Order>>()
@@ -36,15 +35,34 @@ class OrdersViewModel : ViewModel() {
     }
 
     suspend fun getAddresses(orders: List<Order>): List<OrderAddressModel>{
-        val orderAddresses = mutableListOf<OrderAddressModel>()
+        return withContext(Dispatchers.Default){
+            val orderAddresses = mutableListOf<OrderAddressModel>()
 
-        viewModelScope.launch(Dispatchers.IO) {
             for(order in orders)
                 orderAddresses.add(OrderAddressModel(order, getAddress(order.addressId)))
-        }.join()
 
-        return orderAddresses
+            orderAddresses
+        }
     }
 
+//    suspend fun getAddresses(orders: List<Order>): List<OrderAddressModel>{
+//        val orderAddresses = mutableListOf<OrderAddressModel>()
+//
+//        viewModelScope.launch(Dispatchers.IO) {
+//            for(order in orders)
+//                orderAddresses.add(OrderAddressModel(order, getAddress(order.addressId)))
+//        }.join()
+//
+//        return orderAddresses
+//    }
+}
 
+
+class OrdersViewModelFactory(private val context: Context) :
+    ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return OrdersViewModel(context) as T
+    }
 }

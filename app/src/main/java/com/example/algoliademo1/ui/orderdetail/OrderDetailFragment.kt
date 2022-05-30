@@ -19,14 +19,14 @@ import com.bumptech.glide.Glide
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentOrderDetailBinding
 import com.example.algoliademo1.util.formatDate
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class OrderDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentOrderDetailBinding
-    private val viewModel: OrderDetailViewModel by viewModels()
+    private val viewModel: OrderDetailViewModel by viewModels {
+        OrderDetailViewModelFactory(requireContext())
+    }
 
     private val args: OrderDetailFragmentArgs by navArgs()
 
@@ -78,20 +78,18 @@ class OrderDetailFragment : Fragment() {
             }
         }
 
-        // Live Data
+        // Live Data // correct it
         viewModel.ordersFlag.observe(viewLifecycleOwner) { flag ->
             if (flag == true) {
                 viewModel.orders.observe(viewLifecycleOwner) { productIds ->
 
-                    lifecycleScope.launch(Dispatchers.IO) {
-
+                    lifecycleScope.launch {
                         val productsQuantity =
                             viewModel.getProductsQuantity(productIds, order.orderId)
 
-                        withContext(Dispatchers.Main) {
-                            orderItemsAdapter.addProductQuantityModels(productsQuantity)
-                            viewModel.ordersFlag.value = false
-                        }
+                        orderItemsAdapter.addProductQuantityModels(productsQuantity)
+                        viewModel.ordersFlag.value = false
+
                     }
                 }
             }
@@ -113,10 +111,10 @@ class OrderDetailFragment : Fragment() {
         val ratingBar = ratingDialog.findViewById<RatingBar>(R.id.productRatingBar)
 
         // Displaying dialog views
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             val product = viewModel.getProduct(productId)
 
-            if(product != null){
+            if (product != null) {
                 ratingItemName.text = product.name
 
                 Glide.with(ratingItemImage.context)
@@ -144,7 +142,7 @@ class OrderDetailFragment : Fragment() {
         }
 
         // Showing previous rating
-        lifecycleScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             val userRating = viewModel.getUserRating(productId)
 
             if (userRating != null) {

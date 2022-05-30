@@ -10,10 +10,10 @@ import com.example.algoliademo1.data.source.local.entity.Cart
 interface CartDao {
 
     @Query("SELECT total FROM cart WHERE user_id = :userId")
-    fun getCartTotal(userId: String): Float
+    suspend fun getCartTotal(userId: String): Float
 
     @Query("UPDATE cart SET total= :newTotal WHERE user_id = :userId")
-    fun updateCartTotal(userId: String, newTotal: Float)
+    suspend fun updateCartTotal(userId: String, newTotal: Float)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cart: Cart)

@@ -12,21 +12,21 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentCartBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CartFragment : Fragment() {
     private lateinit var binding: FragmentCartBinding
 
-    private val viewModel : CartViewModel by viewModels()
+    private val viewModel: CartViewModel by viewModels {
+        CartViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        viewModel.getCartItems()
+        viewModel.getCartItems()  // Need to check
         return inflater.inflate(R.layout.fragment_cart, container, false)
     }
 
@@ -70,13 +70,12 @@ class CartFragment : Fragment() {
                         getString(R.string.currency) + String.format("%.2f", cartModel.total)
                     binding.totalPrice.text = totalPrice
 
-                    lifecycleScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch {
 
                         val productsQuantity = viewModel.getProductsQuantity(cartModel)
 
-                        withContext(Dispatchers.Main) {
-                            cartAdapter.addProductQuantities(productsQuantity)
-                        }
+                        cartAdapter.addProductQuantities(productsQuantity)
+
                     }
                 }
 
@@ -104,7 +103,6 @@ class CartFragment : Fragment() {
 
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
-
     }
 
     private fun gotoAddressFragment() {

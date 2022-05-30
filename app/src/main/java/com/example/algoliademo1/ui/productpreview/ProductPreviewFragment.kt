@@ -23,6 +23,7 @@ class ProductPreviewFragment : Fragment() {
     private val viewModel: ProductPreviewViewModel
             by viewModels {
                 ProductPreviewViewModelFactory(
+                    requireContext(),
                     args.productModel,
                     Uri.parse(args.imageUri)
                 )

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Particular order's items and their quantities
 @Entity(tableName = "order_items")
 data class OrderItems(
     @ColumnInfo(name = "order_id") val orderId: String,

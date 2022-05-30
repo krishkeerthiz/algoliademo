@@ -9,7 +9,11 @@ import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.local.entity.ProductRatings
 import com.example.algoliademo1.data.source.remote.FirebaseService
 
-class ProductsLocalDataSource(private val productsDao: ProductsDao, private val productRatingsDao: ProductRatingsDao) : ProductsDataSource {
+class ProductsLocalDataSource(
+    private val productsDao: ProductsDao,
+    private val productRatingsDao: ProductRatingsDao
+) : ProductsDataSource {
+
     override suspend fun getProducts(): List<Product> {
         return productsDao.getProducts()
     }
@@ -18,8 +22,8 @@ class ProductsLocalDataSource(private val productsDao: ProductsDao, private val 
 
     override suspend fun getProducts(productIds: List<String>?): List<Product?> {
         val products = mutableListOf<Product?>()
-        if(productIds != null){
-            for(productId in productIds){
+        if (productIds != null) {
+            for (productId in productIds) {
                 products.add(getProduct(productId.removeSurrounding("\"", "\"")))
             }
             Log.d(TAG, "getProducts: wishlist ${products.size}")
@@ -39,9 +43,9 @@ class ProductsLocalDataSource(private val productsDao: ProductsDao, private val 
     override suspend fun addRating(productId: String, rating: Int) {
         val userRating = getUserRating(productId)
 
-        if(userRating == null)
-        productRatingsDao.insert(ProductRatings(FirebaseService.userId, productId, rating))
-        else{
+        if (userRating == null)
+            productRatingsDao.insert(ProductRatings(FirebaseService.userId, productId, rating))
+        else {
             productRatingsDao.updateRating(FirebaseService.userId, productId, rating)
         }
         val ratings = productRatingsDao.getOverallRating(productId)

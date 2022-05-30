@@ -6,6 +6,7 @@ import com.google.firebase.ktx.Firebase
 object FirebaseService {
 
     var userId = Firebase.auth.currentUser!!.uid
+    private set
 
     fun refreshUserId() {
         userId = Firebase.auth.currentUser!!.uid

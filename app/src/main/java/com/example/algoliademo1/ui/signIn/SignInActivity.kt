@@ -1,7 +1,9 @@
 package com.example.algoliademo1.ui.signIn
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.viewModels
@@ -19,7 +21,9 @@ class SignInActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignInBinding
 
-    private val viewModel: SignInViewModel by viewModels()
+    private val viewModel: SignInViewModel by viewModels{
+        SignInViewModelFactory(baseContext)
+    }
 
     private val signIn: ActivityResultLauncher<Intent> = registerForActivityResult(
         FirebaseAuthUIActivityResultContract(), this::onSignInResult
@@ -36,6 +40,7 @@ class SignInActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         if (Firebase.auth.currentUser == null) {
+            Log.d(TAG, "onStart: signin id = null")
             val signInIntent = AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(
@@ -45,6 +50,8 @@ class SignInActivity : AppCompatActivity() {
                 ).build()
             signIn.launch(signInIntent)
         } else {
+            Log.d(TAG, "onStart: signin id != null")
+            FirebaseService.refreshUserId()
             viewModel.initializeCart()
             goToMainActivity()
         }

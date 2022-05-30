@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Ratings given by each user to the products
 @Entity(tableName = "product_ratings")
 data class ProductRatings(
     @ColumnInfo(name = "user_id") val userId: String,

@@ -1,6 +1,7 @@
 package com.example.algoliademo1.ui.productpreview
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.*
@@ -12,11 +13,11 @@ import com.example.algoliademo1.model.ProductModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.*
 
-class ProductPreviewViewModel(private val productModel: ProductModel, private val uri: Uri) :
+class ProductPreviewViewModel(context: Context, private val productModel: ProductModel, private val uri: Uri) :
     ViewModel() {
 
     private val storageRepository = StorageRepository
-    private val productRepository = ProductsRepository //.getRepository()
+    private val productRepository = ProductsRepository.getRepository(context)
 
     fun uploadImage(): MutableLiveData<String?> {
         Log.d(TAG, "uploadImage: called")
@@ -64,10 +65,11 @@ class ProductPreviewViewModel(private val productModel: ProductModel, private va
 
 }
 
-class ProductPreviewViewModelFactory(private val productModel: ProductModel, private val uri: Uri) :
+class ProductPreviewViewModelFactory(private val context: Context, private val productModel: ProductModel, private val uri: Uri) :
     ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProductPreviewViewModel(productModel, uri) as T//super.create(modelClass)
+        return ProductPreviewViewModel(context, productModel, uri) as T
     }
 }

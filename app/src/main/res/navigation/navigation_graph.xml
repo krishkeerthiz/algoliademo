@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/productDetailFragment"
-        android:name="com.example.algoliademo1.ui.prductdetail.ProductDetailFragment"
+        android:name="com.example.algoliademo1.ui.productdetail.ProductDetailFragment"
         android:label="Product Detail" >
         <argument
             android:name="id"

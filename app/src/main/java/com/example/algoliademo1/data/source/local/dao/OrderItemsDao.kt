@@ -5,13 +5,13 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.algoliademo1.data.source.local.entity.OrderItems
-import com.example.algoliademo1.data.source.local.entity.ItemCount
+import com.example.algoliademo1.model.ItemCountModel
 
 @Dao
 interface OrderItemsDao {
 
     @Query("SELECT product_id, quantity FROM order_items WHERE order_id = :orderId ")
-    suspend fun getProductsAndQuantities(orderId: String): List<ItemCount>
+    suspend fun getProductsAndQuantities(orderId: String): List<ItemCountModel>
 
     @Query("SELECT quantity FROM order_items WHERE order_id = :orderId AND product_id = :productId")
     suspend fun getProductQuantity(orderId: String, productId: String): Int

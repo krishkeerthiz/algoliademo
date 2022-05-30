@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+
+// Stores all orders placed by users
 @Entity
 data class Orders(
     @ColumnInfo(name = "user_id") val userId: String,

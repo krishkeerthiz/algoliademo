@@ -1,25 +1,23 @@
 package com.example.algoliademo1.ui.wishlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.content.ContentValues.TAG
+import android.content.Context
+import android.util.Log
+import androidx.lifecycle.*
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.CartRepository
 import com.example.algoliademo1.data.source.repository.ProductsRepository
 import com.example.algoliademo1.data.source.repository.WishlistRepository
 import com.example.algoliademo1.model.WishlistModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class WishlistViewModel : ViewModel() {
+class WishlistViewModel(context: Context) : ViewModel() {
 
     // Repositories
-    private val wishlistRepository = WishlistRepository //.getRepository()
-    private val cartRepository = CartRepository //.getRepository()
-    private val productRepository = ProductsRepository //.getRepository()
+    private val wishlistRepository = WishlistRepository.getRepository(context)
+    private val cartRepository = CartRepository.getRepository(context)
+    private val productRepository = ProductsRepository.getRepository(context)
 
     // Livedata
     private val _wishlistModel = MutableLiveData<WishlistModel>()
@@ -29,22 +27,24 @@ class WishlistViewModel : ViewModel() {
     fun getWishlistItems() {
         viewModelScope.launch {
             val productIds = wishlistRepository.getWishlist(FirebaseService.userId)
-            val model = if (productIds.isEmpty()) WishlistModel(listOf()) else WishlistModel(productIds)
+            val model =
+                if (productIds.isEmpty()) WishlistModel(listOf()) else WishlistModel(productIds)
             _wishlistModel.value = model
         }
     }
 
     suspend fun getWishlistProducts(productIds: List<String>?): List<Product?> {
         var products = listOf<Product?>()
-        viewModelScope.launch { 
+        viewModelScope.launch {
             products = productRepository.getProducts(productIds)
         }.join()
-       return products
+        return products
     }
 
     fun removeFromWishlistAndUpdate(productId: String) {
         viewModelScope.launch {
             wishlistRepository.removeFromWishlist(FirebaseService.userId, productId)
+            Log.d(TAG, "addToCart: viewmodel ")
             getWishlistItems()
         }
     }
@@ -63,10 +63,13 @@ class WishlistViewModel : ViewModel() {
 //        return count.await()
 //    }
 
-    suspend fun getProductCount(productId: String) = withContext(Dispatchers.IO){
-        cartRepository.getProductQuantity(FirebaseService.userId, productId)
-    }
+//    suspend fun getProductCount(productId: String) = withContext(Dispatchers.IO){
+//        return@withContext cartRepository.getProductQuantity(FirebaseService.userId, productId)
+//    }
 
+    suspend fun getProductCount(productId: String): Int? {
+        return cartRepository.getProductQuantity(FirebaseService.userId, productId)
+    }
 
     private suspend fun removeFromWishlist(productId: String) {
         viewModelScope.launch {
@@ -81,12 +84,22 @@ class WishlistViewModel : ViewModel() {
             for (productId in productIds) {
                 val productCount = getProductCount(productId)
 
-                if (productCount == 0)
+                if (productCount == null || productCount == 0)  // when product not found in cart db, null is the return type
                     cartRepository.addToCart(productId)
 
                 removeFromWishlist(productId)
             }
         }.join()
         getWishlistItems()
+    }
+}
+
+
+class WishlistViewModelFactory(private val context: Context) :
+    ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return WishlistViewModel(context) as T
     }
 }

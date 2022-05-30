@@ -27,32 +27,29 @@ class ProductAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = ProductCardBinding.inflate(view, parent, false)
-        Log.d(TAG, "onCreateViewHolder: Adapter click listener")
+
         return ProductViewHolder(binding).apply {
             itemView.setOnClickListener {
                 val product = products[absoluteAdapterPosition]
+
                 if(product != null)
                 onClickListener.onClick(product.productId)
+                else
+                    Log.d(TAG, "onCreateViewHolder: First time error clicked restricted")
             }
         }
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
-        //holder.setIsRecyclable(false) // to prevent showing old data while loading new data
+
         val product = products[position]
 
         if(product != null)  // First time product could become null
             holder.bind(product)
-
-        //Log.d(TAG, "onBindViewHolder: bind viewholder ${product?.productId}")
-
-        Log.d(TAG, "onBindViewHolder: Adapter click listener")
-
     }
 
     override fun getItemCount(): Int {
         return if(products.size > limit) limit else products.size
-        //return products.size
     }
 }
 
@@ -62,6 +59,7 @@ class ProductViewHolder(
 
     fun bind(product: Product) {
 
+        
         binding.apply {
             productName.text = product.name
             productBrand.text = product.brand
@@ -76,8 +74,6 @@ class ProductViewHolder(
                 .placeholder(R.drawable.spinner1)
                 .into(binding.productImage)
         }
-
-        Log.d(TAG, "bind: products ${product.productId}")
 
     }
 }

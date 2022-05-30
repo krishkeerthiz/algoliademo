@@ -1,9 +1,7 @@
 package com.example.algoliademo1.ui.orderdetail
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import androidx.lifecycle.*
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.FirebaseService
 import com.example.algoliademo1.data.source.repository.AddressRepository
@@ -14,11 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class OrderDetailViewModel : ViewModel() {
+class OrderDetailViewModel(context: Context) : ViewModel() {
     // Repositories
-    private val ordersRepository = OrdersRepository //.getRepository()
-    private val addressRepository = AddressRepository //.getRepository()
-    private val productsRepository = ProductsRepository //.getRepository()
+    private val ordersRepository = OrdersRepository.getRepository(context)
+    private val addressRepository = AddressRepository.getRepository(context)
+    private val productsRepository = ProductsRepository.getRepository(context)
 
     lateinit var orderId: String
 
@@ -60,18 +58,12 @@ class OrderDetailViewModel : ViewModel() {
     }
 
     private suspend fun getOrderItemQuantity(orderId: String, productId: String) =
-        withContext(Dispatchers.IO) {
-            ordersRepository.getOrderItemQuantity(orderId, productId)
-        }
+        ordersRepository.getOrderItemQuantity(orderId, productId)
 
-    private suspend fun getOrderProducts(productIds: List<String>?): List<Product?> {
-        var products = listOf<Product?>()
-        viewModelScope.launch {
-            products = productsRepository.getProducts(productIds)
-        }.join()
 
-        return products
-    }
+    private suspend fun getOrderProducts(productIds: List<String>?): List<Product?> =
+         productsRepository.getProducts(productIds)
+
 
     fun addRating(productId: String, rating: Int) {
         viewModelScope.launch {
@@ -84,33 +76,39 @@ class OrderDetailViewModel : ViewModel() {
         orderId: String
     ): List<ProductQuantityModel> {
 
-        val productsQuantity = mutableListOf<ProductQuantityModel>()
+        return withContext(Dispatchers.Default){
+            val productsQuantity = mutableListOf<ProductQuantityModel>()
 
-        viewModelScope.launch {
             val products = getOrderProducts(productIds)
 
             for (product in products) {
                 if(product != null)
-                productsQuantity.add(
-                    ProductQuantityModel(
-                        product,
-                        getOrderItemQuantity(orderId, product.productId)
+                    productsQuantity.add(
+                        ProductQuantityModel(
+                            product,
+                            getOrderItemQuantity(orderId, product.productId)
+                        )
                     )
-                )
             }
-        }.join()
 
-        return productsQuantity
+            productsQuantity
+        }
     }
 
-    suspend fun getProduct(productId: String) = withContext(Dispatchers.IO) {
+    suspend fun getProduct(productId: String) =
         productsRepository.getProduct(productId)
-    }
 
-
-    suspend fun getUserRating(productId: String) = withContext(Dispatchers.IO) {
+    suspend fun getUserRating(productId: String) =
         productsRepository.getUserRating(productId)
-    }
+}
 
+
+class OrderDetailViewModelFactory(private val context: Context) :
+    ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return OrderDetailViewModel(context) as T
+    }
 }
 

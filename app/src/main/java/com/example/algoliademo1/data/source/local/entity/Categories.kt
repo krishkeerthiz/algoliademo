@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Product categories
 @Entity
 data class Categories(
     @ColumnInfo(name = "product_id") val productId: String,

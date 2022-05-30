@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Contains cart total, cart items are kept in separate table(CartItems)
 @Entity
 data class Cart(
     @ColumnInfo(name = "user_id") val userId: String,

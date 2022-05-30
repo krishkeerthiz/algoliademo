@@ -5,6 +5,7 @@ import com.algolia.search.model.APIKey
 import com.algolia.search.model.ApplicationID
 import io.ktor.client.features.logging.*
 
+
 class AlgoliaIndex {
 
     companion object {

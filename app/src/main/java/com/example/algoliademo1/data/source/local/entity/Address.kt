@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+// Address specific details are stored here
 @Entity
 data class Address(
     @PrimaryKey @ColumnInfo(name = "address_id") var addressId: String,

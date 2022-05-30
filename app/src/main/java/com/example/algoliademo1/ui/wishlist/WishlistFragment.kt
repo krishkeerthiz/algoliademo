@@ -13,14 +13,14 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.R
 import com.example.algoliademo1.databinding.FragmentWishlistBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class WishlistFragment : Fragment() {
 
     private lateinit var binding: FragmentWishlistBinding
-    private val viewModel: WishlistViewModel by viewModels()
+    private val viewModel: WishlistViewModel by viewModels {
+        WishlistViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +28,7 @@ class WishlistFragment : Fragment() {
     ): View? {
         return inflater.inflate(R.layout.fragment_wishlist, container, false)
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,11 +65,9 @@ class WishlistFragment : Fragment() {
 
                     // binding.addAllToCartButton.isClickable = !wishlistModel.products.isNullOrEmpty()
 
-                    lifecycleScope.launch(Dispatchers.IO) {
+                    lifecycleScope.launch {
                         val wishlistProducts = viewModel.getWishlistProducts(wishlistModel.products)
-                        withContext(Dispatchers.Main) {
-                            wishlistAdapter.addWishlistProducts(wishlistProducts)
-                        }
+                        wishlistAdapter.addWishlistProducts(wishlistProducts)
                     }
                 }
 
@@ -77,29 +76,40 @@ class WishlistFragment : Fragment() {
 
         // Add all to cart button
         binding.addAllToCartButton.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
+            lifecycleScope.launch {
                 viewModel.addAllToCart()
             }
             Toast.makeText(requireContext(), "Products added to cart", Toast.LENGTH_SHORT).show()
         }
     }
 
+    //    private fun addToCart(productId: String?, price: Float) {
+//        if(productId != null){
+//            lifecycleScope.launch(Dispatchers.IO) {
+//                val cartProductCount = viewModel.getProductCount(productId)
+//
+//                if (cartProductCount == null || cartProductCount == 0)
+//                    viewModel.addToCart(productId, price)
+//
+//                viewModel.removeFromWishlistAndUpdate(productId)
+//            }
+//        }
+//    }
     private fun addToCart(productId: String?, price: Float) {
-        if(productId != null){
-            lifecycleScope.launch(Dispatchers.IO) {
-                val productCount = viewModel.getProductCount(productId)
+        if (productId != null) {
+            lifecycleScope.launch {
+                val cartProductCount = viewModel.getProductCount(productId)
 
-                if (productCount == 0)
+                if (cartProductCount == null || cartProductCount == 0)
                     viewModel.addToCart(productId, price)
 
                 viewModel.removeFromWishlistAndUpdate(productId)
             }
         }
-
     }
 
     private fun gotoProductDetailFragment(productId: String?) {
-        if(productId != null){
+        if (productId != null) {
             val action =
                 WishlistFragmentDirections.actionWishlistFragmentToProductDetailFragment(productId)
             view?.findNavController()?.navigate(action)
@@ -108,7 +118,7 @@ class WishlistFragment : Fragment() {
     }
 
     private fun showAlertDialog(productId: String?) {
-        if(productId != null){
+        if (productId != null) {
             val alertDialogBuilder = AlertDialog.Builder(requireContext()).apply {
 
                 setTitle("Remove product")
@@ -116,7 +126,8 @@ class WishlistFragment : Fragment() {
 
                 setPositiveButton("Yes") { _, _ ->
                     viewModel.removeFromWishlistAndUpdate(productId)
-                    Toast.makeText(requireContext(), "removed from wishlist", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "removed from wishlist", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 setNegativeButton("No") { dialogInterface, _ ->

@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.algoliademo1.R
 import com.example.algoliademo1.data.source.local.entity.Order
 import com.example.algoliademo1.databinding.FragmentOrdersBinding
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class OrdersFragment : Fragment() {
 
     private lateinit var binding: FragmentOrdersBinding
-    private val viewModel: OrdersViewModel by viewModels()
+    private val viewModel: OrdersViewModel by viewModels {
+        OrdersViewModelFactory(requireContext())
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +40,6 @@ class OrdersFragment : Fragment() {
                 gotoOrderDetailsFragment(order)
             }
         )
-
-
 
         // Getting orders
         viewModel.getOrders()
@@ -65,12 +63,11 @@ class OrdersFragment : Fragment() {
                     binding.emptyLayout.visibility = View.INVISIBLE
                     binding.ordersList.visibility = View.VISIBLE
                 }
-                lifecycleScope.launch(Dispatchers.IO){
+                lifecycleScope.launch {
                     val orderAddresses = viewModel.getAddresses(orders)
 
-                    withContext(Dispatchers.Main){
-                        orderAdapter.addOrderAddresses(orderAddresses)
-                    }
+                    orderAdapter.addOrderAddresses(orderAddresses)
+
                 }
             }
         }

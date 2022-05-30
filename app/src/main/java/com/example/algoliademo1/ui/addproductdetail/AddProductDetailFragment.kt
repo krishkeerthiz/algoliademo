@@ -75,7 +75,6 @@ class AddProductDetailFragment : Fragment() {
         description.addTextChangedListener(ValidationTextWatcher(description))
         rating.addTextChangedListener(ValidationTextWatcher(rating))
 
-
         binding.nextButton.setOnClickListener {
             if (validateProductBrand() && validateProductCategory() && validateProductDescription()
                 && validateProductName() && validateProductPrice() && validateProductRating()
@@ -125,12 +124,12 @@ class AddProductDetailFragment : Fragment() {
 
     private fun calculatePriceRange(price: Int): String {
         return when (price) {
-            in 1..50 -> "1 - 50"
-            in 50..100 -> "50 - 100"
-            in 100..200 -> "100 - 200"
-            in 200..500 -> "200 - 500"
-            in 500..2000 -> "500 - 2000"
-            else -> "> 2000"
+            in 1..50 -> "1 - 50" // 1 to 50
+            in 51..100 -> "50 - 100" // 51 to 100
+            in 101..200 -> "100 - 200" // 101 to 200
+            in 201..500 -> "200 - 500" // 201 to 500
+            in 501..2000 -> "500 - 2000" // 501 to 2000
+            else -> "> 2000" // >2000
         }
     }
 
@@ -286,13 +285,11 @@ class AddProductDetailFragment : Fragment() {
     }
 
 
-    inner class ValidationTextWatcher(val view: View) : TextWatcher {
+    inner class ValidationTextWatcher(var view: View) : TextWatcher {
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         }
-
         override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
         }
-
         override fun afterTextChanged(s: Editable?) {
             when (view.id) {
                 R.id.productNameText -> validateProductName()
@@ -304,6 +301,5 @@ class AddProductDetailFragment : Fragment() {
                 R.id.productRatingText -> validateProductRating()
             }
         }
-
     }
 }

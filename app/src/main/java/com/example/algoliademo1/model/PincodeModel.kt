@@ -5,7 +5,7 @@ import java.io.Serializable
 
 data class PincodeModel(
     @Json(name = "Message")
-    var message: String?,
+    val message: String?,
     @Json(name = "Status")
     val status: String?,
     @Json(name = "PostOffice")
@@ -15,28 +15,28 @@ data class PincodeModel(
 
 data class PincodeInfo(
     @Json(name = "Name")
-    var name: String?,
+    val name: String?,
     @Json(name = "Description")
-    var description: String?,
+    val description: String?,
     @Json(name = "BranchType")
-    var branchType: String?,
+    val branchType: String?,
     @Json(name = "DeliveryStatus")
-    var deliveryStatus: String?,
+    val deliveryStatus: String?,
     @Json(name = "Circle")
-    var circle: String?,
+    val circle: String?,
     @Json(name = "District")
-    var district: String?,
+    val district: String?,
     @Json(name = "Division")
-    var division: String?,
+    val division: String?,
     @Json(name = "Region")
-    var region: String?,
+    val region: String?,
     @Json(name = "Block")
-    var block: String?,
+    val block: String?,
     @Json(name = "State")
-    var state: String?,
+    val state: String?,
     @Json(name = "Country")
-    var country: String?,
+    val country: String?,
     @Json(name = "Pincode")
-    var pincode: String?
+    val pincode: String?
 
 ) : Serializable

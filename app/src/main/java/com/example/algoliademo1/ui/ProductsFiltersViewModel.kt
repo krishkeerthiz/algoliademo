@@ -1,8 +1,7 @@
 package com.example.algoliademo1.ui
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import androidx.lifecycle.*
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.algolia.instantsearch.core.connection.ConnectionHandler
@@ -23,12 +22,11 @@ import com.algolia.search.model.IndexName
 import com.example.algoliademo1.data.source.local.entity.Product
 import com.example.algoliademo1.data.source.remote.AlgoliaIndex
 import com.example.algoliademo1.data.source.repository.ProductsRepository
-import com.example.algoliademo1.model.ProductInfo
+import com.example.algoliademo1.model.ProductInfoModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProductsFiltersViewModel : ViewModel() {
+class ProductsFiltersViewModel(context: Context) : ViewModel() {
 
 //    private val client = ClientSearch(
 //        ApplicationID(ApplicationID),
@@ -38,10 +36,10 @@ class ProductsFiltersViewModel : ViewModel() {
     private val index = AlgoliaIndex.getClient().initIndex(IndexName("products4"))
     private val searcher = SearcherSingleIndex(index)
 
-    private val productsRepository = ProductsRepository //.getRepository()
+    private val productsRepository = ProductsRepository.getRepository(context)
 
     private val dataSourceFactory = SearcherSingleIndexDataSource.Factory(searcher) { hit ->
-        ProductInfo(
+        ProductInfoModel(
             hit.json["objectID"].toString(),
             hit.json["name"].toString()
         )
@@ -51,8 +49,12 @@ class ProductsFiltersViewModel : ViewModel() {
 
     private val pagedListConfig = PagedList.Config.Builder().setPageSize(50).build()
 
-    val products: LiveData<PagedList<ProductInfo>> =
+    val products: LiveData<PagedList<ProductInfoModel>> =
         LivePagedListBuilder(dataSourceFactory, pagedListConfig).build()
+
+    var pendingHits: PagedList<ProductInfoModel>? = null
+
+    var running = MutableLiveData<Boolean>()
 
     val searchBox = SearchBoxConnectorPagedList(searcher, listOf(products))
 
@@ -105,7 +107,6 @@ class ProductsFiltersViewModel : ViewModel() {
         connection += searcher.connectFilterState(filterState)
         connection += filterState.connectPagedList(products)
         connection += clearAll
-
     }
 
     override fun onCleared() {
@@ -115,28 +116,28 @@ class ProductsFiltersViewModel : ViewModel() {
 
     }
 
-    suspend fun getProducts(productInfos: List<ProductInfo>?): List<Product?> {
-        val products = mutableListOf<Product?>()
+    suspend fun getProducts(productInfos: List<ProductInfoModel>?): List<Product?> {
+        return withContext(Dispatchers.Default){
+            val products = mutableListOf<Product?>()
 
-        if (productInfos != null) {
-            for(productInfo in productInfos){
-                viewModelScope.launch(Dispatchers.IO) {
+            if (productInfos != null)
+                for(productInfo in productInfos)
                     products.add(getProduct(productInfo.id))
-                }.join()
-            }
-        }
 
-        return products
+            products
+        }
     }
 
-     suspend fun getProduct(productId: String) = withContext(Dispatchers.IO){
+     suspend fun getProduct(productId: String) =
          productsRepository.getProduct(productId.removeSurrounding("\"", "\""))
-     }
 
+}
 
-//    companion object{
-//        private const val ApplicationID = "9N1YDJJ8DK"
-//        private const val APIKEY = "dcd5088a151c2e8db47aec60ea0eb6ec"
-//    }
+class ProductsFiltersViewModelFactory(private val context: Context) :
+    ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return ProductsFiltersViewModel(context) as T
+    }
 }
